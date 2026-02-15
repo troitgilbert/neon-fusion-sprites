@@ -11,6 +11,7 @@ import VersusTypeMenu from '../components/VersusTypeMenu';
 import ShopMenu from '../components/ShopMenu';
 import ConfigMenu from '../components/ConfigMenu';
 import TouchControls from '../components/TouchControls';
+import CharacterCreator from '../components/CharacterCreator';
 
 const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent) || window.innerWidth < 800;
 
@@ -18,14 +19,14 @@ const GameApp: React.FC = () => {
   const { gameState, coins } = useGame();
   const inFight = gameState === 'FIGHT' || gameState === 'PAUSED' || gameState === 'ROUND_OVER';
   const showMenu = gameState === 'MENU';
+  const showNebula = showMenu || gameState === 'SELECT' || gameState === 'SKIN_SELECT' || gameState === 'STAGE_SELECT' || gameState === 'VERSUS_TYPE' || gameState === 'SHOP' || gameState === 'CONFIG' || gameState === 'CREATOR';
 
   return (
     <div className="w-screen h-screen overflow-hidden" style={{ background: '#000' }}>
-      {/* Nebula background (menu + selectors) */}
-      {(showMenu || gameState === 'SELECT' || gameState === 'SKIN_SELECT' || gameState === 'STAGE_SELECT' || gameState === 'VERSUS_TYPE' || gameState === 'SHOP' || gameState === 'CONFIG') && <NebulaBackground />}
+      {showNebula && <NebulaBackground />}
 
       {/* Crystal counter — hidden during fight */}
-      {!inFight && (
+      {!inFight && gameState !== 'CREATOR' && (
         <div
           style={{
             position: 'fixed', top: 20, right: 20, fontSize: 20, color: '#00ffff',
@@ -38,10 +39,8 @@ const GameApp: React.FC = () => {
         </div>
       )}
 
-      {/* Menu state */}
       {showMenu && <MainMenu />}
 
-      {/* Fight state — canvas is now fullscreen internally */}
       {inFight && (
         <>
           <GameCanvas />
@@ -50,10 +49,8 @@ const GameApp: React.FC = () => {
         </>
       )}
 
-      {/* Non-fight canvas states (selectors render on top of nebula) */}
       {(gameState === 'SELECT' || gameState === 'SKIN_SELECT' || gameState === 'STAGE_SELECT' || gameState === 'VERSUS_TYPE' || gameState === 'SHOP' || gameState === 'CONFIG') && <GameCanvas />}
 
-      {/* Overlay menus — now fullscreen */}
       {gameState === 'SELECT' && <CharacterSelect />}
       {gameState === 'SKIN_SELECT' && <CharacterSelect />}
       {gameState === 'STAGE_SELECT' && <StageSelect />}
@@ -61,6 +58,7 @@ const GameApp: React.FC = () => {
       {gameState === 'VERSUS_TYPE' && <VersusTypeMenu />}
       {gameState === 'SHOP' && <ShopMenu />}
       {gameState === 'CONFIG' && <ConfigMenu />}
+      {gameState === 'CREATOR' && <CharacterCreator />}
     </div>
   );
 };

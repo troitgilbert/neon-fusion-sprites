@@ -38,7 +38,6 @@ const NebulaBackground: React.FC = () => {
             radial-gradient(circle at 80% 70%, rgba(0,120,255,0.25), transparent 65%),
             radial-gradient(circle at 50% 50%, rgba(255,0,120,0.18), transparent 70%)
           `,
-          animation: 'nebulaMove 60s linear infinite'
         }}
       />
 
@@ -56,7 +55,6 @@ const NebulaBackground: React.FC = () => {
         className="fixed inset-0 pointer-events-none z-[1]"
         style={{
           background: 'radial-gradient(circle, rgba(20,20,20,.5), transparent 70%)',
-          animation: 'smokeMove 25s linear infinite'
         }}
       />
 
@@ -65,7 +63,6 @@ const NebulaBackground: React.FC = () => {
         className="fixed inset-0 pointer-events-none z-[1]"
         style={{
           background: 'radial-gradient(circle, rgba(10,10,10,.7), transparent 70%)',
-          animation: 'fogMove 40s linear infinite'
         }}
       />
 

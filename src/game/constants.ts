@@ -45,9 +45,15 @@ export const MODE_INFO: Record<string, string> = {
   "SUPERVIVENCIA": "Resiste oleadas infinitas de enemigos hasta caer derrotado.",
   "BOSS RUSH": "Enfréntate únicamente a los jefes, uno tras otro, sin descanso.",
   "ENTRENAMIENTO": "Practica combos, movimientos y estrategias sin presión.",
+  "JUEGOS MENTALES": "Pon a prueba tu ingenio con puzzles y acertijos basados en el universo del juego.",
+  "CITAS": "Interactúa con los personajes del juego en escenarios sociales y forja relaciones únicas.",
+  "CREADOR DE PERSONAJES": "Diseña tu propio luchador personalizado con apariencia, habilidades y estilo únicos.",
   "TIENDA": "Compra personajes, skins y mejoras usando cristales.",
   "DOCUMENTOS": "Consulta información del mundo, historia y guías internas.",
   "LOGROS": "Revisa tus hazañas y desafíos completados durante el juego.",
   "CONFIGURACIÓN": "Ajusta controles, sonido, gráficos y opciones generales.",
-  "SALIR": "Cierra el juego."
+  "SALIR": "Cierra el juego.",
+  "PERSONALIZABLE": "Selecciona o crea un personaje completamente personalizado.",
+  "MODOS DE JUEGO": "Accede a modos especiales con reglas y desafíos únicos.",
+  "EXTRAS": "Contenido adicional, documentos y logros del juego.",
 };

@@ -1,4 +1,19 @@
-export type GameState = 'MENU' | 'VERSUS_TYPE' | 'SELECT' | 'SKIN_SELECT' | 'STAGE_SELECT' | 'FIGHT' | 'PAUSED' | 'ROUND_OVER' | 'SHOP' | 'CONFIG';
+export type GameState = 'MENU' | 'VERSUS_TYPE' | 'SELECT' | 'SKIN_SELECT' | 'STAGE_SELECT' | 'FIGHT' | 'PAUSED' | 'ROUND_OVER' | 'SHOP' | 'CONFIG' | 'CREATOR';
+
+export interface CustomCharData {
+  name: string;
+  hairColor: string;
+  skinColor: string;
+  clothesColor: string;
+  pantsColor: string;
+  handsColor: string;
+  shoesColor: string;
+  eyesColor: string;
+  speed: 'lento' | 'normal' | 'rapido' | 'velocista';
+  size: 'pequeño' | 'normal' | 'grande';
+  effectColor: string;
+  specialAbility: string;
+}
 
 export type GameMode = '' | 'arcade' | 'survival' | 'versus' | 'vs_cpu' | 'training';
 

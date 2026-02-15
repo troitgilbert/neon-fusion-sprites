@@ -43,10 +43,11 @@ const CharacterSelect: React.FC = () => {
           }}>
             ELIGE ESTILO P{skinSelectFor.pNum}: {ch.name}
           </h2>
-          {/* Large preview */}
+          {/* Large preview - reflects skin */}
           <div style={{
             width: 120, height: 120, margin: '0 auto 30px', borderRadius: '50%',
-            background: ch.color, border: `4px solid ${ch.eyes}`,
+            background: skinSelectFor.charIdx === 1 ? '#f5d1ad' : ch.color,
+            border: `4px solid ${ch.eyes}`,
             boxShadow: `0 0 40px ${ch.eyes}60, 0 0 80px ${ch.eyes}20`,
           }} />
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: 15 }}>
@@ -102,17 +103,17 @@ const CharacterSelect: React.FC = () => {
         background: 'rgba(0,0,0,0.5)',
       }}>
         <div style={{ color: '#00ffff', fontFamily: "'Orbitron', monospace", fontSize: 'clamp(12px, 2vw, 18px)', letterSpacing: 2 }}>
-          The king of Fighters
+          P1
         </div>
         <div style={{
           color: '#ffff00', fontFamily: "'Orbitron', monospace", fontSize: 'clamp(18px, 3.5vw, 36px)',
           textShadow: '0 0 20px #ffff00, 0 0 40px rgba(255,255,0,0.3)', letterSpacing: 4,
           fontWeight: 900,
         }}>
-          PLAYER SELECT
+          SELECCIÓN DE PERSONAJE
         </div>
         <div style={{ color: '#ff8c00', fontFamily: "'Orbitron', monospace", fontSize: 'clamp(12px, 2vw, 18px)', letterSpacing: 2 }}>
-          The king of Fighters
+          P2
         </div>
       </div>
 
@@ -201,6 +202,45 @@ const CharacterSelect: React.FC = () => {
                 </div>
               );
             })}
+            {/* Personalizable slots */}
+            {(() => {
+              try {
+                const customs: any[] = JSON.parse(localStorage.getItem('customChars') || '[]');
+                return customs.map((ch, ci) => (
+                  <div
+                    key={`custom-${ci}`}
+                    style={{
+                      width: 'clamp(70px, 10vw, 110px)', height: 'clamp(70px, 10vw, 110px)',
+                      cursor: 'pointer', position: 'relative',
+                      background: 'rgba(20,20,60,0.6)',
+                      clipPath: 'polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%)',
+                      display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+                      transition: 'all 0.3s',
+                    }}
+                    onMouseEnter={() => setHoveredIdx(null)}
+                  >
+                    <div style={{
+                      width: '90%', height: '90%', position: 'absolute',
+                      clipPath: 'polygon(50% 2%, 98% 26%, 98% 74%, 50% 98%, 2% 74%, 2% 26%)',
+                      background: 'rgba(10,10,40,0.95)',
+                      display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+                    }}>
+                      <div style={{
+                        width: 'clamp(30px, 5vw, 55px)', height: 'clamp(30px, 5vw, 55px)',
+                        borderRadius: '50%', background: ch.clothesColor || '#444',
+                        border: `3px solid ${ch.eyesColor || '#888'}`,
+                        boxShadow: `0 0 15px ${ch.eyesColor || '#888'}40`,
+                      }} />
+                    </div>
+                    <div style={{
+                      position: 'absolute', bottom: '8%', color: '#87ceeb',
+                      fontSize: 'clamp(5px, 0.8vw, 8px)', fontFamily: "'Orbitron', monospace",
+                      textShadow: '0 0 5px #00ffff', letterSpacing: 1,
+                    }}>{ch.name || '?'}</div>
+                  </div>
+                ));
+              } catch { return null; }
+            })()}
             {/* Random/mystery slot */}
             <div
               style={{

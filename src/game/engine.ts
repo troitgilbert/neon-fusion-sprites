@@ -247,6 +247,123 @@ export class GameEngine {
     this.ctx.fillStyle = 'white'; this.ctx.fillRect(0, 0, CANVAS_W * RENDER_SCALE, CANVAS_H * RENDER_SCALE);
   }
 
+  drawStageBackground(ctx: CanvasRenderingContext2D) {
+    const t = Date.now() * 0.001;
+
+    if (this.selectedStage === 'nada') {
+      ctx.fillStyle = '#000000';
+      ctx.fillRect(-10, -10, 660, 500);
+      return;
+    }
+
+    if (this.selectedStage === 'infierno') {
+      const bg = ctx.createLinearGradient(0, 0, 0, CANVAS_H);
+      bg.addColorStop(0, '#1a0000'); bg.addColorStop(0.4, '#3d0000'); bg.addColorStop(1, '#000000');
+      ctx.fillStyle = bg; ctx.fillRect(-10, -10, 660, 500);
+      ctx.strokeStyle = 'rgba(255,50,0,0.15)'; ctx.lineWidth = 1;
+      const vanishY = 180, vanishX = 320;
+      for (let i = 0; i < 12; i++) { ctx.beginPath(); ctx.moveTo(i * 60 - 20, CANVAS_H); ctx.lineTo(vanishX, vanishY); ctx.stroke(); }
+      for (let i = 0; i < 8; i++) { const y = FLOOR_Y + i * 12; const sp = (y - vanishY) / (CANVAS_H - vanishY); ctx.beginPath(); ctx.moveTo(vanishX - sp * 400, y); ctx.lineTo(vanishX + sp * 400, y); ctx.stroke(); }
+      ctx.fillStyle = '#2a0000'; ctx.beginPath(); ctx.moveTo(0, 280);
+      for (let x = 0; x <= 640; x += 40) ctx.lineTo(x, 250 + Math.sin(x * 0.02 + 1) * 30 + Math.sin(x * 0.05) * 15);
+      ctx.lineTo(640, 400); ctx.lineTo(0, 400); ctx.fill();
+      for (let i = 0; i < 5; i++) {
+        ctx.fillStyle = `rgb(${40 + i * 8}, ${10 + i * 3}, 5)`;
+        const rx = 80 + i * 130, ry = FLOOR_Y - 5;
+        ctx.beginPath(); ctx.moveTo(rx - 15, ry); ctx.lineTo(rx - 8, ry - 20); ctx.lineTo(rx + 5, ry - 25); ctx.lineTo(rx + 15, ry - 10); ctx.lineTo(rx + 12, ry); ctx.fill();
+      }
+      for (let i = 0; i < 20; i++) {
+        const fx = ((i * 97 + t * 40) % 680) - 20;
+        const fy = FLOOR_Y - ((t * 30 + i * 47) % 200);
+        ctx.globalAlpha = Math.max(0, 1 - (FLOOR_Y - fy) / 200) * 0.8;
+        ctx.fillStyle = ['#ff4400', '#ff8800', '#ffcc00'][i % 3];
+        ctx.beginPath(); ctx.arc(fx, fy, 2 + Math.sin(t * 3 + i) * 1.5, 0, Math.PI * 2); ctx.fill();
+      }
+      ctx.globalAlpha = 0.3 + Math.sin(t * 2) * 0.1;
+      const lava = ctx.createLinearGradient(0, FLOOR_Y, 0, CANVAS_H);
+      lava.addColorStop(0, 'rgba(255,100,0,0.6)'); lava.addColorStop(1, 'rgba(200,0,0,0.3)');
+      ctx.fillStyle = lava; ctx.fillRect(0, FLOOR_Y, CANVAS_W, CANVAS_H - FLOOR_Y);
+      ctx.globalAlpha = 1;
+      return;
+    }
+
+    if (this.selectedStage === 'cielo') {
+      const bg = ctx.createLinearGradient(0, 0, 0, CANVAS_H);
+      bg.addColorStop(0, '#4a90d9'); bg.addColorStop(0.3, '#87ceeb'); bg.addColorStop(0.7, '#b8e6ff'); bg.addColorStop(1, '#fff9e0');
+      ctx.fillStyle = bg; ctx.fillRect(-10, -10, 660, 500);
+      ctx.globalAlpha = 0.08;
+      for (let i = 0; i < 6; i++) {
+        const rx = 100 + i * 90 + Math.sin(t * 0.3 + i) * 20;
+        ctx.fillStyle = '#ffffff'; ctx.beginPath();
+        ctx.moveTo(rx, 0); ctx.lineTo(rx - 40, CANVAS_H); ctx.lineTo(rx + 40, CANVAS_H); ctx.fill();
+      }
+      ctx.globalAlpha = 1;
+      ctx.strokeStyle = 'rgba(255,215,0,0.12)'; ctx.lineWidth = 1;
+      const vanishY = 160, vanishX = 320;
+      for (let i = 0; i < 12; i++) { ctx.beginPath(); ctx.moveTo(i * 60 - 20, CANVAS_H); ctx.lineTo(vanishX, vanishY); ctx.stroke(); }
+      for (let i = 0; i < 8; i++) { const y = FLOOR_Y + i * 12; const sp = (y - vanishY) / (CANVAS_H - vanishY); ctx.beginPath(); ctx.moveTo(vanishX - sp * 400, y); ctx.lineTo(vanishX + sp * 400, y); ctx.stroke(); }
+      for (let i = 0; i < 8; i++) {
+        const cx = ((i * 120 + t * (15 + i * 3)) % 800) - 80;
+        const cy = 60 + i * 25 + Math.sin(t * 0.5 + i * 2) * 10;
+        const cw = 80 + (i % 3) * 40;
+        ctx.globalAlpha = 0.3 + (i % 3) * 0.1; ctx.fillStyle = '#ffffff';
+        ctx.beginPath(); ctx.ellipse(cx, cy, cw, 15 + (i % 2) * 10, 0, 0, Math.PI * 2); ctx.fill();
+        ctx.beginPath(); ctx.ellipse(cx - cw * 0.3, cy - 8, cw * 0.5, 12, 0, 0, Math.PI * 2); ctx.fill();
+      }
+      for (let i = 0; i < 15; i++) {
+        ctx.globalAlpha = 0.3 + Math.sin(t * 4 + i * 1.5) * 0.3;
+        ctx.fillStyle = '#ffffaa';
+        ctx.beginPath(); ctx.arc((i * 73 + t * 10) % 640, 50 + ((i * 41 + t * 8) % 350), 1.5, 0, Math.PI * 2); ctx.fill();
+      }
+      ctx.globalAlpha = 1;
+      return;
+    }
+
+    // Galaxia default
+    const bg = ctx.createLinearGradient(0, 0, 0, CANVAS_H);
+    bg.addColorStop(0, '#050510'); bg.addColorStop(0.5, '#0b0b2a'); bg.addColorStop(1, '#0a0a20');
+    ctx.fillStyle = bg; ctx.fillRect(-10, -10, 660, 500);
+    for (let i = 0; i < 4; i++) {
+      const nx = 100 + i * 150 + Math.sin(t * 0.2 + i * 1.5) * 30;
+      const ny = 80 + i * 60 + Math.cos(t * 0.15 + i) * 20;
+      const grad = ctx.createRadialGradient(nx, ny, 0, nx, ny, 120 + i * 30);
+      const cols = [['rgba(100,0,200,0.08)','rgba(100,0,200,0)'],['rgba(0,100,200,0.06)','rgba(0,100,200,0)'],['rgba(200,0,100,0.05)','rgba(200,0,100,0)'],['rgba(0,200,150,0.04)','rgba(0,200,150,0)']];
+      grad.addColorStop(0, cols[i][0]); grad.addColorStop(1, cols[i][1]);
+      ctx.fillStyle = grad; ctx.fillRect(0, 0, CANVAS_W, CANVAS_H);
+    }
+    this.stars.forEach((s, i) => {
+      const tw = 0.4 + Math.sin(t * 3 + s.blink * 10) * 0.4 + Math.sin(t * 7 + i) * 0.2;
+      ctx.globalAlpha = Math.max(0, Math.min(1, tw));
+      const size = s.s * (0.8 + Math.sin(t * 2 + s.blink * 5) * 0.3);
+      ctx.fillStyle = '#ffffff';
+      ctx.beginPath(); ctx.arc(s.x, s.y, size, 0, Math.PI * 2); ctx.fill();
+      if (size > 1.2) { ctx.globalAlpha *= 0.3; ctx.beginPath(); ctx.arc(s.x, s.y, size * 3, 0, Math.PI * 2); ctx.fill(); }
+    });
+    ctx.globalAlpha = 1;
+    ctx.strokeStyle = 'rgba(0,255,255,0.08)'; ctx.lineWidth = 1;
+    const vanishY = 200, vanishX = 320;
+    for (let i = 0; i < 14; i++) { ctx.beginPath(); ctx.moveTo(i * 50 - 10, CANVAS_H); ctx.lineTo(vanishX, vanishY); ctx.stroke(); }
+    for (let i = 0; i < 6; i++) { const y = FLOOR_Y + i * 15; const sp = (y - vanishY) / (CANVAS_H - vanishY); ctx.beginPath(); ctx.moveTo(vanishX - sp * 400, y); ctx.lineTo(vanishX + sp * 400, y); ctx.stroke(); }
+  }
+
+  drawStageFloor(ctx: CanvasRenderingContext2D) {
+    if (this.selectedStage === 'nada') {
+      ctx.strokeStyle = 'rgba(255,255,255,0.05)'; ctx.lineWidth = 1;
+      ctx.beginPath(); ctx.moveTo(0, FLOOR_Y); ctx.lineTo(CANVAS_W, FLOOR_Y); ctx.stroke();
+      return;
+    }
+    const colors: Record<string, [string, string]> = {
+      infierno: ['rgba(255,80,0,0.8)', '#ff4400'],
+      cielo: ['rgba(255,215,0,0.6)', '#ffd700'],
+      default: ['rgba(0,255,255,0.5)', '#ffffff'],
+    };
+    const [shadow, stroke] = colors[this.selectedStage] || colors.default;
+    ctx.shadowBlur = 20; ctx.shadowColor = shadow;
+    ctx.strokeStyle = stroke; ctx.lineWidth = 3;
+    ctx.beginPath(); ctx.moveTo(0, FLOOR_Y); ctx.lineTo(CANVAS_W, FLOOR_Y); ctx.stroke();
+    ctx.shadowBlur = 0;
+  }
+
   update() {
     if (this.state !== 'FIGHT') return;
     if (this.hitStop > 0) { this.hitStop--; return; }
@@ -288,26 +405,11 @@ export class GameEngine {
     ctx.translate(320, 240); ctx.scale(zoom, zoom); ctx.translate(-320, -240);
     ctx.translate(dx, dy);
 
-    // Background
-    const bg = ctx.createLinearGradient(0, 0, 0, CANVAS_H);
-    if (this.selectedStage === 'infierno') { bg.addColorStop(0, '#4b0000'); bg.addColorStop(1, '#1a0000'); }
-    else if (this.selectedStage === 'cielo') { bg.addColorStop(0, '#87ceeb'); bg.addColorStop(1, '#fff9c4'); }
-    else if (this.selectedStage === 'nada') { bg.addColorStop(0, '#000'); bg.addColorStop(1, '#050505'); }
-    else { bg.addColorStop(0, '#0b0b2a'); bg.addColorStop(1, '#050510'); }
-    ctx.fillStyle = bg; ctx.fillRect(-10, -10, 660, 500);
+    // Background with 3D perspective
+    this.drawStageBackground(ctx);
 
-    // Stars
-    this.stars.forEach(s => {
-      ctx.globalAlpha = 0.5 + Math.sin(Date.now() * 0.005 + s.blink) * 0.5;
-      ctx.fillStyle = '#ffffff'; ctx.fillRect(s.x, s.y, s.s, s.s);
-    });
-    ctx.globalAlpha = 1;
-
-    // Floor
-    ctx.shadowBlur = 20; ctx.shadowColor = 'rgba(0,255,255,0.5)';
-    ctx.strokeStyle = '#ffffff'; ctx.lineWidth = 3;
-    ctx.beginPath(); ctx.moveTo(0, FLOOR_Y); ctx.lineTo(CANVAS_W, FLOOR_Y); ctx.stroke();
-    ctx.shadowBlur = 0;
+    // Floor with perspective
+    this.drawStageFloor(ctx);
 
     if (this.state === 'FIGHT' || this.state === 'PAUSED' || this.state === 'ROUND_OVER') {
       // Shadows

@@ -24,17 +24,19 @@ const GameApp: React.FC = () => {
       {/* Nebula background (menu + selectors) */}
       {(showMenu || gameState === 'SELECT' || gameState === 'SKIN_SELECT' || gameState === 'STAGE_SELECT' || gameState === 'VERSUS_TYPE' || gameState === 'SHOP' || gameState === 'CONFIG') && <NebulaBackground />}
 
-      {/* Crystal counter */}
-      <div
-        style={{
-          position: 'fixed', top: 20, right: 20, fontSize: 20, color: '#00ffff',
-          fontWeight: 'bold', textShadow: '0 0 10px #00ffff', zIndex: 100,
-          background: 'rgba(0,0,0,0.6)', padding: '5px 15px', borderRadius: 20,
-          border: '1px solid #87ceeb', fontFamily: "'Orbitron', monospace",
-        }}
-      >
-        🔷 {coins}
-      </div>
+      {/* Crystal counter — hidden during fight */}
+      {!inFight && (
+        <div
+          style={{
+            position: 'fixed', top: 20, right: 20, fontSize: 20, color: '#00ffff',
+            fontWeight: 'bold', textShadow: '0 0 10px #00ffff', zIndex: 100,
+            background: 'rgba(0,0,0,0.6)', padding: '5px 15px', borderRadius: 20,
+            border: '1px solid #87ceeb', fontFamily: "'Orbitron', monospace",
+          }}
+        >
+          🔷 {coins}
+        </div>
+      )}
 
       {/* Menu state */}
       {showMenu && <MainMenu />}

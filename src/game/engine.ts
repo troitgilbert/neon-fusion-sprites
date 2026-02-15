@@ -1,7 +1,7 @@
 import { Fighter } from './fighter';
 import { Projectile } from './projectile';
 import { Particle, Shockwave, FloatingText, PunchCircle } from './effects';
-import { CHAR_DATA, CANVAS_W, CANVAS_H, CONTROLS, TRANSFORM_KEY, FLOOR_Y } from './constants';
+import { CHAR_DATA, CANVAS_W, CANVAS_H, CONTROLS, TRANSFORM_KEY, FLOOR_Y, RENDER_SCALE } from './constants';
 import type { GameState, GameMode, StarData } from './types';
 
 export class GameEngine {
@@ -48,7 +48,7 @@ export class GameEngine {
   init(canvas: HTMLCanvasElement) {
     this.canvas = canvas;
     this.ctx = canvas.getContext('2d')!;
-    this.ctx.imageSmoothingEnabled = false;
+    this.ctx.imageSmoothingEnabled = true;
 
     // Load inventory
     try { this.inventory = JSON.parse(localStorage.getItem('inv') || '{}'); } catch { this.inventory = {}; }
@@ -244,7 +244,7 @@ export class GameEngine {
   }
   flashScreen() {
     if (!this.ctx) return;
-    this.ctx.fillStyle = 'white'; this.ctx.fillRect(0, 0, CANVAS_W, CANVAS_H);
+    this.ctx.fillStyle = 'white'; this.ctx.fillRect(0, 0, CANVAS_W * RENDER_SCALE, CANVAS_H * RENDER_SCALE);
   }
 
   update() {
@@ -283,6 +283,7 @@ export class GameEngine {
     const dy = (Math.random() - 0.5) * this.shake;
 
     ctx.save();
+    ctx.scale(RENDER_SCALE, RENDER_SCALE);
     const zoom = 1 + Math.min(this.shake / 120, 0.06);
     ctx.translate(320, 240); ctx.scale(zoom, zoom); ctx.translate(-320, -240);
     ctx.translate(dx, dy);

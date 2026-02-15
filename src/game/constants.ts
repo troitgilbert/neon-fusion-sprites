@@ -4,6 +4,7 @@ export const CANVAS_W = 640;
 export const CANVAS_H = 480;
 export const GROUND_Y = 400;
 export const FLOOR_Y = 425;
+export const RENDER_SCALE = 2;
 
 export const CHAR_DATA: CharData[] = [
   { name: 'EDOWADO', color: '#8B4513', eyes: '#00ffff', speed: 5, weight: 1 },

@@ -3,6 +3,7 @@ import { Projectile } from './projectile';
 import { Particle, Shockwave, FloatingText, PunchCircle } from './effects';
 import { CHAR_DATA, CANVAS_W, CANVAS_H, CONTROLS, TRANSFORM_KEY, FLOOR_Y, RENDER_SCALE } from './constants';
 import type { GameState, GameMode, StarData } from './types';
+import { playHitSound, playSpecialSound, playSuperSound, playKOSound, playBlockSound, startAmbient, stopAmbient } from './audio';
 
 export class GameEngine {
   state: GameState = 'MENU';
@@ -155,6 +156,7 @@ export class GameEngine {
     if (this.mode === 'training') { this.p2.hp = 9999; this.p2.energy = 0; }
     this.resetRound();
     this.setState('FIGHT');
+    startAmbient(this.selectedStage);
   }
 
   resetRound() {
@@ -187,6 +189,7 @@ export class GameEngine {
     this.shake = 25;
     this.flashScreen();
     this.state = 'ROUND_OVER';
+    playKOSound();
 
     setTimeout(() => {
       if (this.mode === 'survival') {
@@ -194,7 +197,7 @@ export class GameEngine {
           this.round++; this.updatePrisms(20); this.resetRound(); this.state = 'FIGHT';
         } else {
           this.onAnnouncerText?.('GAME OVER');
-          setTimeout(() => { this.onAnnouncerText?.(''); this.setState('MENU'); }, 3000);
+          setTimeout(() => { this.onAnnouncerText?.(''); stopAmbient(); this.setState('MENU'); }, 3000);
         }
       } else if (this.mode === 'training') {
         this.resetRound(); this.state = 'FIGHT';
@@ -203,7 +206,7 @@ export class GameEngine {
         if (winner.rounds === 2) {
           this.onAnnouncerText?.(`${CHAR_DATA[winner.charIdx].name} GANA!`);
           this.updatePrisms(10);
-          setTimeout(() => { this.onAnnouncerText?.(''); this.setState('MENU'); }, 3000);
+          setTimeout(() => { this.onAnnouncerText?.(''); stopAmbient(); this.setState('MENU'); }, 3000);
         } else {
           this.round = this.p1!.rounds + this.p2!.rounds + 1;
           this.resetRound(); this.state = 'FIGHT';
@@ -214,7 +217,7 @@ export class GameEngine {
 
   resume() { this.setState('FIGHT'); }
   restart() { if (this.p1Choice !== null && this.p2Choice !== null) this.startMatch(this.p1Choice, this.p2Choice); }
-  goToMainMenu() { this.p1Choice = null; this.p2Choice = null; this.setState('MENU'); }
+  goToMainMenu() { this.p1Choice = null; this.p2Choice = null; stopAmbient(); this.setState('MENU'); }
   togglePause() {
     if (this.state === 'FIGHT') this.setState('PAUSED');
     else if (this.state === 'PAUSED') this.resume();
@@ -227,13 +230,14 @@ export class GameEngine {
   }
 
   spawnParticles(x: number, y: number, color: string, count: number, size?: number) {
-    // Demonio skin override
     if ((this.p1 && this.p1.isKaitoDemonio()) || (this.p2 && this.p2.isKaitoDemonio())) color = '#000000';
     for (let i = 0; i < count; i++) this.particles.push(new Particle(x, y, color, 5, size));
+    if (count >= 10) playHitSound();
   }
   spawnExplosion(x: number, y: number, color: string) {
     this.spawnParticles(x, y, color, 20, 4);
     this.shockwaves.push(new Shockwave(x, y, color));
+    playSuperSound();
   }
   spawnProjectile(x: number, y: number, vx: number, vy: number, color: string, owner: Fighter, type: string) {
     this.projectiles.push(new Projectile(x, y, vx, vy, color, owner, type));
@@ -252,14 +256,14 @@ export class GameEngine {
 
     if (this.selectedStage === 'nada') {
       ctx.fillStyle = '#000000';
-      ctx.fillRect(-10, -10, 660, 500);
+      ctx.fillRect(-50, -50, CANVAS_W + 100, CANVAS_H + 100);
       return;
     }
 
     if (this.selectedStage === 'infierno') {
       const bg = ctx.createLinearGradient(0, 0, 0, CANVAS_H);
       bg.addColorStop(0, '#1a0000'); bg.addColorStop(0.4, '#3d0000'); bg.addColorStop(1, '#000000');
-      ctx.fillStyle = bg; ctx.fillRect(-10, -10, 660, 500);
+      ctx.fillStyle = bg; ctx.fillRect(-50, -50, CANVAS_W + 100, CANVAS_H + 100);
       ctx.strokeStyle = 'rgba(255,50,0,0.15)'; ctx.lineWidth = 1;
       const vanishY = 180, vanishX = 320;
       for (let i = 0; i < 12; i++) { ctx.beginPath(); ctx.moveTo(i * 60 - 20, CANVAS_H); ctx.lineTo(vanishX, vanishY); ctx.stroke(); }
@@ -290,7 +294,7 @@ export class GameEngine {
     if (this.selectedStage === 'cielo') {
       const bg = ctx.createLinearGradient(0, 0, 0, CANVAS_H);
       bg.addColorStop(0, '#4a90d9'); bg.addColorStop(0.3, '#87ceeb'); bg.addColorStop(0.7, '#b8e6ff'); bg.addColorStop(1, '#fff9e0');
-      ctx.fillStyle = bg; ctx.fillRect(-10, -10, 660, 500);
+      ctx.fillStyle = bg; ctx.fillRect(-50, -50, CANVAS_W + 100, CANVAS_H + 100);
       ctx.globalAlpha = 0.08;
       for (let i = 0; i < 6; i++) {
         const rx = 100 + i * 90 + Math.sin(t * 0.3 + i) * 20;
@@ -322,7 +326,7 @@ export class GameEngine {
     // Galaxia default
     const bg = ctx.createLinearGradient(0, 0, 0, CANVAS_H);
     bg.addColorStop(0, '#050510'); bg.addColorStop(0.5, '#0b0b2a'); bg.addColorStop(1, '#0a0a20');
-    ctx.fillStyle = bg; ctx.fillRect(-10, -10, 660, 500);
+    ctx.fillStyle = bg; ctx.fillRect(-50, -50, CANVAS_W + 100, CANVAS_H + 100);
     for (let i = 0; i < 4; i++) {
       const nx = 100 + i * 150 + Math.sin(t * 0.2 + i * 1.5) * 30;
       const ny = 80 + i * 60 + Math.cos(t * 0.15 + i) * 20;

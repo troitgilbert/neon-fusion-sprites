@@ -36,6 +36,9 @@ const MainMenu: React.FC = () => {
         { label: 'SUPERVIVENCIA', action: () => setGameState('SELECT', 'survival') },
         { label: 'BOSS RUSH', action: () => {}, className: 'boss-rush' },
         { label: 'ENTRENAMIENTO', action: () => setGameState('SELECT', 'training') },
+        { label: 'JUEGOS MENTALES', action: () => {} },
+        { label: 'CITAS', action: () => {} },
+        { label: 'CREADOR DE PERSONAJES', action: () => setGameState('CREATOR') },
       ]
     },
     { label: 'TIENDA', action: () => setGameState('SHOP') },

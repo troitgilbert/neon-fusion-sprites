@@ -1,5 +1,6 @@
-import { CHAR_DATA, GROUND_Y } from './constants';
+import { CHAR_DATA, GROUND_Y, CANVAS_W } from './constants';
 import { FloatingText, PunchCircle } from './effects';
+import { playHitSound, playSpecialSound, playBlockSound } from './audio';
 import type { Controls } from './types';
 
 export class Fighter {
@@ -118,7 +119,8 @@ export class Fighter {
     this.squashX += (1 - this.squashX) * 0.15;
     this.squashY += (1 - this.squashY) * 0.15;
     if (this.hitFlash > 0) this.hitFlash--;
-    this.x = Math.max(30, Math.min(610, this.x));
+    // Extended stage boundaries
+    this.x = Math.max(30, Math.min(CANVAS_W - 30, this.x));
     this.y = Math.max(30, Math.min(450, this.y));
   }
 
@@ -243,6 +245,7 @@ export class Fighter {
       this.damageBoost = 1;
     } else if (type === 'special' && this.energy >= 49.5) {
       this.energy -= 49.5;
+      playSpecialSound();
       game.spawnShockwave(this.x, this.y, this.charIdx === 1 ? '#ffff00' : '#00ffff');
       game.shake = 14; game.hitStop = 6;
       if (this.charIdx === 0) {
@@ -274,7 +277,8 @@ export class Fighter {
   takeDamage(dmg: number, canStun = true) {
     if (this.isDodging) return;
     if (this.isKaitoDemonio() && this.isIntangible) return;
-    if (this.isBlocking) { dmg *= 0.5; canStun = false; }
+    if (this.isBlocking) { dmg *= 0.5; canStun = false; playBlockSound(); }
+    else { playHitSound(); }
     this.comboHits = 0; this.blockTime = 0;
     this.hp -= dmg; this.hp = Math.max(0, this.hp);
     if (canStun) { this.stun = 12; this.vx = -this.side * 6; this.vy = -3; }

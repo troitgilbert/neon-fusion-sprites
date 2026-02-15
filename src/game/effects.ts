@@ -24,7 +24,7 @@ export class FloatingText {
   draw(ctx: CanvasRenderingContext2D) {
     ctx.globalAlpha = this.life / 60;
     ctx.fillStyle = this.color;
-    ctx.font = "bold 20px 'Orbitron', monospace";
+    ctx.font = "bold 24px 'Orbitron', monospace";
     ctx.fillText(this.text, this.x, this.y);
     ctx.globalAlpha = 1;
   }

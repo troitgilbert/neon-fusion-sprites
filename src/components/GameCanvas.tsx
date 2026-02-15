@@ -1,6 +1,6 @@
 import React, { useRef, useEffect, useState } from 'react';
 import { useGame } from '../game/GameContext';
-import { CANVAS_W, CANVAS_H } from '../game/constants';
+import { CANVAS_W, CANVAS_H, RENDER_SCALE } from '../game/constants';
 
 const GameCanvas: React.FC = () => {
   const { engine } = useGame();
@@ -39,14 +39,13 @@ const GameCanvas: React.FC = () => {
           height: CANVAS_H,
           transform: `scale(${scale})`,
           transformOrigin: 'center center',
-          imageRendering: 'pixelated',
         }}
       >
         <canvas
           ref={canvasRef}
-          width={CANVAS_W}
-          height={CANVAS_H}
-          style={{ display: 'block', imageRendering: 'pixelated' }}
+          width={CANVAS_W * RENDER_SCALE}
+          height={CANVAS_H * RENDER_SCALE}
+          style={{ display: 'block', width: CANVAS_W, height: CANVAS_H }}
         />
 
         {/* Scanlines */}

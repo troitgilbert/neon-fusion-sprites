@@ -9,34 +9,45 @@ const stages = [
 ];
 
 const StageSelect: React.FC = () => {
-  const { engine, setGameState } = useGame();
+  const { engine } = useGame();
   const owned = engine.inventory?.stages || {};
 
   return (
-    <div className="absolute inset-0 z-10 flex items-center justify-center" style={{ background: 'rgba(0,0,0,0.85)', backdropFilter: 'blur(4px)' }}>
-      <div style={{
-        border: '2px solid #87ceeb', boxShadow: '0 0 20px rgba(0,255,255,.4)',
-        background: 'rgba(10,10,20,0.95)', padding: 25, textAlign: 'center', transform: 'skew(-2deg)'
+    <div className="fixed inset-0 z-50 flex flex-col items-center justify-center" style={{ background: 'rgba(0,0,0,0.85)', backdropFilter: 'blur(8px)' }}>
+      <h2 style={{
+        color: '#00ffff', fontSize: 'clamp(28px, 5vw, 48px)',
+        textShadow: '0 0 20px #00ffff, 0 0 40px rgba(0,255,255,0.3)',
+        marginBottom: 50, fontFamily: "'Orbitron', monospace", letterSpacing: 6
       }}>
-        <h2 style={{ color: '#00ffff', textShadow: '0 0 10px #00ffff', marginBottom: 15 }}>ELIGE ESCENARIO</h2>
-        <div style={{ display: 'flex', gap: 15 }}>
-          {stages.map(s => {
-            if (s.unlockable && !owned.nada) return null;
-            return (
-              <div
-                key={s.id}
-                onClick={() => engine.selectStage(s.id)}
-                style={{
-                  border: '1px solid #555', background: 'rgba(0,0,0,0.5)', padding: 10,
-                  cursor: 'pointer', color: s.color, fontFamily: "'Orbitron', monospace"
-                }}
-              >
-                <div style={{ width: 100, height: 60, border: '1px solid white', marginBottom: 5, background: s.bg }} />
-                {s.name}
-              </div>
-            );
-          })}
-        </div>
+        ELIGE ESCENARIO
+      </h2>
+
+      <div style={{ display: 'flex', gap: 30, justifyContent: 'center', flexWrap: 'wrap' }}>
+        {stages.map(s => {
+          if (s.unlockable && !owned.nada) return null;
+          return (
+            <div
+              key={s.id}
+              onClick={() => engine.selectStage(s.id)}
+              style={{
+                width: 180, padding: 15, cursor: 'pointer', textAlign: 'center',
+                color: s.color, fontFamily: "'Orbitron', monospace", fontSize: 16,
+                background: 'rgba(10,10,30,0.8)', border: '2px solid rgba(0,255,255,0.3)',
+                transition: 'all 0.3s', boxShadow: '0 0 15px rgba(0,255,255,0.1)',
+                letterSpacing: 2,
+              }}
+              onMouseEnter={e => { e.currentTarget.style.borderColor = s.color; e.currentTarget.style.boxShadow = `0 0 30px ${s.color}40`; e.currentTarget.style.transform = 'scale(1.05)'; }}
+              onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(0,255,255,0.3)'; e.currentTarget.style.boxShadow = '0 0 15px rgba(0,255,255,0.1)'; e.currentTarget.style.transform = 'scale(1)'; }}
+            >
+              <div style={{
+                width: '100%', height: 100, border: '2px solid rgba(255,255,255,0.3)',
+                marginBottom: 12, background: s.bg,
+                boxShadow: 'inset 0 0 20px rgba(0,0,0,0.5)',
+              }} />
+              {s.name}
+            </div>
+          );
+        })}
       </div>
     </div>
   );

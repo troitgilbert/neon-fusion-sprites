@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React from 'react';
 import { GameProvider, useGame } from '../game/GameContext';
 import NebulaBackground from '../components/NebulaBackground';
 import MainMenu from '../components/MainMenu';
@@ -21,8 +21,8 @@ const GameApp: React.FC = () => {
 
   return (
     <div className="w-screen h-screen overflow-hidden" style={{ background: '#000' }}>
-      {/* Nebula background (always visible behind menu) */}
-      {showMenu && <NebulaBackground />}
+      {/* Nebula background (menu + selectors) */}
+      {(showMenu || gameState === 'SELECT' || gameState === 'SKIN_SELECT' || gameState === 'STAGE_SELECT' || gameState === 'VERSUS_TYPE' || gameState === 'SHOP' || gameState === 'CONFIG') && <NebulaBackground />}
 
       {/* Crystal counter */}
       <div
@@ -39,21 +39,19 @@ const GameApp: React.FC = () => {
       {/* Menu state */}
       {showMenu && <MainMenu />}
 
-      {/* Fight state */}
-      {(inFight || gameState === 'SELECT' || gameState === 'SKIN_SELECT' || gameState === 'STAGE_SELECT' || gameState === 'VERSUS_TYPE' || gameState === 'SHOP' || gameState === 'CONFIG') && (
-        <div className="flex items-center justify-center w-full h-full">
-          <div className="relative" style={{
-            transform: isMobile ? 'scale(0.75)' : 'none',
-            transformOrigin: 'top center',
-          }}>
-            <GameCanvas />
-            {inFight && <FightHUD />}
-            {inFight && isMobile && <TouchControls />}
-          </div>
-        </div>
+      {/* Fight state — canvas is now fullscreen internally */}
+      {inFight && (
+        <>
+          <GameCanvas />
+          <FightHUD />
+          {isMobile && <TouchControls />}
+        </>
       )}
 
-      {/* Overlay menus */}
+      {/* Non-fight canvas states (selectors render on top of nebula) */}
+      {(gameState === 'SELECT' || gameState === 'SKIN_SELECT' || gameState === 'STAGE_SELECT' || gameState === 'VERSUS_TYPE' || gameState === 'SHOP' || gameState === 'CONFIG') && <GameCanvas />}
+
+      {/* Overlay menus — now fullscreen */}
       {gameState === 'SELECT' && <CharacterSelect />}
       {gameState === 'SKIN_SELECT' && <CharacterSelect />}
       {gameState === 'STAGE_SELECT' && <StageSelect />}

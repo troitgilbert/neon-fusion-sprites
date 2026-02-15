@@ -1,10 +1,23 @@
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useEffect, useState } from 'react';
 import { useGame } from '../game/GameContext';
 import { CANVAS_W, CANVAS_H } from '../game/constants';
 
 const GameCanvas: React.FC = () => {
   const { engine } = useGame();
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [scale, setScale] = useState(1);
+
+  useEffect(() => {
+    const updateScale = () => {
+      const scaleX = window.innerWidth / CANVAS_W;
+      const scaleY = window.innerHeight / CANVAS_H;
+      setScale(Math.min(scaleX, scaleY));
+    };
+    updateScale();
+    window.addEventListener('resize', updateScale);
+    return () => window.removeEventListener('resize', updateScale);
+  }, []);
 
   useEffect(() => {
     if (canvasRef.current) {
@@ -14,14 +27,18 @@ const GameCanvas: React.FC = () => {
   }, [engine]);
 
   return (
-    <div className="relative" style={{ boxShadow: '0 0 50px rgba(0,255,255,0.2)' }}>
+    <div
+      ref={containerRef}
+      className="fixed inset-0 flex items-center justify-center"
+      style={{ background: '#000' }}
+    >
       <div
         className="relative overflow-hidden"
         style={{
-          width: CANVAS_W, height: CANVAS_H,
-          background: 'linear-gradient(180deg, #1a1a3a, #0b0b1f)',
-          border: '4px solid #87ceeb',
-          boxShadow: '0 0 25px rgba(0,255,255,.3), inset 0 0 50px rgba(0,0,0,0.8)',
+          width: CANVAS_W,
+          height: CANVAS_H,
+          transform: `scale(${scale})`,
+          transformOrigin: 'center center',
           imageRendering: 'pixelated',
         }}
       >

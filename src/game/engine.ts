@@ -143,7 +143,11 @@ export class GameEngine {
     }
     saveStats(this.stats);
     const newAchievements = checkAchievements(this.stats);
-    newAchievements.forEach(a => this.onAchievement?.(a));
+    newAchievements.forEach(a => {
+      // Auto-grant crystals when achievement is unlocked
+      this.updatePrisms(a.reward);
+      this.onAchievement?.(a);
+    });
   }
 
   getCustomChar(idx: number): CustomCharData | null {
@@ -247,7 +251,8 @@ export class GameEngine {
       } else {
         winner.rounds++;
         if (winner.rounds === 2) {
-          this.onAnnouncerText?.(`${winner.data.name} GANA!`);
+          const winnerName = winner.data.name;
+          this.onAnnouncerText?.(`${winnerName} GANA!`);
           this.updatePrisms(10);
           if (winner === this.p1) this.trackStat('totalWins');
           setTimeout(() => { this.onAnnouncerText?.(''); stopAmbient(); this.setState('MENU'); }, 3000);

@@ -1,22 +1,33 @@
-// 20 skills per category for custom characters
+// Character-based abilities for custom characters
 
-export const SPECIAL_SKILLS = [
-  'Proyectil', 'Teletransporte', 'Escudo', 'Ráfaga', 'Explosión', 'Drenaje',
-  'Relámpago', 'Hielo', 'Fuego', 'Viento', 'Veneno', 'Sombra',
-  'Espada Láser', 'Gancho', 'Onda Vital', 'Terremoto',
-  'Cuchilla', 'Bumerán', 'Absorción', 'Clones',
+export interface CharAbility {
+  name: string;
+  source: string;
+  attackId: string;
+}
+
+export const SPECIAL_ABILITIES: CharAbility[] = [
+  { name: 'Rombo Cósmico', source: 'Edowado', attackId: 'edowado_special' },
+  { name: 'Estela Dorada', source: 'Kaito', attackId: 'kaito_special' },
+  { name: 'Intangibilidad', source: 'Demonio Blanco', attackId: 'demonio_special' },
+  { name: 'Estela Asesina', source: 'Asesino', attackId: 'asesino_special' },
 ];
 
-export const SUPER_SKILLS = [
-  'Mega Explosión', 'Tormenta', 'Meteoro', 'Láser Orbital', 'Dragón',
-  'Tsunami', 'Impacto Nova', 'Garras Infernales', 'Cadenas', 'Gravitón',
-  'Llamarada', 'Ventisca', 'Puño Divino', 'Rayo Mortal', 'Huracán',
-  'Plasma', 'Oscuridad', 'Luz Sagrada', 'Terremoto Total', 'Implosión',
+export const SUPER_ABILITIES: CharAbility[] = [
+  { name: 'Impacto Rojo', source: 'Edowado', attackId: 'edowado_super' },
+  { name: 'Esfera Rebotante', source: 'Kaito', attackId: 'kaito_super' },
+  { name: 'Teletransporte Oscuro', source: 'Demonio Blanco', attackId: 'demonio_super' },
+  { name: 'Teletransporte Rojo', source: 'Asesino', attackId: 'asesino_super' },
 ];
 
-export const ULTRA_SKILLS = [
-  'Aniquilación', 'Big Bang', 'Juicio Final', 'Ragnarök', 'Apocalipsis',
-  'Singularidad', 'Supernova', 'Génesis', 'Oblivion', 'Infinito',
-  'Dimensión Cero', 'Pulsar Estelar', 'Eclipse Total', 'Caos Absoluto', 'Destino',
-  'Fin de Todo', 'Renacimiento', 'Vacío Eterno', 'Tiempo Muerto', 'Omega',
+export const ULTRA_ABILITIES: CharAbility[] = [
+  { name: 'Persecución Blanca', source: 'Edowado', attackId: 'edowado_ultra' },
+  { name: 'Detención Temporal', source: 'Kaito', attackId: 'kaito_ultra' },
+  { name: 'Eclipse Negro', source: 'Demonio Blanco', attackId: 'demonio_ultra' },
+  { name: 'Juicio Final', source: 'Asesino', attackId: 'asesino_ultra' },
 ];
+
+// Legacy compat
+export const SPECIAL_SKILLS = SPECIAL_ABILITIES.map(a => a.name);
+export const SUPER_SKILLS = SUPER_ABILITIES.map(a => a.name);
+export const ULTRA_SKILLS = ULTRA_ABILITIES.map(a => a.name);

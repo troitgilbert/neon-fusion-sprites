@@ -36,8 +36,8 @@ export const SHOP_CATALOG: Record<string, SkinCatalogItem[]> = {
 
 export const MODE_INFO: Record<string, string> = {
   "HISTORIA": "Vive la trama principal del juego, enfrentando enemigos y jefes mientras descubres los secretos del mundo.",
-  "ARCADE": "Combates consecutivos contra distintos rivales hasta llegar al jefe final.",
-  "AVENTURA": "Explora escenarios especiales con retos únicos y progresión libre.",
+  "ARCADE": "10 combates consecutivos con la estructura de torre. Enfrenta rivales, ejércitos, minijuegos y al temible Big Bang.",
+  "AVENTURA": "Mundo abierto 2D con tres destinos: Galaxia, Infierno y Cielo. Explora, combate y derrota a los jefes.",
   "VERSUS": "Enfréntate a otro jugador o a la IA en combates directos.",
   "BATALLA LIBRE": "Elige personajes y reglas personalizadas para pelear sin restricciones.",
   "MISIONES": "Completa objetivos específicos con condiciones especiales.",
@@ -48,6 +48,8 @@ export const MODE_INFO: Record<string, string> = {
   "JUEGOS MENTALES": "Pon a prueba tu ingenio con puzzles y acertijos basados en el universo del juego.",
   "CITAS": "Interactúa con los personajes del juego en escenarios sociales y forja relaciones únicas.",
   "CREADOR DE PERSONAJES": "Diseña tu propio luchador personalizado con apariencia, habilidades y estilo únicos.",
+  "CREACIÓN DE NIVELES": "Diseña tus propios escenarios y desafíos personalizados.",
+  "MINIJUEGOS": "Juega a una variedad de minijuegos divertidos y desafiantes.",
   "TIENDA": "Compra personajes, skins y mejoras usando cristales.",
   "DOCUMENTOS": "Consulta información del mundo, historia y guías internas.",
   "LOGROS": "Revisa tus hazañas y desafíos completados durante el juego.",

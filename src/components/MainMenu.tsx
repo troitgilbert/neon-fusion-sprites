@@ -18,9 +18,9 @@ const MainMenu: React.FC = () => {
   const [hoveredMode, setHoveredMode] = useState<string>('');
 
   const menuItems: MenuItem[] = useMemo(() => [
-    { label: 'HISTORIA', action: () => {} },
+    { label: 'HISTORIA', action: () => setGameState('STORY_SELECT') },
     { label: 'ARCADE', action: () => setGameState('SELECT', 'arcade') },
-    { label: 'AVENTURA', action: () => {} },
+    { label: 'AVENTURA', action: () => setGameState('ADVENTURE_SELECT', 'adventure') },
     {
       label: 'VERSUS', hasSub: true,
       subItems: [
@@ -39,6 +39,8 @@ const MainMenu: React.FC = () => {
         { label: 'JUEGOS MENTALES', action: () => {} },
         { label: 'CITAS', action: () => {} },
         { label: 'CREADOR DE PERSONAJES', action: () => setGameState('CREATOR') },
+        { label: 'CREACIÓN DE NIVELES', action: () => {} },
+        { label: 'MINIJUEGOS', action: () => {} },
       ]
     },
     { label: 'TIENDA', action: () => setGameState('SHOP') },

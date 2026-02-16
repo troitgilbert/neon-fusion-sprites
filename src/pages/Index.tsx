@@ -13,6 +13,9 @@ import ConfigMenu from '../components/ConfigMenu';
 import TouchControls from '../components/TouchControls';
 import CharacterCreator from '../components/CharacterCreator';
 import AchievementsMenu from '../components/AchievementsMenu';
+import StorySelect from '../components/StorySelect';
+import ArcadeTower from '../components/ArcadeTower';
+import AdventureSelect from '../components/AdventureSelect';
 import { getDifficultyColor } from '../game/achievements';
 
 const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent) || window.innerWidth < 800;
@@ -21,13 +24,13 @@ const GameApp: React.FC = () => {
   const { gameState, coins, achievementPopup } = useGame();
   const inFight = gameState === 'FIGHT' || gameState === 'PAUSED' || gameState === 'ROUND_OVER';
   const showMenu = gameState === 'MENU';
-  const showNebula = showMenu || gameState === 'SELECT' || gameState === 'SKIN_SELECT' || gameState === 'STAGE_SELECT' || gameState === 'VERSUS_TYPE' || gameState === 'SHOP' || gameState === 'CONFIG' || gameState === 'CREATOR' || gameState === 'ACHIEVEMENTS';
+  const showNebula = showMenu || gameState === 'SELECT' || gameState === 'SKIN_SELECT' || gameState === 'STAGE_SELECT' || gameState === 'VERSUS_TYPE' || gameState === 'SHOP' || gameState === 'CONFIG' || gameState === 'CREATOR' || gameState === 'ACHIEVEMENTS' || gameState === 'STORY_SELECT' || gameState === 'ARCADE_TOWER' || gameState === 'ADVENTURE_SELECT';
 
   return (
     <div className="w-screen h-screen overflow-hidden" style={{ background: '#000' }}>
       {showNebula && <NebulaBackground />}
 
-      {/* Crystal counter — hidden during fight */}
+      {/* Crystal counter */}
       {!inFight && gameState !== 'CREATOR' && gameState !== 'ACHIEVEMENTS' && (
         <div style={{
           position: 'fixed', top: 20, right: 20, fontSize: 20, color: '#00ffff',
@@ -60,6 +63,9 @@ const GameApp: React.FC = () => {
       {gameState === 'CONFIG' && <ConfigMenu />}
       {gameState === 'CREATOR' && <CharacterCreator />}
       {gameState === 'ACHIEVEMENTS' && <AchievementsMenu />}
+      {gameState === 'STORY_SELECT' && <StorySelect />}
+      {gameState === 'ARCADE_TOWER' && <ArcadeTower />}
+      {gameState === 'ADVENTURE_SELECT' && <AdventureSelect />}
 
       {/* Achievement popup */}
       {achievementPopup && (

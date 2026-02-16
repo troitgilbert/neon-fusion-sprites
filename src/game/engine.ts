@@ -15,6 +15,7 @@ export class GameEngine {
   p2Choice: number | null = null;
   selectedStage = 'default';
   selectedSkins = { p1: null as string | null, p2: null as string | null };
+  arcadeStage = 0;
 
   particles: (Particle | PunchCircle)[] = [];
   projectiles: Projectile[] = [];
@@ -170,10 +171,13 @@ export class GameEngine {
   confirmSkinChoice(charIdx: number, skinId: string | null, pNum: number) {
     if (pNum === 1) {
       this.selectedSkins.p1 = skinId; this.p1Choice = charIdx;
-      if (this.mode === 'survival' || this.mode === 'arcade' || this.mode === 'training') {
+      if (this.mode === 'arcade') {
         this.p2Choice = (charIdx === 0 || charIdx >= 100) ? 1 : 0;
-        if (this.mode === 'arcade') this.setState('STAGE_SELECT');
-        else { this.selectedStage = 'default'; this.startMatch(charIdx, this.p2Choice!); }
+        this.arcadeStage = 0;
+        this.setState('ARCADE_TOWER');
+      } else if (this.mode === 'survival' || this.mode === 'training') {
+        this.p2Choice = (charIdx === 0 || charIdx >= 100) ? 1 : 0;
+        this.selectedStage = 'default'; this.startMatch(charIdx, this.p2Choice!);
       } else if (this.mode === 'versus' || this.mode === 'vs_cpu') {
         this.setState('SELECT');
       }
@@ -181,6 +185,19 @@ export class GameEngine {
       this.selectedSkins.p2 = skinId; this.p2Choice = charIdx;
       this.setState('STAGE_SELECT');
     }
+  }
+
+  startArcadeStage(stageIdx: number) {
+    this.arcadeStage = stageIdx;
+    const stages = ['default', 'infierno', 'cielo', 'default', 'default', 'nada', 'default', 'infierno', 'cielo', 'nada'];
+    this.selectedStage = stages[stageIdx] || 'default';
+
+    // Pick a random opponent (not custom, not same as player)
+    const availableChars = CHAR_DATA.map((_, i) => i).filter(i => i !== this.p1Choice);
+    const oppIdx = availableChars[Math.floor(Math.random() * availableChars.length)] ?? 0;
+    this.p2Choice = oppIdx;
+
+    this.startMatch(this.p1Choice!, this.p2Choice!);
   }
 
   selectStage(stageId: string) {

@@ -1,4 +1,4 @@
-export type GameState = 'MENU' | 'VERSUS_TYPE' | 'SELECT' | 'SKIN_SELECT' | 'STAGE_SELECT' | 'FIGHT' | 'PAUSED' | 'ROUND_OVER' | 'SHOP' | 'CONFIG' | 'CREATOR' | 'ACHIEVEMENTS';
+export type GameState = 'MENU' | 'VERSUS_TYPE' | 'SELECT' | 'SKIN_SELECT' | 'STAGE_SELECT' | 'FIGHT' | 'PAUSED' | 'ROUND_OVER' | 'SHOP' | 'CONFIG' | 'CREATOR' | 'ACHIEVEMENTS' | 'STORY_SELECT' | 'ARCADE_TOWER' | 'ADVENTURE_SELECT';
 
 export interface CustomCharData {
   name: string;
@@ -17,7 +17,7 @@ export interface CustomCharData {
   ultraAbility: string;
 }
 
-export type GameMode = '' | 'arcade' | 'survival' | 'versus' | 'vs_cpu' | 'training';
+export type GameMode = '' | 'arcade' | 'survival' | 'versus' | 'vs_cpu' | 'training' | 'story' | 'adventure';
 
 export interface Controls {
   up: string; down: string; left: string; right: string;
@@ -42,7 +42,7 @@ export interface Achievement {
   name: string;
   description: string;
   difficulty: 'normal' | 'dificil' | 'muy_dificil' | 'bastante_dificil';
-  reward: number; // crystals
+  reward: number;
   condition: (stats: GameStats) => boolean;
 }
 
@@ -60,4 +60,10 @@ export interface GameStats {
   totalSupers: number;
   totalUltras: number;
   totalTransforms: number;
+}
+
+export interface ArcadeStage {
+  type: 'fight' | 'army' | 'minigame' | '2v2' | '3vGiant' | 'miniboss' | 'boss';
+  label: string;
+  description: string;
 }

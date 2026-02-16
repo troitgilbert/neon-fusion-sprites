@@ -4,51 +4,39 @@ import { CHAR_DATA, SHOP_CATALOG } from '../game/constants';
 import type { CustomCharData } from '../game/types';
 import { playSelectSound, playConfirmSound } from '../game/audio';
 
-// Draw a mini ball portrait for characters
-const CharPortrait: React.FC<{ color: string; eyes: string; hairColor?: string; size?: number }> = ({ color, eyes, hairColor, size = 45 }) => (
+// Simple ball portrait - just sphere + eyes (reverted to simple style)
+const CharPortrait: React.FC<{ color: string; eyes: string; size?: number }> = ({ color, eyes, size = 45 }) => (
   <div style={{
     width: size, height: size, borderRadius: '50%',
-    background: color, border: `3px solid ${eyes}`,
-    boxShadow: `0 0 15px ${eyes}40, inset 0 -5px 10px rgba(0,0,0,0.3)`,
-    position: 'relative', overflow: 'visible',
+    background: color, border: `2px solid ${eyes}`,
+    boxShadow: `0 0 12px ${eyes}40`,
+    position: 'relative',
   }}>
-    {/* Hair spikes */}
-    <div style={{
-      position: 'absolute', top: -size * 0.25, left: '10%', right: '10%', height: size * 0.5,
-      background: hairColor || eyes,
-      clipPath: 'polygon(0% 100%, 10% 30%, 25% 70%, 40% 10%, 55% 60%, 70% 0%, 85% 50%, 100% 100%)',
-      filter: `drop-shadow(0 0 3px ${hairColor || eyes})`,
-    }} />
-    {/* Eyes */}
-    <div style={{ position: 'absolute', top: '35%', left: '22%', width: size * 0.17, height: size * 0.17, borderRadius: '50%', background: eyes, boxShadow: `0 0 4px ${eyes}` }} />
-    <div style={{ position: 'absolute', top: '35%', right: '22%', width: size * 0.17, height: size * 0.17, borderRadius: '50%', background: eyes, boxShadow: `0 0 4px ${eyes}` }} />
-    {/* Pupils */}
-    <div style={{ position: 'absolute', top: '40%', left: '26%', width: size * 0.08, height: size * 0.08, borderRadius: '50%', background: '#000' }} />
-    <div style={{ position: 'absolute', top: '40%', right: '26%', width: size * 0.08, height: size * 0.08, borderRadius: '50%', background: '#000' }} />
+    <div style={{ position: 'absolute', top: '38%', left: '25%', width: size * 0.15, height: size * 0.15, borderRadius: '50%', background: eyes, boxShadow: `0 0 4px ${eyes}` }} />
+    <div style={{ position: 'absolute', top: '38%', right: '25%', width: size * 0.15, height: size * 0.15, borderRadius: '50%', background: eyes, boxShadow: `0 0 4px ${eyes}` }} />
   </div>
 );
 
+// Custom portrait in select = sphere + eyes + aura only
 const CustomPortrait: React.FC<{ ch: CustomCharData; size?: number }> = ({ ch, size = 45 }) => (
   <div style={{
     width: size, height: size, borderRadius: '50%',
-    background: ch.skinColor, border: `3px solid ${ch.eyesColor}`,
-    boxShadow: `0 0 15px ${ch.eyesColor}40, inset 0 -5px 10px rgba(0,0,0,0.3)`,
+    background: ch.skinColor, border: `2px solid ${ch.eyesColor}`,
+    boxShadow: `0 0 15px ${ch.effectColor}50, 0 0 30px ${ch.effectColor}20`,
     position: 'relative',
   }}>
-    {/* Hair spikes */}
+    <div style={{ position: 'absolute', top: '38%', left: '25%', width: size * 0.15, height: size * 0.15, borderRadius: '50%', background: ch.eyesColor, boxShadow: `0 0 4px ${ch.eyesColor}` }} />
+    <div style={{ position: 'absolute', top: '38%', right: '25%', width: size * 0.15, height: size * 0.15, borderRadius: '50%', background: ch.eyesColor, boxShadow: `0 0 4px ${ch.eyesColor}` }} />
+    {/* Aura ring */}
     <div style={{
-      position: 'absolute', top: -size * 0.25, left: '10%', right: '10%', height: size * 0.5,
-      background: ch.hairColor,
-      clipPath: 'polygon(0% 100%, 10% 30%, 25% 70%, 40% 10%, 55% 60%, 70% 0%, 85% 50%, 100% 100%)',
-      filter: `drop-shadow(0 0 3px ${ch.hairColor})`,
+      position: 'absolute', inset: -6, borderRadius: '50%',
+      border: `2px solid ${ch.effectColor}40`,
+      boxShadow: `0 0 10px ${ch.effectColor}30`,
     }} />
-    {/* Clothes */}
-    <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: '28%', borderRadius: `0 0 ${size}px ${size}px`, background: ch.clothesColor }} />
-    {/* Eyes */}
-    <div style={{ position: 'absolute', top: '35%', left: '22%', width: size * 0.17, height: size * 0.17, borderRadius: '50%', background: ch.eyesColor, boxShadow: `0 0 4px ${ch.eyesColor}` }} />
-    <div style={{ position: 'absolute', top: '35%', right: '22%', width: size * 0.17, height: size * 0.17, borderRadius: '50%', background: ch.eyesColor, boxShadow: `0 0 4px ${ch.eyesColor}` }} />
   </div>
 );
+
+const KONAMI_CODE = ['ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'ArrowLeft', 'ArrowRight', 'KeyB', 'KeyA'];
 
 const CharacterSelect: React.FC = () => {
   const { engine, setGameState } = useGame();
@@ -56,6 +44,8 @@ const CharacterSelect: React.FC = () => {
   const [hoveredIdx, setHoveredIdx] = React.useState<number | null>(null);
   const [showCustomMenu, setShowCustomMenu] = React.useState(false);
   const [customChars, setCustomChars] = React.useState<(CustomCharData | null)[]>([null, null, null, null, null, null]);
+  const [konamiProgress, setKonamiProgress] = React.useState(0);
+  const [cheatActive, setCheatActive] = React.useState(false);
 
   React.useEffect(() => {
     try {
@@ -65,6 +55,31 @@ const CharacterSelect: React.FC = () => {
       setCustomChars(arr);
     } catch {}
   }, []);
+
+  // Konami code listener
+  React.useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      if (e.code === KONAMI_CODE[konamiProgress]) {
+        const next = konamiProgress + 1;
+        if (next === KONAMI_CODE.length) {
+          setCheatActive(true);
+          setKonamiProgress(0);
+          // Show notification
+          const notif = document.createElement('div');
+          notif.style.cssText = 'position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);z-index:9999;background:rgba(0,0,0,0.95);border:3px solid #ffff00;padding:20px 40px;color:#ffff00;font-family:"Orbitron",monospace;font-size:24px;letter-spacing:4px;text-shadow:0 0 20px #ffff00;animation:fadeIn 0.3s ease-out;';
+          notif.textContent = '¡CÓDIGO ACTIVO!';
+          document.body.appendChild(notif);
+          setTimeout(() => notif.remove(), 2500);
+        } else {
+          setKonamiProgress(next);
+        }
+      } else {
+        setKonamiProgress(e.code === KONAMI_CODE[0] ? 1 : 0);
+      }
+    };
+    window.addEventListener('keydown', handler);
+    return () => window.removeEventListener('keydown', handler);
+  }, [konamiProgress]);
 
   const isP2Turn = engine.p1Choice !== null && (engine.mode === 'versus' || engine.mode === 'vs_cpu') && engine.p2Choice === null;
 
@@ -106,7 +121,11 @@ const CharacterSelect: React.FC = () => {
     const inv = engine.inventory[charName.toLowerCase()] || {};
     const catalog = SHOP_CATALOG[charName] || [];
     const skins: { id: string | null; name: string }[] = [{ id: null, name: 'Original' }];
-    catalog.forEach(item => { if (inv[item.id]) skins.push({ id: item.id, name: item.name }); });
+    if (cheatActive) {
+      catalog.forEach(item => skins.push({ id: item.id, name: item.name }));
+    } else {
+      catalog.forEach(item => { if (inv[item.id]) skins.push({ id: item.id, name: item.name }); });
+    }
     return skins;
   };
 
@@ -171,7 +190,7 @@ const CharacterSelect: React.FC = () => {
             ELIGE ESTILO P{skinSelectFor.pNum}: {ch.name}
           </h2>
           <div style={{ margin: '0 auto 25px', display: 'flex', justifyContent: 'center' }}>
-            <CharPortrait color={ch.color} eyes={ch.eyes} hairColor={skinSelectFor.charIdx === 0 ? '#5a3a1a' : '#fff'} size={90} />
+            <CharPortrait color={ch.color} eyes={ch.eyes} size={90} />
           </div>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(130px, 1fr))', gap: 12 }}>
             {skins.map(skin => (
@@ -181,14 +200,13 @@ const CharacterSelect: React.FC = () => {
                   padding: 16, cursor: 'pointer', color: '#87ceeb',
                   fontFamily: "'Orbitron', monospace", fontSize: 13, transition: 'all 0.3s',
                 }}
-                onMouseEnter={e => { e.currentTarget.style.borderColor = '#00ffff'; e.currentTarget.style.boxShadow = '0 0 20px rgba(0,255,255,0.4)'; e.currentTarget.style.transform = 'scale(1.05)'; }}
-                onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(0,255,255,0.3)'; e.currentTarget.style.boxShadow = 'none'; e.currentTarget.style.transform = 'scale(1)'; }}
+                onMouseEnter={e => { e.currentTarget.style.borderColor = '#00ffff'; e.currentTarget.style.boxShadow = '0 0 20px rgba(0,255,255,0.4)'; }}
+                onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(0,255,255,0.3)'; e.currentTarget.style.boxShadow = 'none'; }}
               >
                 <div style={{ margin: '0 auto 8px', display: 'flex', justifyContent: 'center' }}>
                   <CharPortrait
                     color={skin.id === 'demonioBlanco' ? '#000' : skin.id === 'demonioBlanco2' ? '#222' : ch.color}
                     eyes={skin.id === 'demonioBlanco' ? '#ff0000' : skin.id === 'demonioBlanco2' ? '#ff4444' : ch.eyes}
-                    hairColor={skin.id ? '#444' : (skinSelectFor.charIdx === 0 ? '#5a3a1a' : '#fff')}
                     size={50}
                   />
                 </div>
@@ -199,7 +217,7 @@ const CharacterSelect: React.FC = () => {
           <button onClick={() => setSkinSelectFor(null)} style={{
             marginTop: 25, padding: '10px 35px', background: 'transparent',
             border: '2px solid #ff4d4d', color: '#ff4d4d', cursor: 'pointer',
-            fontFamily: "'Orbitron', monospace", fontSize: 14, letterSpacing: 3, transition: 'all 0.3s',
+            fontFamily: "'Orbitron', monospace", fontSize: 14, letterSpacing: 3,
           }}>CANCELAR</button>
         </div>
         <style>{`@keyframes fadeIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }`}</style>
@@ -214,7 +232,6 @@ const CharacterSelect: React.FC = () => {
   const p1Name = p1Custom ? p1Custom.name : (p1Char ? p1Char.name : (hoveredIdx !== null && !isP2Turn && hoveredIdx < 100 ? CHAR_DATA[hoveredIdx]?.name : '???'));
   const p1Color = p1Custom ? p1Custom.skinColor : (p1Char ? p1Char.color : (hoveredIdx !== null && !isP2Turn && hoveredIdx < 100 ? CHAR_DATA[hoveredIdx]?.color : '#222'));
   const p1Eyes = p1Custom ? p1Custom.eyesColor : (p1Char ? p1Char.eyes : (hoveredIdx !== null && !isP2Turn && hoveredIdx < 100 ? CHAR_DATA[hoveredIdx]?.eyes : '#555'));
-  const p1Hair = p1Custom ? p1Custom.hairColor : (p1Char ? (engine.p1Choice === 0 ? '#5a3a1a' : '#fff') : '#333');
 
   return (
     <div className="fixed inset-0 z-50 flex flex-col" style={{ background: 'linear-gradient(135deg, #0a0a2e 0%, #1a0a3e 50%, #0a0a2e 100%)', animation: 'fadeIn 0.4s ease-out' }}>
@@ -240,7 +257,7 @@ const CharacterSelect: React.FC = () => {
           {p1Custom ? (
             <CustomPortrait ch={p1Custom} size={Math.min(window.innerWidth * 0.12, 130)} />
           ) : (
-            <CharPortrait color={p1Color} eyes={p1Eyes} hairColor={p1Hair} size={Math.min(window.innerWidth * 0.12, 130)} />
+            <CharPortrait color={p1Color} eyes={p1Eyes} size={Math.min(window.innerWidth * 0.12, 130)} />
           )}
         </div>
 
@@ -272,7 +289,7 @@ const CharacterSelect: React.FC = () => {
                     background: isP1Selected ? 'rgba(0,255,255,0.15)' : hoveredIdx === i ? 'rgba(0,255,255,0.08)' : 'rgba(10,10,40,0.95)',
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
                   }}>
-                    <CharPortrait color={ch.color} eyes={ch.eyes} hairColor={i === 0 ? '#5a3a1a' : '#fff'} size={Math.min(window.innerWidth * 0.04, 45)} />
+                    <CharPortrait color={ch.color} eyes={ch.eyes} size={Math.min(window.innerWidth * 0.04, 45)} />
                   </div>
                   {isP1Selected && (
                     <div style={{ position: 'absolute', bottom: '6%', color: '#00ffff', fontSize: 'clamp(6px, 1vw, 9px)', fontFamily: "'Orbitron', monospace", fontWeight: 900, textShadow: '0 0 5px #00ffff' }}>P1</div>
@@ -345,7 +362,7 @@ const CharacterSelect: React.FC = () => {
             {p2Char ? p2Char.name : (isP2Turn ? '???' : '---')}
           </div>
           {p2Char ? (
-            <CharPortrait color={p2Char.color} eyes={p2Char.eyes} hairColor={hoveredIdx === 0 ? '#5a3a1a' : '#fff'} size={Math.min(window.innerWidth * 0.12, 130)} />
+            <CharPortrait color={p2Char.color} eyes={p2Char.eyes} size={Math.min(window.innerWidth * 0.12, 130)} />
           ) : (
             <div style={{
               width: 'clamp(70px, 13vw, 130px)', height: 'clamp(70px, 13vw, 130px)', borderRadius: '50%',

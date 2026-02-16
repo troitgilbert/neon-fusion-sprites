@@ -97,7 +97,12 @@ const CharacterCreator: React.FC = () => {
     try {
       const saved = JSON.parse(localStorage.getItem('customChars') || '[]');
       const arr: (CustomCharData | null)[] = [null, null, null, null, null, null];
-      saved.forEach((ch: any, i: number) => { if (i < 6 && ch) arr[i] = ch; });
+      saved.forEach((ch: any, i: number) => {
+        if (i < 6 && ch) {
+          // Migrate old data missing new fields
+          arr[i] = { ...defaultChar, ...ch };
+        }
+      });
       setCustomChars(arr);
     } catch { /* */ }
   }, []);

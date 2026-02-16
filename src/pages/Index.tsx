@@ -66,9 +66,10 @@ const GameApp: React.FC = () => {
         <div style={{
           position: 'fixed', bottom: 30, right: 30, zIndex: 200,
           background: 'rgba(10,10,30,0.95)', border: `2px solid ${getDifficultyColor(achievementPopup.difficulty)}`,
-          padding: '14px 22px', minWidth: 260,
-          boxShadow: `0 0 30px ${getDifficultyColor(achievementPopup.difficulty)}40`,
-          animation: 'slideInRight 0.4s ease-out',
+          padding: '14px 22px', minWidth: 280,
+          boxShadow: `0 0 40px ${getDifficultyColor(achievementPopup.difficulty)}50, inset 0 0 20px ${getDifficultyColor(achievementPopup.difficulty)}10`,
+          animation: 'slideInRight 0.5s ease-out',
+          backdropFilter: 'blur(8px)',
         }}>
           <div style={{ color: getDifficultyColor(achievementPopup.difficulty), fontFamily: "'Orbitron', monospace", fontSize: 9, letterSpacing: 3, marginBottom: 4 }}>
             ¡LOGRO DESBLOQUEADO!
@@ -79,8 +80,8 @@ const GameApp: React.FC = () => {
           <div style={{ color: '#87ceeb', fontSize: 11, marginTop: 3 }}>
             {achievementPopup.description}
           </div>
-          <div style={{ color: '#00ffff', fontFamily: "'Orbitron', monospace", fontSize: 11, marginTop: 5 }}>
-            🔷 +{achievementPopup.reward}
+          <div style={{ color: '#00ff66', fontFamily: "'Orbitron', monospace", fontSize: 12, marginTop: 6, fontWeight: 'bold' }}>
+            🔷 +{achievementPopup.reward} CRISTALES
           </div>
         </div>
       )}

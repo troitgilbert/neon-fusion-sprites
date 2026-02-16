@@ -1,6 +1,6 @@
 import { CHAR_DATA, GROUND_Y, CANVAS_W } from './constants';
 import { FloatingText, PunchCircle } from './effects';
-import { playHitSound, playSpecialSound, playBlockSound } from './audio';
+import { playHitSound, playSpecialSound, playBlockSound, playSuperSound } from './audio';
 import type { Controls, CustomCharData } from './types';
 
 const SPEED_MAP: Record<string, number> = { lento: 3.5, normal: 5, rapido: 7, velocista: 9.5 };
@@ -185,6 +185,7 @@ export class Fighter {
     if (dist < 80 && Math.random() < 0.2 + aggression) this.attack('hit', game);
     if (dist > 100 && dist < 300 && Math.random() < 0.05 + aggression) this.attack('special', game);
     if (this.energy >= 100 && Math.random() < 0.02 + aggression) this.attack('super', game);
+    if (this.energy >= 300 && Math.random() < 0.008 + aggression) this.attack('ultra', game);
   }
 
   tryTransform(game: any) {
@@ -198,7 +199,7 @@ export class Fighter {
     const dist = Math.hypot(this.x - opp.x, this.y - opp.y);
     this.squashX = 1.1; this.squashY = 0.9;
 
-    // Skin overrides
+    // Skin overrides for Kaito skins
     if ((this.isKaitoAsesino() || this.isKaitoDemonio()) && type === 'super' && this.energy >= 100) {
       this.energy -= 100;
       this.x = opp.x - this.side * 40;
@@ -206,14 +207,18 @@ export class Fighter {
       const fxColor = this.isKaitoDemonio() ? '#000000' : '#ff0000';
       game.spawnParticles(opp.x, opp.y, fxColor, 45, 3);
       game.spawnShockwave(opp.x, opp.y, fxColor);
+      game.trackStat('totalSupers');
       return;
     }
     if (this.isKaitoDemonio() && type === 'special' && this.energy >= 49.5) {
-      this.energy -= 49.5; this.invulnTimer = 120; this.isIntangible = true; return;
+      this.energy -= 49.5; this.invulnTimer = 120; this.isIntangible = true;
+      game.trackStat('totalSpecials');
+      return;
     }
     if (this.isKaitoAsesino() && type === 'special') {
       this.energy -= 49.5; this.vx = this.side * 45; this.specialTrail = 60;
-      if (dist < 120) { opp.takeDamage(4, true); }
+      if (dist < 120) { opp.takeDamage(4, true); game.trackStat('totalDamage', 4); }
+      game.trackStat('totalSpecials');
       return;
     }
 
@@ -222,11 +227,80 @@ export class Fighter {
       if (type === 'hit') this.damageBoost = 1.6;
       if (type === 'special') {
         for (let i = 0; i < 3; i++) game.spawnProjectile(this.x, this.y - 10 + i * 10, this.side * 12, 0, '#ff0000', this, 'rhombus');
+        game.trackStat('totalSpecials');
         return;
       }
       if (type === 'super') {
         this.x = opp.x - this.side * 40;
         for (let i = 0; i < 5; i++) { opp.takeDamage(2, true); game.spawnExplosion(opp.x, opp.y, '#ff0000'); }
+        game.trackStat('totalSupers');
+        return;
+      }
+    }
+
+    // === CUSTOM CHARACTER ATTACKS ===
+    if (this.customData && type !== 'hit') {
+      const effectColor = this.customData.effectColor;
+
+      if (type === 'special' && this.energy >= 49.5) {
+        this.energy -= 49.5;
+        playSpecialSound();
+        game.spawnShockwave(this.x, this.y, effectColor);
+        game.shake = 14; game.hitStop = 6;
+        // Show ability name
+        game.texts.push(new FloatingText(this.x, this.y - 50, this.customData.specialAbility.toUpperCase(), effectColor));
+        // Projectile attack
+        game.spawnProjectile(this.x, this.y, this.side * 11, 0, effectColor, this, 'rhombus');
+        game.spawnParticles(this.x, this.y, effectColor, 25, 3);
+        game.trackStat('totalSpecials');
+        game.trackStat('totalDamage', 4);
+        return;
+      }
+
+      if (type === 'super' && this.energy >= 100) {
+        this.energy -= 100;
+        playSuperSound();
+        game.flashScreen();
+        game.shake = 25; game.hitStop = 12;
+        // Show ability name
+        game.texts.push(new FloatingText(this.x, this.y - 50, this.customData.superAbility.toUpperCase(), '#ffcc00'));
+        // Area explosion
+        if (dist < 120) {
+          opp.takeDamage(8, true);
+          opp.vx = this.side * 15; opp.vy = -12;
+          game.trackStat('totalDamage', 8);
+        }
+        game.spawnExplosion(this.x + this.side * 40, this.y, effectColor);
+        game.spawnParticles(this.x, this.y, effectColor, 40, 4);
+        for (let i = 0; i < 3; i++) {
+          game.spawnProjectile(this.x, this.y, this.side * (8 + i * 3), -3 + i * 3, effectColor, this, 'rhombus');
+        }
+        game.trackStat('totalSupers');
+        return;
+      }
+
+      if (type === 'ultra' && this.energy >= 300) {
+        this.energy -= 300;
+        playSuperSound();
+        game.flashScreen();
+        game.shake = 40; game.hitStop = 18;
+        // Show ability name
+        game.texts.push(new FloatingText(this.x, this.y - 60, this.customData.ultraAbility.toUpperCase(), '#ff4400'));
+        // Devastating attack
+        if (dist < 150) {
+          opp.takeDamage(20, true);
+          opp.vx = this.side * 25; opp.vy = -18;
+          game.trackStat('totalDamage', 20);
+        }
+        // Multiple explosions
+        for (let i = 0; i < 5; i++) {
+          setTimeout(() => {
+            game.spawnExplosion(this.x + this.side * (20 + i * 30), this.y - 10 + i * 5, effectColor);
+          }, i * 80);
+        }
+        game.spawnParticles(this.x, this.y, effectColor, 60, 5);
+        game.spawnProjectile(this.x, this.y, this.side * 6, 0, effectColor, this, 'homing');
+        game.trackStat('totalUltras');
         return;
       }
     }
@@ -237,10 +311,13 @@ export class Fighter {
       const push = 8 + this.comboHits * 2.2;
       this.vx = this.side * 18;
       if (dist < 70 * comboScale && Math.abs(this.y - opp.y) < 50 * comboScale) {
-        opp.takeDamage(0.8 * this.damageBoost, true);
+        const dmg = 0.8 * this.damageBoost;
+        opp.takeDamage(dmg, true);
+        game.trackStat('totalDamage', dmg);
         this.handOrder *= -1;
         opp.vx = this.side * push; opp.vy -= (3 + this.comboHits * 0.6);
         this.comboHits++;
+        game.trackStat('comboMax', this.comboHits);
         let label: string | null = null;
         if (this.comboHits >= 20) label = "EXTREME COMBO!";
         else if (this.comboHits >= 15) label = "ULTRA COMBO!";
@@ -261,6 +338,7 @@ export class Fighter {
       playSpecialSound();
       game.spawnShockwave(this.x, this.y, this.charIdx === 1 ? '#ffff00' : '#00ffff');
       game.shake = 14; game.hitStop = 6;
+      game.trackStat('totalSpecials');
       if (this.charIdx === 0) {
         game.spawnProjectile(this.x, this.y, this.side * 12, 0, '#00ffff', this, 'rhombus');
       } else {
@@ -270,18 +348,21 @@ export class Fighter {
           opp.takeDamage(4, true); opp.vx = this.side * 18; opp.vy = -10;
           game.spawnExplosion(opp.x, opp.y, '#ffff00');
           game.hitStop = 8; game.shake = 18;
+          game.trackStat('totalDamage', 4);
         }
       }
     } else if (type === 'super' && this.energy >= 100) {
       this.energy -= 100; game.flashScreen();
+      game.trackStat('totalSupers');
       if (this.charIdx === 0) {
-        if (dist < 110) { opp.takeDamage(8, true); game.shake = 28; game.hitStop = 14; game.spawnExplosion(opp.x, opp.y, '#ff0000'); }
+        if (dist < 110) { opp.takeDamage(8, true); game.shake = 28; game.hitStop = 14; game.spawnExplosion(opp.x, opp.y, '#ff0000'); game.trackStat('totalDamage', 8); }
       } else {
         this.handMode = 'slam'; this.handTimer = 20;
         game.spawnProjectile(this.x, this.y, 6, 6, '#ffff00', this, 'bounce');
       }
     } else if (type === 'ultra' && this.energy >= 300) {
       this.energy -= 300; game.flashScreen();
+      game.trackStat('totalUltras');
       if (this.charIdx === 0) game.spawnProjectile(this.x, this.y, 0, 0, '#ffffff', this, 'homing');
       else game.startTimeStop(this);
     }
@@ -348,10 +429,19 @@ export class Fighter {
       ctx.beginPath(); ctx.arc(this.x, this.y, r, 0, Math.PI * 2);
       ctx.fillStyle = this.customData.skinColor; ctx.fill();
       ctx.strokeStyle = '#000'; ctx.lineWidth = 2; ctx.stroke();
-      // Hair
-      ctx.save(); ctx.translate(this.x, this.y - r * 0.4); ctx.scale(1, 0.6);
-      ctx.beginPath(); ctx.arc(0, 0, r * 0.85, Math.PI, 0);
-      ctx.fillStyle = this.customData.hairColor; ctx.fill(); ctx.stroke(); ctx.restore();
+      // Hair - TALLER
+      ctx.save(); ctx.translate(this.x, this.y - r * 0.55);
+      ctx.beginPath(); ctx.arc(0, 0, r * 0.8, Math.PI, 0);
+      ctx.lineTo(r * 0.5, -r * 0.5);
+      ctx.lineTo(r * 0.2, -r * 0.35);
+      ctx.lineTo(0, -r * 0.6);
+      ctx.lineTo(-r * 0.2, -r * 0.3);
+      ctx.lineTo(-r * 0.5, -r * 0.45);
+      ctx.lineTo(-r * 0.8, 0);
+      ctx.closePath();
+      ctx.fillStyle = this.customData.hairColor; ctx.fill();
+      ctx.strokeStyle = '#000'; ctx.lineWidth = 1.5; ctx.stroke();
+      ctx.restore();
       // Clothes band
       ctx.beginPath(); (ctx as any).roundRect(this.x - r, this.y, r * 2, r * 0.44, 0);
       ctx.fillStyle = this.customData.clothesColor; ctx.fill(); ctx.stroke();
@@ -359,17 +449,25 @@ export class Fighter {
       ctx.save(); ctx.translate(this.x, this.y + r * 0.44); ctx.scale(1, 0.6);
       ctx.beginPath(); ctx.arc(0, 0, r * 0.9, 0, Math.PI);
       ctx.fillStyle = this.customData.pantsColor; ctx.fill(); ctx.stroke(); ctx.restore();
+      // Shoes
+      ctx.fillStyle = this.customData.shoesColor;
+      ctx.beginPath(); ctx.arc(this.x - r * 0.4, this.y + r * 0.85, r * 0.22, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+      ctx.beginPath(); ctx.arc(this.x + r * 0.4, this.y + r * 0.85, r * 0.22, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
       // Eyes
       ctx.fillStyle = this.customData.eyesColor;
       const eyeX = this.x + 6 * s;
-      ctx.beginPath(); ctx.arc(eyeX - 4 * s, this.y - 6 * s, 3 * s, 0, Math.PI * 2);
+      ctx.beginPath(); ctx.arc(eyeX - 4 * s, this.y - 6 * s, 3.5 * s, 0, Math.PI * 2);
       ctx.strokeStyle = '#000'; ctx.lineWidth = 1.5; ctx.stroke(); ctx.fill();
-      ctx.beginPath(); ctx.arc(eyeX + 4 * s, this.y - 6 * s, 3 * s, 0, Math.PI * 2); ctx.stroke(); ctx.fill();
-      // Effect aura (darker)
+      ctx.beginPath(); ctx.arc(eyeX + 4 * s, this.y - 6 * s, 3.5 * s, 0, Math.PI * 2); ctx.stroke(); ctx.fill();
+      // Pupils
+      ctx.fillStyle = '#000';
+      ctx.beginPath(); ctx.arc(eyeX - 3 * s, this.y - 5.5 * s, 1.5 * s, 0, Math.PI * 2); ctx.fill();
+      ctx.beginPath(); ctx.arc(eyeX + 5 * s, this.y - 5.5 * s, 1.5 * s, 0, Math.PI * 2); ctx.fill();
+      // Effect aura
       if (this.specialTrail > 0 || this.isTransformed) {
-        ctx.globalAlpha = 0.15;
-        ctx.strokeStyle = this.customData.effectColor; ctx.lineWidth = 2;
-        ctx.beginPath(); ctx.arc(this.x, this.y, r * 1.5, 0, Math.PI * 2); ctx.stroke();
+        ctx.globalAlpha = 0.2;
+        ctx.strokeStyle = this.customData.effectColor; ctx.lineWidth = 3;
+        ctx.beginPath(); ctx.arc(this.x, this.y, r * 1.6, 0, Math.PI * 2); ctx.stroke();
         ctx.globalAlpha = 1;
       }
       return;
@@ -383,9 +481,14 @@ export class Fighter {
       ctx.save(); ctx.translate(this.x, this.y + 11); ctx.scale(1, 0.6);
       ctx.beginPath(); ctx.arc(0, 0, 23, 0, Math.PI);
       ctx.fillStyle = '#000'; ctx.fill(); ctx.stroke(); ctx.restore();
-      ctx.save(); ctx.translate(this.x, this.y - 10); ctx.scale(1, 0.7);
+      // Hair - taller spiky
+      ctx.save(); ctx.translate(this.x, this.y - 12);
       ctx.beginPath(); ctx.arc(0, 0, 22, Math.PI, 0);
-      ctx.fillStyle = '#5a3a1a'; ctx.fill(); ctx.stroke(); ctx.restore();
+      ctx.lineTo(15, -12); ctx.lineTo(8, -8); ctx.lineTo(4, -16); ctx.lineTo(-2, -6);
+      ctx.lineTo(-8, -14); ctx.lineTo(-15, -10);
+      ctx.closePath();
+      ctx.fillStyle = '#5a3a1a'; ctx.fill(); ctx.strokeStyle = '#000'; ctx.lineWidth = 1.5; ctx.stroke();
+      ctx.restore();
       ctx.fillStyle = '#00ffff'; const eyeX = this.x + 6;
       ctx.beginPath(); ctx.arc(eyeX - 4, this.y - 6, 3, 0, Math.PI * 2);
       ctx.strokeStyle = '#000'; ctx.lineWidth = 1.5; ctx.stroke(); ctx.fill();
@@ -400,9 +503,13 @@ export class Fighter {
       ctx.save(); ctx.translate(this.x, this.y + 11); ctx.scale(1, 0.6);
       ctx.beginPath(); ctx.arc(0, 0, 23, 0, Math.PI);
       ctx.fillStyle = '#000'; ctx.fill(); ctx.stroke(); ctx.restore();
-      ctx.save(); ctx.translate(this.x, this.y - 10); ctx.scale(1, 0.7);
+      // Hair - taller
+      ctx.save(); ctx.translate(this.x, this.y - 12);
       ctx.beginPath(); ctx.arc(0, 0, 22, Math.PI, 0);
-      ctx.fillStyle = '#ffffff'; ctx.fill(); ctx.stroke(); ctx.restore();
+      ctx.lineTo(14, -14); ctx.lineTo(7, -10); ctx.lineTo(0, -18); ctx.lineTo(-7, -10); ctx.lineTo(-14, -14);
+      ctx.closePath();
+      ctx.fillStyle = '#ffffff'; ctx.fill(); ctx.strokeStyle = '#000'; ctx.lineWidth = 1.5; ctx.stroke();
+      ctx.restore();
       ctx.fillStyle = '#ffff00'; const eyeX = this.x + 6;
       ctx.beginPath(); ctx.arc(eyeX - 4, this.y - 6, 3, 0, Math.PI * 2);
       ctx.strokeStyle = '#000'; ctx.lineWidth = 1.5; ctx.stroke(); ctx.fill();

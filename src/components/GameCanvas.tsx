@@ -12,7 +12,8 @@ const GameCanvas: React.FC = () => {
     const updateScale = () => {
       const scaleX = window.innerWidth / CANVAS_W;
       const scaleY = window.innerHeight / CANVAS_H;
-      setScale(Math.min(scaleX, scaleY));
+      // Use max to cover full screen
+      setScale(Math.max(scaleX, scaleY));
     };
     updateScale();
     window.addEventListener('resize', updateScale);
@@ -30,7 +31,7 @@ const GameCanvas: React.FC = () => {
     <div
       ref={containerRef}
       className="fixed inset-0 flex items-center justify-center"
-      style={{ background: '#000' }}
+      style={{ background: '#000', overflow: 'hidden' }}
     >
       <div
         className="relative overflow-hidden"
@@ -48,13 +49,13 @@ const GameCanvas: React.FC = () => {
           style={{ display: 'block', width: CANVAS_W, height: CANVAS_H }}
         />
 
-        {/* Scanlines */}
+        {/* Scanlines - subtle HD */}
         <div
           className="absolute inset-0 pointer-events-none z-[2]"
           style={{
             background: `
-              linear-gradient(rgba(18,16,16,0) 50%, rgba(0,0,0,0.25) 50%),
-              linear-gradient(90deg, rgba(255,0,0,0.06), rgba(0,255,0,0.02), rgba(0,0,255,0.06))
+              linear-gradient(rgba(18,16,16,0) 50%, rgba(0,0,0,0.12) 50%),
+              linear-gradient(90deg, rgba(255,0,0,0.03), rgba(0,255,0,0.01), rgba(0,0,255,0.03))
             `,
             backgroundSize: '100% 2px, 3px 100%',
           }}

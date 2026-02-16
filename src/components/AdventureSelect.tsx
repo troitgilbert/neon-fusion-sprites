@@ -31,7 +31,7 @@ const WORLDS = [
 ];
 
 const AdventureSelect: React.FC = () => {
-  const { setGameState } = useGame();
+  const { engine, setGameState } = useGame();
   const [hoveredIdx, setHoveredIdx] = useState<number | null>(null);
   const [selectedWorld, setSelectedWorld] = useState<number | null>(null);
 

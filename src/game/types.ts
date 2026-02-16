@@ -1,4 +1,4 @@
-export type GameState = 'MENU' | 'VERSUS_TYPE' | 'SELECT' | 'SKIN_SELECT' | 'STAGE_SELECT' | 'FIGHT' | 'PAUSED' | 'ROUND_OVER' | 'SHOP' | 'CONFIG' | 'CREATOR';
+export type GameState = 'MENU' | 'VERSUS_TYPE' | 'SELECT' | 'SKIN_SELECT' | 'STAGE_SELECT' | 'FIGHT' | 'PAUSED' | 'ROUND_OVER' | 'SHOP' | 'CONFIG' | 'CREATOR' | 'ACHIEVEMENTS';
 
 export interface CustomCharData {
   name: string;
@@ -13,6 +13,8 @@ export interface CustomCharData {
   size: 'pequeño' | 'normal' | 'grande';
   effectColor: string;
   specialAbility: string;
+  superAbility: string;
+  ultraAbility: string;
 }
 
 export type GameMode = '' | 'arcade' | 'survival' | 'versus' | 'vs_cpu' | 'training';
@@ -33,4 +35,29 @@ export interface SkinCatalogItem {
 
 export interface StarData {
   x: number; y: number; s: number; blink: number;
+}
+
+export interface Achievement {
+  id: string;
+  name: string;
+  description: string;
+  difficulty: 'normal' | 'dificil' | 'muy_dificil' | 'bastante_dificil';
+  reward: number; // crystals
+  condition: (stats: GameStats) => boolean;
+}
+
+export interface GameStats {
+  totalFights: number;
+  totalWins: number;
+  totalKOs: number;
+  comboMax: number;
+  totalDamage: number;
+  customCharsCreated: number;
+  roundsSurvived: number;
+  perfectWins: number;
+  totalBlocks: number;
+  totalSpecials: number;
+  totalSupers: number;
+  totalUltras: number;
+  totalTransforms: number;
 }

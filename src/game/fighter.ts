@@ -1,10 +1,14 @@
 import { CHAR_DATA, GROUND_Y, CANVAS_W } from './constants';
 import { FloatingText, PunchCircle } from './effects';
 import { playHitSound, playSpecialSound, playBlockSound } from './audio';
-import type { Controls } from './types';
+import type { Controls, CustomCharData } from './types';
+
+const SPEED_MAP: Record<string, number> = { lento: 3.5, normal: 5, rapido: 7, velocista: 9.5 };
+const SIZE_MAP: Record<string, number> = { 'pequeño': 0.75, normal: 1, grande: 1.3 };
 
 export class Fighter {
   id: number; charIdx: number; data: typeof CHAR_DATA[0]; skinId: string | null;
+  customData: CustomCharData | null;
   x: number; y: number; vx: number; vy: number;
   isBlocking: boolean; blockCooldown: number; isDodging: boolean; dodgeCooldown: number;
   side: number; controls: Controls; isAI: boolean;
@@ -18,10 +22,18 @@ export class Fighter {
   isTransformed: boolean; transformTimer: number; baseName: string;
   invulnTimer: number; isIntangible: boolean;
   damageBoost: number;
+  sizeScale: number;
 
-  constructor(id: number, charIdx: number, x: number, side: number, controls: Controls, isAI = false, skinId: string | null = null) {
+  constructor(id: number, charIdx: number, x: number, side: number, controls: Controls, isAI = false, skinId: string | null = null, customData: CustomCharData | null = null) {
     this.id = id; this.charIdx = charIdx;
-    this.data = { ...CHAR_DATA[charIdx] }; this.skinId = skinId;
+    this.customData = customData;
+    this.sizeScale = customData ? (SIZE_MAP[customData.size] || 1) : 1;
+    if (customData) {
+      this.data = { name: customData.name, color: customData.clothesColor, eyes: customData.eyesColor, speed: SPEED_MAP[customData.speed] || 5, weight: 1 };
+    } else {
+      this.data = { ...CHAR_DATA[Math.min(charIdx, CHAR_DATA.length - 1)] };
+    }
+    this.skinId = skinId;
     this.x = x; this.y = 0; this.vx = 0; this.vy = 0;
     this.isBlocking = false; this.blockCooldown = 0;
     this.isDodging = false; this.dodgeCooldown = 0;
@@ -97,7 +109,8 @@ export class Fighter {
     if (this.handTimer > 0) this.handTimer--; else this.handMode = 'normal';
 
     if (this.specialTrail > 0) {
-      game.spawnParticles(this.x - this.side * 20, this.y, '#ffff00', 2, 2);
+      const trailColor = this.customData ? this.customData.effectColor : '#ffff00';
+      game.spawnParticles(this.x - this.side * 20, this.y, trailColor, 2, 2);
       this.specialTrail--;
     }
 
@@ -327,6 +340,41 @@ export class Fighter {
     const demonio = this.skinId === 'demonioBlanco';
     const demonio2 = this.skinId === 'demonioBlanco2';
 
+    // Custom character - draw as ball
+    if (this.customData) {
+      const s = this.sizeScale;
+      const r = 25 * s;
+      // Body ball
+      ctx.beginPath(); ctx.arc(this.x, this.y, r, 0, Math.PI * 2);
+      ctx.fillStyle = this.customData.skinColor; ctx.fill();
+      ctx.strokeStyle = '#000'; ctx.lineWidth = 2; ctx.stroke();
+      // Hair
+      ctx.save(); ctx.translate(this.x, this.y - r * 0.4); ctx.scale(1, 0.6);
+      ctx.beginPath(); ctx.arc(0, 0, r * 0.85, Math.PI, 0);
+      ctx.fillStyle = this.customData.hairColor; ctx.fill(); ctx.stroke(); ctx.restore();
+      // Clothes band
+      ctx.beginPath(); (ctx as any).roundRect(this.x - r, this.y, r * 2, r * 0.44, 0);
+      ctx.fillStyle = this.customData.clothesColor; ctx.fill(); ctx.stroke();
+      // Pants
+      ctx.save(); ctx.translate(this.x, this.y + r * 0.44); ctx.scale(1, 0.6);
+      ctx.beginPath(); ctx.arc(0, 0, r * 0.9, 0, Math.PI);
+      ctx.fillStyle = this.customData.pantsColor; ctx.fill(); ctx.stroke(); ctx.restore();
+      // Eyes
+      ctx.fillStyle = this.customData.eyesColor;
+      const eyeX = this.x + 6 * s;
+      ctx.beginPath(); ctx.arc(eyeX - 4 * s, this.y - 6 * s, 3 * s, 0, Math.PI * 2);
+      ctx.strokeStyle = '#000'; ctx.lineWidth = 1.5; ctx.stroke(); ctx.fill();
+      ctx.beginPath(); ctx.arc(eyeX + 4 * s, this.y - 6 * s, 3 * s, 0, Math.PI * 2); ctx.stroke(); ctx.fill();
+      // Effect aura (darker)
+      if (this.specialTrail > 0 || this.isTransformed) {
+        ctx.globalAlpha = 0.15;
+        ctx.strokeStyle = this.customData.effectColor; ctx.lineWidth = 2;
+        ctx.beginPath(); ctx.arc(this.x, this.y, r * 1.5, 0, Math.PI * 2); ctx.stroke();
+        ctx.globalAlpha = 1;
+      }
+      return;
+    }
+
     if (this.charIdx === 0) { // EDOWADO
       ctx.beginPath(); ctx.arc(this.x, this.y, 25, 0, Math.PI * 2);
       ctx.fillStyle = '#f5deb3'; ctx.fill(); ctx.strokeStyle = '#000'; ctx.lineWidth = 2; ctx.stroke();
@@ -382,7 +430,8 @@ export class Fighter {
     }
 
     let handColor = '#f5d1ad';
-    if (this.charIdx === 0) handColor = '#d4af37';
+    if (this.customData) handColor = this.customData.handsColor;
+    else if (this.charIdx === 0) handColor = '#d4af37';
     if (this.skinId === 'demonioBlanco') handColor = '#000000';
     if (this.skinId === 'demonioBlanco2') handColor = '#444444';
     ctx.fillStyle = handColor;

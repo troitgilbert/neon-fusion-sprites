@@ -2,8 +2,9 @@ import { Fighter } from './fighter';
 import { Projectile } from './projectile';
 import { Particle, Shockwave, FloatingText, PunchCircle } from './effects';
 import { CHAR_DATA, CANVAS_W, CANVAS_H, CONTROLS, TRANSFORM_KEY, FLOOR_Y, RENDER_SCALE } from './constants';
-import type { GameState, GameMode, StarData } from './types';
-import { playHitSound, playSpecialSound, playSuperSound, playKOSound, playBlockSound, startAmbient, stopAmbient } from './audio';
+import type { GameState, GameMode, StarData, Achievement, CustomCharData } from './types';
+import { playHitSound, playSpecialSound, playSuperSound, playKOSound, playBlockSound, startAmbient, stopAmbient, startMenuMusic, stopMenuMusic } from './audio';
+import { checkAchievements, loadStats, saveStats } from './achievements';
 
 export class GameEngine {
   state: GameState = 'MENU';
@@ -32,6 +33,7 @@ export class GameEngine {
 
   coins = 100;
   inventory: Record<string, any> = {};
+  stats = loadStats();
 
   keys: Record<string, boolean> = {};
   justPressed: Record<string, boolean> = {};
@@ -41,26 +43,26 @@ export class GameEngine {
   ctx: CanvasRenderingContext2D | null = null;
   animFrameId = 0;
 
+  menuMusicStarted = false;
+
   // Callbacks
   onStateChange?: (state: GameState) => void;
   onCoinsChange?: (coins: number) => void;
   onAnnouncerText?: (text: string) => void;
+  onAchievement?: (a: Achievement) => void;
 
   init(canvas: HTMLCanvasElement) {
     this.canvas = canvas;
     this.ctx = canvas.getContext('2d')!;
     this.ctx.imageSmoothingEnabled = true;
 
-    // Load inventory
     try { this.inventory = JSON.parse(localStorage.getItem('inv') || '{}'); } catch { this.inventory = {}; }
     try { this.coins = parseInt(localStorage.getItem('coins') || '100'); } catch { this.coins = 100; }
 
-    // Stars
     for (let i = 0; i < 80; i++) {
       this.stars.push({ x: Math.random() * CANVAS_W, y: Math.random() * CANVAS_H, s: Math.random() * 2, blink: Math.random() });
     }
 
-    // Input
     window.addEventListener('keydown', this._onKeyDown);
     window.addEventListener('keyup', this._onKeyUp);
 
@@ -71,14 +73,21 @@ export class GameEngine {
     cancelAnimationFrame(this.animFrameId);
     window.removeEventListener('keydown', this._onKeyDown);
     window.removeEventListener('keyup', this._onKeyUp);
+    stopMenuMusic();
+    stopAmbient();
   }
 
   _onKeyDown = (e: KeyboardEvent) => {
+    // Start menu music on first interaction
+    if (!this.menuMusicStarted) {
+      this.menuMusicStarted = true;
+      if (this.state === 'MENU') startMenuMusic();
+    }
+
     if (e.code === 'Escape') { this.togglePause(); return; }
     if (!this.keys[e.code]) this.justPressed[e.code] = true;
     this.keys[e.code] = true;
 
-    // Double tap for flying
     const now = Date.now();
     if (now - (this.tapTracker[e.code]?.time || 0) < 250) {
       if (this.state === 'FIGHT') {
@@ -90,7 +99,6 @@ export class GameEngine {
       this.tapTracker[e.code] = { time: now, active: false };
     }
 
-    // Transform
     if (this.state === 'FIGHT') {
       if (e.code === TRANSFORM_KEY.p1 && this.p1) this.p1.tryTransform(this);
       if (e.code === TRANSFORM_KEY.p2 && this.p2) this.p2.tryTransform(this);
@@ -103,8 +111,19 @@ export class GameEngine {
   };
 
   setState(s: GameState, mode?: GameMode) {
+    const prevState = this.state;
     this.state = s;
     if (mode) this.mode = mode;
+
+    // Music management
+    if (s === 'MENU' && prevState !== 'MENU') {
+      stopAmbient();
+      if (this.menuMusicStarted) startMenuMusic();
+    }
+    if (s === 'FIGHT' && prevState !== 'FIGHT') {
+      stopMenuMusic();
+    }
+
     this.onStateChange?.(s);
   }
 
@@ -116,10 +135,28 @@ export class GameEngine {
 
   saveInv() { localStorage.setItem('inv', JSON.stringify(this.inventory)); }
 
+  trackStat(key: keyof typeof this.stats, value: number = 1) {
+    if (key === 'comboMax' || key === 'roundsSurvived') {
+      (this.stats as any)[key] = Math.max((this.stats as any)[key], value);
+    } else {
+      (this.stats as any)[key] += value;
+    }
+    saveStats(this.stats);
+    const newAchievements = checkAchievements(this.stats);
+    newAchievements.forEach(a => this.onAchievement?.(a));
+  }
+
+  getCustomChar(idx: number): CustomCharData | null {
+    try {
+      const customs = JSON.parse(localStorage.getItem('customChars') || '[]');
+      return customs[idx - 100] || null;
+    } catch { return null; }
+  }
+
   selectChar(idx: number) {
     if (this.p1Choice === null) {
       this.setState('SKIN_SELECT');
-      return; // handled by UI
+      return;
     } else if ((this.mode?.includes('versus') || this.mode === 'vs_cpu') && this.p2Choice === null) {
       this.setState('SKIN_SELECT');
       return;
@@ -130,7 +167,7 @@ export class GameEngine {
     if (pNum === 1) {
       this.selectedSkins.p1 = skinId; this.p1Choice = charIdx;
       if (this.mode === 'survival' || this.mode === 'arcade' || this.mode === 'training') {
-        this.p2Choice = (charIdx === 0) ? 1 : 0;
+        this.p2Choice = (charIdx === 0 || charIdx >= 100) ? 1 : 0;
         if (this.mode === 'arcade') this.setState('STAGE_SELECT');
         else { this.selectedStage = 'default'; this.startMatch(charIdx, this.p2Choice!); }
       } else if (this.mode === 'versus' || this.mode === 'vs_cpu') {
@@ -149,14 +186,15 @@ export class GameEngine {
 
   startMatch(c1: number, c2: number) {
     this.round = 1;
-    this.p1 = new Fighter(1, c1, 150, 1, CONTROLS.p1, false, this.selectedSkins.p1);
+    this.p1 = new Fighter(1, c1, 150, 1, CONTROLS.p1, false, this.selectedSkins.p1, c1 >= 100 ? this.getCustomChar(c1) : null);
     const isAI = this.mode !== 'versus';
     if (this.mode === 'survival') { this.p1.rounds = 0; c2 = Math.random() > 0.5 ? 0 : 1; }
-    this.p2 = new Fighter(2, c2, 490, -1, CONTROLS.p2, isAI, this.selectedSkins.p2);
+    this.p2 = new Fighter(2, c2, 490, -1, CONTROLS.p2, isAI, this.selectedSkins.p2, c2 >= 100 ? this.getCustomChar(c2) : null);
     if (this.mode === 'training') { this.p2.hp = 9999; this.p2.energy = 0; }
     this.resetRound();
     this.setState('FIGHT');
     startAmbient(this.selectedStage);
+    this.trackStat('totalFights');
   }
 
   resetRound() {
@@ -190,6 +228,11 @@ export class GameEngine {
     this.flashScreen();
     this.state = 'ROUND_OVER';
     playKOSound();
+    this.trackStat('totalKOs');
+
+    // Check perfect win
+    if (winner === this.p1 && this.p1!.hp >= 100) this.trackStat('perfectWins');
+    if (this.mode === 'survival') this.trackStat('roundsSurvived', this.round);
 
     setTimeout(() => {
       if (this.mode === 'survival') {
@@ -204,8 +247,9 @@ export class GameEngine {
       } else {
         winner.rounds++;
         if (winner.rounds === 2) {
-          this.onAnnouncerText?.(`${CHAR_DATA[winner.charIdx].name} GANA!`);
+          this.onAnnouncerText?.(`${winner.data.name} GANA!`);
           this.updatePrisms(10);
+          if (winner === this.p1) this.trackStat('totalWins');
           setTimeout(() => { this.onAnnouncerText?.(''); stopAmbient(); this.setState('MENU'); }, 3000);
         } else {
           this.round = this.p1!.rounds + this.p2!.rounds + 1;
@@ -384,7 +428,6 @@ export class GameEngine {
     this.p1!.update(this.p2!, this, this.keys, this.justPressed, this.tapTracker);
     this.p2!.update(this.p1!, this, this.keys, this.justPressed, this.tapTracker);
 
-    // Check KO
     if (this.p1!.hp <= 0) this.roundEnd(this.p1!);
     if (this.p2!.hp <= 0) this.roundEnd(this.p2!);
 
@@ -409,15 +452,12 @@ export class GameEngine {
     ctx.translate(320, 240); ctx.scale(zoom, zoom); ctx.translate(-320, -240);
     ctx.translate(dx, dy);
 
-    // Background with 3D perspective
     this.drawStageBackground(ctx);
-
-    // Floor with perspective
     this.drawStageFloor(ctx);
 
     if (this.state === 'FIGHT' || this.state === 'PAUSED' || this.state === 'ROUND_OVER') {
-      // Shadows
-      ctx.fillStyle = 'rgba(0,0,0,0.5)';
+      // Darker shadows
+      ctx.fillStyle = 'rgba(0,0,0,0.6)';
       ctx.beginPath(); ctx.ellipse(this.p1!.x, FLOOR_Y, 20, 5, 0, 0, Math.PI * 2); ctx.fill();
       ctx.beginPath(); ctx.ellipse(this.p2!.x, FLOOR_Y, 20, 5, 0, 0, Math.PI * 2); ctx.fill();
 

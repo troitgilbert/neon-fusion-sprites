@@ -46,7 +46,7 @@ const MainMenu: React.FC = () => {
       label: 'EXTRAS', hasSub: true,
       subItems: [
         { label: 'DOCUMENTOS', action: () => {} },
-        { label: 'LOGROS', action: () => {}, className: 'logros' },
+        { label: 'LOGROS', action: () => setGameState('ACHIEVEMENTS'), className: 'logros' },
       ]
     },
     { label: 'CONFIGURACIÓN', action: () => setGameState('CONFIG') },

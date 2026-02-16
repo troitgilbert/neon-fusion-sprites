@@ -1,12 +1,13 @@
 import React, { createContext, useContext, useRef, useState, useCallback, useEffect } from 'react';
 import { GameEngine } from './engine';
-import type { GameState, GameMode } from './types';
+import type { GameState, GameMode, Achievement } from './types';
 
 interface GameContextType {
   engine: GameEngine;
   gameState: GameState;
   coins: number;
   announcerText: string;
+  achievementPopup: Achievement | null;
   setGameState: (s: GameState, mode?: GameMode) => void;
 }
 
@@ -23,12 +24,17 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [gameState, setGameStateLocal] = useState<GameState>('MENU');
   const [coins, setCoins] = useState(100);
   const [announcerText, setAnnouncerText] = useState('');
+  const [achievementPopup, setAchievementPopup] = useState<Achievement | null>(null);
 
   useEffect(() => {
     const engine = engineRef.current;
     engine.onStateChange = (s) => setGameStateLocal(s);
     engine.onCoinsChange = (c) => setCoins(c);
     engine.onAnnouncerText = (t) => setAnnouncerText(t);
+    engine.onAchievement = (a) => {
+      setAchievementPopup(a);
+      setTimeout(() => setAchievementPopup(null), 4000);
+    };
     setCoins(engine.coins);
     return () => engine.destroy();
   }, []);
@@ -38,7 +44,7 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
   }, []);
 
   return (
-    <GameCtx.Provider value={{ engine: engineRef.current, gameState, coins, announcerText, setGameState }}>
+    <GameCtx.Provider value={{ engine: engineRef.current, gameState, coins, announcerText, achievementPopup, setGameState }}>
       {children}
     </GameCtx.Provider>
   );

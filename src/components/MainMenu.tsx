@@ -7,6 +7,7 @@ interface MenuItem {
   action?: () => void;
   hasSub?: boolean;
   subItems?: { label: string; action: () => void; className?: string }[];
+  isMystery?: boolean;
 }
 
 const MainMenu: React.FC = () => {
@@ -16,6 +17,7 @@ const MainMenu: React.FC = () => {
   const [subIndex, setSubIndex] = useState(0);
   const [openSubMenu, setOpenSubMenu] = useState<number | null>(null);
   const [hoveredMode, setHoveredMode] = useState<string>('');
+  const [mysteryHover, setMysteryHover] = useState(false);
 
   const menuItems: MenuItem[] = useMemo(() => [
     { label: 'HISTORIA', action: () => setGameState('STORY_SELECT') },
@@ -25,29 +27,31 @@ const MainMenu: React.FC = () => {
       label: 'VERSUS', hasSub: true,
       subItems: [
         { label: 'VERSUS', action: () => setGameState('SELECT', 'versus') },
-        { label: 'BATALLA LIBRE', action: () => setGameState('SELECT', 'vs_cpu') },
+        { label: 'BATALLA LIBRE', action: () => setGameState('DIFFICULTY_SELECT') },
       ]
     },
     {
       label: 'MODOS DE JUEGO', hasSub: true,
       subItems: [
-        { label: 'MISIONES', action: () => {} },
-        { label: 'EVENTOS', action: () => {} },
+        { label: 'MISIONES', action: () => setGameState('MISSIONS') },
+        { label: 'EVENTOS', action: () => setGameState('EVENTS') },
         { label: 'SUPERVIVENCIA', action: () => setGameState('SELECT', 'survival') },
-        { label: 'BOSS RUSH', action: () => {}, className: 'boss-rush' },
+        { label: 'BOSS RUSH', action: () => setGameState('BOSS_RUSH'), className: 'boss-rush' },
+        { label: 'SELECCIÓN DE JEFES', action: () => setGameState('BOSS_SELECT') },
         { label: 'ENTRENAMIENTO', action: () => setGameState('SELECT', 'training') },
-        { label: 'JUEGOS MENTALES', action: () => {} },
-        { label: 'CITAS', action: () => {} },
+        { label: 'JUEGOS MENTALES', action: () => setGameState('MIND_GAMES') },
+        { label: 'CITAS', action: () => setGameState('DATING') },
         { label: 'CREADOR DE PERSONAJES', action: () => setGameState('CREATOR') },
         { label: 'CREACIÓN DE NIVELES', action: () => {} },
-        { label: 'MINIJUEGOS', action: () => {} },
+        { label: 'MINIJUEGOS', action: () => setGameState('MINIGAMES') },
+        { label: '???', action: () => {}, className: 'mystery' },
       ]
     },
     { label: 'TIENDA', action: () => setGameState('SHOP') },
     {
       label: 'EXTRAS', hasSub: true,
       subItems: [
-        { label: 'DOCUMENTOS', action: () => {} },
+        { label: 'DOCUMENTOS', action: () => setGameState('DOCUMENTS') },
         { label: 'LOGROS', action: () => setGameState('ACHIEVEMENTS'), className: 'logros' },
       ]
     },
@@ -88,7 +92,11 @@ const MainMenu: React.FC = () => {
   const infoText = MODE_INFO[currentHover] || 'Selecciona un modo para ver su descripción.';
 
   return (
-    <div className="fixed inset-0 z-10 flex flex-col justify-center" style={{ paddingLeft: '8%' }}>
+    <div className="fixed inset-0 z-10 flex flex-col justify-center" style={{ 
+      paddingLeft: '8%',
+      background: mysteryHover ? 'rgba(0,0,0,0.95)' : 'transparent',
+      transition: 'background 0.5s',
+    }}>
       {/* Title */}
       <h1
         className="mb-8 text-6xl font-black tracking-[8px] md:text-7xl lg:text-[80px]"
@@ -137,13 +145,19 @@ const MainMenu: React.FC = () => {
                     key={sub.label}
                     className={sub.className || ''}
                     onClick={() => sub.action()}
-                    onMouseEnter={() => { setSubIndex(si); setHoveredMode(sub.label); }}
-                    onMouseLeave={() => setHoveredMode('')}
+                    onMouseEnter={() => { 
+                      setSubIndex(si); setHoveredMode(sub.label);
+                      if (sub.className === 'mystery') setMysteryHover(true);
+                    }}
+                    onMouseLeave={() => { 
+                      setHoveredMode('');
+                      if (sub.className === 'mystery') setMysteryHover(false);
+                    }}
                     style={{
                       display: 'block', width: 260, padding: '8px 16px', margin: '5px 0', fontSize: 16,
-                      borderLeft: `4px solid ${inSub && subIndex === si ? '#ff9f1c' : sub.className === 'boss-rush' ? '#ff0000' : '#6fe7ff'}`,
+                      borderLeft: `4px solid ${inSub && subIndex === si ? '#ff9f1c' : sub.className === 'boss-rush' ? '#ff0000' : sub.className === 'mystery' ? '#555' : '#6fe7ff'}`,
                       background: 'linear-gradient(90deg, rgba(10,30,50,.95), rgba(0,0,0,.2))',
-                      color: sub.className === 'boss-rush' ? '#ffb3b3' : sub.className === 'logros' ? '#ffd2a1' : '#eafcff',
+                      color: sub.className === 'boss-rush' ? '#ffb3b3' : sub.className === 'logros' ? '#ffd2a1' : sub.className === 'mystery' ? '#555' : '#eafcff',
                       opacity: inSub && subIndex === si ? 1 : 0.7,
                       letterSpacing: 3, cursor: 'pointer', border: 'none',
                       textShadow: sub.className === 'boss-rush' ? '0 0 8px #ff0000,0 0 16px #aa0000' : sub.className === 'logros' ? '0 0 8px #ff8c00' : 'none',

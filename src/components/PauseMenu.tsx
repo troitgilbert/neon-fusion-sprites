@@ -3,25 +3,68 @@ import { useGame } from '../game/GameContext';
 
 const PauseMenu: React.FC = () => {
   const { engine, setGameState } = useGame();
+  const isTraining = engine.mode === 'training';
 
   const btnStyle: React.CSSProperties = {
     background: 'linear-gradient(90deg, transparent, rgba(0,255,255,0.1), transparent)',
-    border: '1px solid #87ceeb', color: '#87ceeb', padding: 12, margin: 6, width: 240,
+    border: '1px solid #87ceeb', color: '#87ceeb', padding: 12, margin: 6, width: 280,
     cursor: 'pointer', textTransform: 'uppercase', fontWeight: 'bold', letterSpacing: 2,
-    fontFamily: "'Orbitron', monospace",
+    fontFamily: "'Orbitron', monospace", display: 'block',
+  };
+
+  const selectStyle: React.CSSProperties = {
+    background: 'rgba(10,10,30,0.9)', border: '1px solid #87ceeb', color: '#87ceeb',
+    padding: '6px 12px', fontFamily: "'Orbitron', monospace", fontSize: 11, letterSpacing: 1,
+    cursor: 'pointer', width: '100%',
   };
 
   return (
     <div className="absolute inset-0 z-10 flex items-center justify-center" style={{ background: 'rgba(0,0,0,0.85)', backdropFilter: 'blur(4px)' }}>
       <div style={{
         border: '2px solid #87ceeb', boxShadow: '0 0 20px rgba(0,255,255,.4)',
-        background: 'rgba(10,10,20,0.95)', padding: 25, textAlign: 'center', transform: 'skew(-2deg)'
+        background: 'rgba(10,10,20,0.95)', padding: 25, textAlign: 'center', transform: 'skew(-2deg)',
+        minWidth: 320,
       }}>
         <h2 style={{ color: '#00ffff', textShadow: '0 0 10px #00ffff', marginBottom: 15 }}>PAUSA</h2>
-        <button onClick={() => engine.resume()} style={btnStyle}>Continuar</button><br/>
-        <button onClick={() => setGameState('CONFIG')} style={btnStyle}>Configuración</button><br/>
-        <button onClick={() => engine.restart()} style={btnStyle}>Reiniciar</button><br/>
+        <button onClick={() => engine.resume()} style={btnStyle}>Continuar</button>
+        <button onClick={() => setGameState('CONFIG')} style={btnStyle}>Configuración</button>
+        <button onClick={() => engine.restart()} style={btnStyle}>Reiniciar</button>
         <button onClick={() => engine.goToMainMenu()} style={btnStyle}>Menú Principal</button>
+
+        {isTraining && (
+          <div style={{ marginTop: 20, borderTop: '1px solid rgba(0,255,255,0.2)', paddingTop: 15 }}>
+            <div style={{ color: '#ffcc66', fontFamily: "'Orbitron', monospace", fontSize: 11, letterSpacing: 3, marginBottom: 12 }}>
+              OPCIONES DE ENTRENAMIENTO
+            </div>
+            
+            {/* AI behavior */}
+            <div style={{ marginBottom: 10, textAlign: 'left' }}>
+              <div style={{ color: '#87ceeb', fontSize: 10, letterSpacing: 2, marginBottom: 4, fontFamily: "'Orbitron', monospace" }}>OPONENTE</div>
+              <select
+                value={engine.trainingAI}
+                onChange={e => { engine.trainingAI = e.target.value as any; }}
+                style={selectStyle}
+              >
+                <option value="dummy">MANIQUÍ (no pelea)</option>
+                <option value="fight">PELEA</option>
+              </select>
+            </div>
+
+            {/* Energy mode */}
+            <div style={{ marginBottom: 10, textAlign: 'left' }}>
+              <div style={{ color: '#87ceeb', fontSize: 10, letterSpacing: 2, marginBottom: 4, fontFamily: "'Orbitron', monospace" }}>ENERGÍA</div>
+              <select
+                value={engine.trainingEnergy}
+                onChange={e => { engine.trainingEnergy = e.target.value as any; }}
+                style={selectStyle}
+              >
+                <option value="infinite">INFINITA</option>
+                <option value="progressive">PROGRESIVA</option>
+                <option value="none">SIN ENERGÍA</option>
+              </select>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

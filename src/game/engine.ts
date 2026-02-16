@@ -1,10 +1,19 @@
 import { Fighter } from './fighter';
 import { Projectile } from './projectile';
 import { Particle, Shockwave, FloatingText, PunchCircle } from './effects';
-import { CHAR_DATA, CANVAS_W, CANVAS_H, CONTROLS, TRANSFORM_KEY, FLOOR_Y, RENDER_SCALE } from './constants';
-import type { GameState, GameMode, StarData, Achievement, CustomCharData } from './types';
+import { CHAR_DATA, CANVAS_W, CANVAS_H, CONTROLS, FLOOR_Y, RENDER_SCALE } from './constants';
+import type { GameState, GameMode, StarData, Achievement, CustomCharData, Difficulty } from './types';
+import { DIFFICULTIES } from './types';
 import { playHitSound, playSpecialSound, playSuperSound, playKOSound, playBlockSound, startAmbient, stopAmbient, startMenuMusic, stopMenuMusic } from './audio';
 import { checkAchievements, loadStats, saveStats } from './achievements';
+
+interface LightningRay {
+  x: number; life: number; maxLife: number;
+}
+
+interface AttractorStar {
+  x: number; y: number; life: number; maxLife: number;
+}
 
 export class GameEngine {
   state: GameState = 'MENU';
@@ -16,12 +25,18 @@ export class GameEngine {
   selectedStage = 'default';
   selectedSkins = { p1: null as string | null, p2: null as string | null };
   arcadeStage = 0;
+  selectedDifficulty: Difficulty = 'normal';
+  selectedBoss = '';
 
   particles: (Particle | PunchCircle)[] = [];
   projectiles: Projectile[] = [];
   texts: FloatingText[] = [];
   shockwaves: Shockwave[] = [];
   stars: StarData[] = [];
+
+  // Big Bang effects
+  lightningRays: LightningRay[] = [];
+  attractorStar: AttractorStar | null = null;
 
   timeStopped = false;
   timeStopper: Fighter | null = null;
@@ -46,6 +61,16 @@ export class GameEngine {
 
   menuMusicStarted = false;
 
+  // Training options
+  trainingAI: 'dummy' | 'fight' = 'dummy';
+  trainingEnergy: 'progressive' | 'infinite' | 'none' = 'infinite';
+  trainingDifficulty: Difficulty = 'normal';
+
+  // Audio volumes
+  musicVolume = 1;
+  sfxVolume = 1;
+  voiceVolume = 1;
+
   // Callbacks
   onStateChange?: (state: GameState) => void;
   onCoinsChange?: (coins: number) => void;
@@ -55,7 +80,7 @@ export class GameEngine {
   init(canvas: HTMLCanvasElement) {
     this.canvas = canvas;
     this.ctx = canvas.getContext('2d')!;
-    this.ctx.imageSmoothingEnabled = true;
+    this.ctx.imageSmoothingEnabled = false;
 
     try { this.inventory = JSON.parse(localStorage.getItem('inv') || '{}'); } catch { this.inventory = {}; }
     try { this.coins = parseInt(localStorage.getItem('coins') || '100'); } catch { this.coins = 100; }
@@ -79,7 +104,6 @@ export class GameEngine {
   }
 
   _onKeyDown = (e: KeyboardEvent) => {
-    // Start menu music on first interaction
     if (!this.menuMusicStarted) {
       this.menuMusicStarted = true;
       if (this.state === 'MENU') startMenuMusic();
@@ -99,11 +123,6 @@ export class GameEngine {
     } else {
       this.tapTracker[e.code] = { time: now, active: false };
     }
-
-    if (this.state === 'FIGHT') {
-      if (e.code === TRANSFORM_KEY.p1 && this.p1) this.p1.tryTransform(this);
-      if (e.code === TRANSFORM_KEY.p2 && this.p2) this.p2.tryTransform(this);
-    }
   };
 
   _onKeyUp = (e: KeyboardEvent) => {
@@ -116,7 +135,6 @@ export class GameEngine {
     this.state = s;
     if (mode) this.mode = mode;
 
-    // Music management
     if (s === 'MENU' && prevState !== 'MENU') {
       stopAmbient();
       if (this.menuMusicStarted) startMenuMusic();
@@ -145,7 +163,6 @@ export class GameEngine {
     saveStats(this.stats);
     const newAchievements = checkAchievements(this.stats);
     newAchievements.forEach(a => {
-      // Auto-grant crystals when achievement is unlocked
       this.updatePrisms(a.reward);
       this.onAchievement?.(a);
     });
@@ -178,8 +195,15 @@ export class GameEngine {
       } else if (this.mode === 'survival' || this.mode === 'training') {
         this.p2Choice = (charIdx === 0 || charIdx >= 100) ? 1 : 0;
         this.selectedStage = 'default'; this.startMatch(charIdx, this.p2Choice!);
+      } else if (this.mode === 'boss_rush' || this.mode === 'boss_select') {
+        // Go directly to fight with boss
+        this.startBossFight(charIdx);
       } else if (this.mode === 'versus' || this.mode === 'vs_cpu') {
         this.setState('SELECT');
+      } else {
+        // Default: go to stage select
+        this.p2Choice = (charIdx === 0 || charIdx >= 100) ? 1 : 0;
+        this.setState('STAGE_SELECT');
       }
     } else {
       this.selectedSkins.p2 = skinId; this.p2Choice = charIdx;
@@ -187,12 +211,53 @@ export class GameEngine {
     }
   }
 
+  startBossFight(playerCharIdx: number) {
+    const bossId = this.selectedBoss || 'big_bang';
+    this.p1Choice = playerCharIdx;
+    this.p2Choice = 1; // placeholder
+    this.selectedStage = bossId === 'lucifer' ? 'infierno' : bossId === 'dios_antiguo' ? 'cielo' : 'nada';
+    
+    this.round = 1;
+    this.p1 = new Fighter(1, playerCharIdx, 150, 1, CONTROLS.p1, false, this.selectedSkins.p1, playerCharIdx >= 100 ? this.getCustomChar(playerCharIdx) : null);
+    
+    // Create boss fighter
+    this.p2 = new Fighter(2, 1, 490, -1, CONTROLS.p2, true, null, null);
+    this.p2.data = { name: bossId.toUpperCase().replace('_', ' '), color: '#ffffff', eyes: '#ffff00', speed: 7, weight: 1 };
+    
+    if (bossId === 'big_bang') {
+      this.p2.isBigBang = true;
+      this.p2.hp = 200;
+      this.p2.isFlying = true;
+      this.p2.data.name = 'BIG BANG';
+    } else if (bossId === 'lucifer') {
+      this.p2.hp = 150;
+      this.p2.data = { name: 'LUCIFER', color: '#ff0000', eyes: '#ffff00', speed: 12, weight: 0.8 };
+    } else if (bossId === 'dios_antiguo') {
+      this.p2.hp = 180;
+      this.p2.isFlying = true;
+      this.p2.data = { name: 'DIOS ANTIGUO', color: '#ff0000', eyes: '#ff0000', speed: 5, weight: 1.5 };
+    } else if (bossId === 'perla_negra') {
+      this.p2.hp = 250;
+      this.p2.data = { name: 'PERLA NEGRA', color: '#8B4513', eyes: '#ffff00', speed: 3, weight: 2 };
+    }
+    
+    this.resetRound();
+    this.setState('FIGHT');
+    startAmbient(this.selectedStage);
+    this.trackStat('totalFights');
+  }
+
   startArcadeStage(stageIdx: number) {
     this.arcadeStage = stageIdx;
     const stages = ['default', 'infierno', 'cielo', 'default', 'default', 'nada', 'default', 'infierno', 'cielo', 'nada'];
     this.selectedStage = stages[stageIdx] || 'default';
 
-    // Pick a random opponent (not custom, not same as player)
+    // Stage 10 is Big Bang
+    if (stageIdx === 9) {
+      this.startBossFight(this.p1Choice!);
+      return;
+    }
+
     const availableChars = CHAR_DATA.map((_, i) => i).filter(i => i !== this.p1Choice);
     const oppIdx = availableChars[Math.floor(Math.random() * availableChars.length)] ?? 0;
     this.p2Choice = oppIdx;
@@ -211,6 +276,20 @@ export class GameEngine {
     const isAI = this.mode !== 'versus';
     if (this.mode === 'survival') { this.p1.rounds = 0; c2 = Math.random() > 0.5 ? 0 : 1; }
     this.p2 = new Fighter(2, c2, 490, -1, CONTROLS.p2, isAI, this.selectedSkins.p2, c2 >= 100 ? this.getCustomChar(c2) : null);
+    
+    // Apply difficulty
+    const diff = DIFFICULTIES.find(d => d.id === this.selectedDifficulty) || DIFFICULTIES[1];
+    if (this.p2) {
+      this.p2.hp *= diff.hpMult;
+    }
+    if (diff.playerHp > 0 && this.p1) {
+      this.p1.hp = diff.playerHp;
+    }
+    // For 1hit mode, enemies also have 1hp
+    if (this.selectedDifficulty === '1hit' && this.p2) {
+      this.p2.hp = 1;
+    }
+    
     if (this.mode === 'training') { this.p2.hp = 9999; this.p2.energy = 0; }
     this.resetRound();
     this.setState('FIGHT');
@@ -227,17 +306,30 @@ export class GameEngine {
       if (this.round > 1) this.p1.hp = Math.min(100, this.p1.hp + 20);
       this.p2.hp = 100 + (this.round * 10);
       this.p2.charIdx = Math.random() > 0.5 ? 0 : 1;
-    } else {
-      this.p1.hp = 100; this.p2.hp = 100;
+    } else if (!this.p2.isBigBang) {
+      const diff = DIFFICULTIES.find(d => d.id === this.selectedDifficulty) || DIFFICULTIES[1];
+      this.p1.hp = diff.playerHp > 0 ? diff.playerHp : 100;
+      this.p2.hp = this.p2.isBigBang ? 200 : (this.selectedDifficulty === '1hit' ? 1 : 100 * diff.hpMult);
     }
 
     this.projectiles = []; this.texts = []; this.shockwaves = [];
+    this.lightningRays = []; this.attractorStar = null;
     this.timer = 99; this.roundLocked = false;
 
     const roundText = this.mode === 'survival' ? `OLEADA ${this.round}` : `ROUND ${this.round}`;
     this.onAnnouncerText?.(roundText);
     setTimeout(() => { this.onAnnouncerText?.('¡LUCHEN!'); this.shake = 10; }, 1000);
     setTimeout(() => this.onAnnouncerText?.(''), 2000);
+  }
+
+  // Big Bang special effects
+  spawnBigBangLightning(x: number) {
+    this.lightningRays.push({ x, life: 90, maxLife: 90 });
+    // Damage check happens in update
+  }
+
+  spawnAttractorStar() {
+    this.attractorStar = { x: CANVAS_W / 2, y: CANVAS_H / 2 - 40, life: 300, maxLife: 300 };
   }
 
   roundEnd(loser: Fighter) {
@@ -251,7 +343,6 @@ export class GameEngine {
     playKOSound();
     this.trackStat('totalKOs');
 
-    // Check perfect win
     if (winner === this.p1 && this.p1!.hp >= 100) this.trackStat('perfectWins');
     if (this.mode === 'survival') this.trackStat('roundsSurvived', this.round);
 
@@ -265,6 +356,23 @@ export class GameEngine {
         }
       } else if (this.mode === 'training') {
         this.resetRound(); this.state = 'FIGHT';
+      } else if (this.mode === 'arcade') {
+        if (winner === this.p1) {
+          this.arcadeStage++;
+          if (this.arcadeStage >= 10) {
+            this.onAnnouncerText?.('¡ARCADE COMPLETADO!');
+            this.updatePrisms(100);
+            setTimeout(() => { this.onAnnouncerText?.(''); stopAmbient(); this.setState('MENU'); }, 3000);
+          } else {
+            this.updatePrisms(15);
+            this.onAnnouncerText?.('');
+            stopAmbient();
+            this.setState('ARCADE_TOWER');
+          }
+        } else {
+          this.onAnnouncerText?.('GAME OVER');
+          setTimeout(() => { this.onAnnouncerText?.(''); stopAmbient(); this.setState('MENU'); }, 3000);
+        }
       } else {
         winner.rounds++;
         if (winner.rounds === 2) {
@@ -458,6 +566,44 @@ export class GameEngine {
     this.texts = this.texts.filter(t => { t.update(); return t.life > 0; });
     this.shockwaves = this.shockwaves.filter(s => { s.update(); return s.life > 0; });
 
+    // Big Bang lightning rays
+    this.lightningRays = this.lightningRays.filter(ray => {
+      ray.life--;
+      // Damage player if they touch lightning
+      if (this.p1 && Math.abs(this.p1.x - ray.x) < 25 && ray.life > 30) {
+        const diff = DIFFICULTIES.find(d => d.id === this.selectedDifficulty) || DIFFICULTIES[1];
+        this.p1.takeDamage(3 * diff.dmgMult, true);
+        this.spawnParticles(this.p1.x, this.p1.y, '#ffffff', 8, 2);
+      }
+      return ray.life > 0;
+    });
+
+    // Attractor star
+    if (this.attractorStar && this.p1) {
+      this.attractorStar.life--;
+      // Pull player toward star
+      const dx = this.attractorStar.x - this.p1.x;
+      const dy = this.attractorStar.y - this.p1.y;
+      const dist = Math.hypot(dx, dy);
+      if (dist > 5) {
+        const force = 2.5;
+        this.p1.vx += (dx / dist) * force;
+        this.p1.vy += (dy / dist) * force;
+      }
+      // Instant kill on contact
+      if (dist < 30) {
+        this.p1.hp = 0;
+        this.spawnExplosion(this.p1.x, this.p1.y, '#ffff00');
+        this.attractorStar = null;
+      }
+      if (this.attractorStar && this.attractorStar.life <= 0) this.attractorStar = null;
+    }
+
+    // Apply difficulty damage multiplier
+    if (this.selectedDifficulty === 'debes_morir' || this.selectedDifficulty === '1hit') {
+      // These are handled in takeDamage already via the hp settings
+    }
+
     if (this.shake > 0) this.shake *= 0.9;
     if (this.shake < 0.5) this.shake = 0;
   }
@@ -478,7 +624,6 @@ export class GameEngine {
     this.drawStageFloor(ctx);
 
     if (this.state === 'FIGHT' || this.state === 'PAUSED' || this.state === 'ROUND_OVER') {
-      // Darker shadows
       ctx.fillStyle = 'rgba(0,0,0,0.6)';
       ctx.beginPath(); ctx.ellipse(this.p1!.x, FLOOR_Y, 20, 5, 0, 0, Math.PI * 2); ctx.fill();
       ctx.beginPath(); ctx.ellipse(this.p2!.x, FLOOR_Y, 20, 5, 0, 0, Math.PI * 2); ctx.fill();
@@ -489,6 +634,59 @@ export class GameEngine {
       this.shockwaves.forEach(s => s.draw(ctx));
       this.particles.forEach(p => p.draw(ctx));
       this.texts.forEach(t => t.draw(ctx));
+
+      // Draw lightning rays
+      this.lightningRays.forEach(ray => {
+        const alpha = ray.life / ray.maxLife;
+        ctx.globalAlpha = alpha;
+        ctx.fillStyle = '#ffffff';
+        // Main beam
+        ctx.fillRect(ray.x - 8, 0, 16, CANVAS_H);
+        // Glow
+        ctx.globalAlpha = alpha * 0.3;
+        ctx.fillRect(ray.x - 20, 0, 40, CANVAS_H);
+        ctx.globalAlpha = 1;
+        // Warning flash
+        if (ray.life > ray.maxLife - 20) {
+          ctx.globalAlpha = (ray.maxLife - ray.life) / 20 * 0.5;
+          ctx.fillStyle = '#ffff00';
+          ctx.fillRect(ray.x - 3, 0, 6, CANVAS_H);
+          ctx.globalAlpha = 1;
+        }
+      });
+
+      // Draw attractor star
+      if (this.attractorStar) {
+        const star = this.attractorStar;
+        const t = Date.now() * 0.005;
+        const pulse = 1 + Math.sin(t * 3) * 0.2;
+        // Star glow
+        ctx.save();
+        ctx.translate(star.x, star.y);
+        ctx.rotate(t);
+        // Outer glow
+        ctx.globalAlpha = 0.3;
+        const grad = ctx.createRadialGradient(0, 0, 0, 0, 0, 60 * pulse);
+        grad.addColorStop(0, '#ffff00');
+        grad.addColorStop(0.5, '#ff880040');
+        grad.addColorStop(1, 'transparent');
+        ctx.fillStyle = grad;
+        ctx.beginPath(); ctx.arc(0, 0, 60 * pulse, 0, Math.PI * 2); ctx.fill();
+        // Star shape
+        ctx.globalAlpha = 1;
+        ctx.fillStyle = '#ffff00';
+        for (let i = 0; i < 8; i++) {
+          const angle = (Math.PI * 2 / 8) * i;
+          ctx.save();
+          ctx.rotate(angle);
+          ctx.fillRect(-2, 0, 4, 25 * pulse);
+          ctx.restore();
+        }
+        // Center
+        ctx.beginPath(); ctx.arc(0, 0, 10 * pulse, 0, Math.PI * 2);
+        ctx.fillStyle = '#ffffff'; ctx.fill();
+        ctx.restore();
+      }
     }
 
     ctx.restore();

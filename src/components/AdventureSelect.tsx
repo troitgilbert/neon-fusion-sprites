@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useGame } from '../game/GameContext';
 import { playSelectSound, playConfirmSound } from '../game/audio';
+import type { GameState } from '../game/types';
 
 const WORLDS = [
   {
@@ -60,7 +61,7 @@ const AdventureSelect: React.FC = () => {
           </div>
         </div>
         <div style={{ display: 'flex', gap: 15 }}>
-          <button onClick={() => { playConfirmSound(); /* TODO: start adventure */ }} style={{
+          <button onClick={() => { playConfirmSound(); (engine as any).adventureWorld = world.id; setGameState('ADVENTURE_PLAY' as any); }} style={{
             padding: '12px 40px', background: `${world.color}15`, border: `2px solid ${world.color}`,
             color: world.color, cursor: 'pointer', fontFamily: "'Orbitron', monospace", fontSize: 16, letterSpacing: 4,
             boxShadow: `0 0 20px ${world.color}30`, transition: 'all 0.3s',

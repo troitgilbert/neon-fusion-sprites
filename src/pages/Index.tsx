@@ -16,22 +16,32 @@ import AchievementsMenu from '../components/AchievementsMenu';
 import StorySelect from '../components/StorySelect';
 import ArcadeTower from '../components/ArcadeTower';
 import AdventureSelect from '../components/AdventureSelect';
+import MissionsMenu from '../components/MissionsMenu';
+import EventsMenu from '../components/EventsMenu';
+import BossRushMenu from '../components/BossRushMenu';
+import BossSelectMenu from '../components/BossSelectMenu';
+import MindGamesMenu from '../components/MindGamesMenu';
+import DatingMenu from '../components/DatingMenu';
+import DocumentsMenu from '../components/DocumentsMenu';
+import MinigamesMenu from '../components/MinigamesMenu';
+import DifficultySelect from '../components/DifficultySelect';
+import AdventurePlay from '../components/AdventurePlay';
 import { getDifficultyColor } from '../game/achievements';
 
 const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent) || window.innerWidth < 800;
 
 const GameApp: React.FC = () => {
-  const { gameState, coins, achievementPopup } = useGame();
+  const { gameState, coins, achievementPopup, engine, setGameState } = useGame();
   const inFight = gameState === 'FIGHT' || gameState === 'PAUSED' || gameState === 'ROUND_OVER';
   const showMenu = gameState === 'MENU';
-  const showNebula = showMenu || gameState === 'SELECT' || gameState === 'SKIN_SELECT' || gameState === 'STAGE_SELECT' || gameState === 'VERSUS_TYPE' || gameState === 'SHOP' || gameState === 'CONFIG' || gameState === 'CREATOR' || gameState === 'ACHIEVEMENTS' || gameState === 'STORY_SELECT' || gameState === 'ARCADE_TOWER' || gameState === 'ADVENTURE_SELECT';
+  const showNebula = showMenu || gameState === 'SELECT' || gameState === 'SKIN_SELECT' || gameState === 'STAGE_SELECT' || gameState === 'VERSUS_TYPE' || gameState === 'SHOP' || gameState === 'CONFIG' || gameState === 'CREATOR' || gameState === 'ACHIEVEMENTS' || gameState === 'STORY_SELECT' || gameState === 'ARCADE_TOWER' || gameState === 'ADVENTURE_SELECT' || gameState === 'MISSIONS' || gameState === 'EVENTS' || gameState === 'BOSS_RUSH' || gameState === 'BOSS_SELECT' || gameState === 'MIND_GAMES' || gameState === 'DATING' || gameState === 'DOCUMENTS' || gameState === 'MINIGAMES' || gameState === 'DIFFICULTY_SELECT';
 
   return (
     <div className="w-screen h-screen overflow-hidden" style={{ background: '#000' }}>
       {showNebula && <NebulaBackground />}
 
       {/* Crystal counter */}
-      {!inFight && gameState !== 'CREATOR' && gameState !== 'ACHIEVEMENTS' && (
+      {!inFight && gameState !== 'CREATOR' && gameState !== 'ACHIEVEMENTS' && gameState !== 'ADVENTURE_PLAY' && (
         <div style={{
           position: 'fixed', top: 20, right: 20, fontSize: 20, color: '#00ffff',
           fontWeight: 'bold', textShadow: '0 0 10px #00ffff', zIndex: 100,
@@ -66,6 +76,21 @@ const GameApp: React.FC = () => {
       {gameState === 'STORY_SELECT' && <StorySelect />}
       {gameState === 'ARCADE_TOWER' && <ArcadeTower />}
       {gameState === 'ADVENTURE_SELECT' && <AdventureSelect />}
+      {gameState === 'MISSIONS' && <MissionsMenu />}
+      {gameState === 'EVENTS' && <EventsMenu />}
+      {gameState === 'BOSS_RUSH' && <BossRushMenu />}
+      {gameState === 'BOSS_SELECT' && <BossSelectMenu />}
+      {gameState === 'MIND_GAMES' && <MindGamesMenu />}
+      {gameState === 'DATING' && <DatingMenu />}
+      {gameState === 'DOCUMENTS' && <DocumentsMenu />}
+      {gameState === 'MINIGAMES' && <MinigamesMenu />}
+      {gameState === 'DIFFICULTY_SELECT' && (
+        <DifficultySelect 
+          onSelect={(d) => { engine.selectedDifficulty = d as any; setGameState('SELECT', 'vs_cpu'); }} 
+          onBack={() => setGameState('MENU')} 
+        />
+      )}
+      {gameState === 'ADVENTURE_PLAY' && <AdventurePlay />}
 
       {/* Achievement popup */}
       {achievementPopup && (

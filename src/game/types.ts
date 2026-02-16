@@ -1,4 +1,6 @@
-export type GameState = 'MENU' | 'VERSUS_TYPE' | 'SELECT' | 'SKIN_SELECT' | 'STAGE_SELECT' | 'FIGHT' | 'PAUSED' | 'ROUND_OVER' | 'SHOP' | 'CONFIG' | 'CREATOR' | 'ACHIEVEMENTS' | 'STORY_SELECT' | 'ARCADE_TOWER' | 'ADVENTURE_SELECT';
+export type GameState = 'MENU' | 'VERSUS_TYPE' | 'SELECT' | 'SKIN_SELECT' | 'STAGE_SELECT' | 'FIGHT' | 'PAUSED' | 'ROUND_OVER' | 'SHOP' | 'CONFIG' | 'CREATOR' | 'ACHIEVEMENTS' | 'STORY_SELECT' | 'ARCADE_TOWER' | 'ADVENTURE_SELECT' | 'MISSIONS' | 'EVENTS' | 'BOSS_RUSH' | 'BOSS_SELECT' | 'MIND_GAMES' | 'DATING' | 'DOCUMENTS' | 'MINIGAMES' | 'DIFFICULTY_SELECT' | 'ADVENTURE_PLAY';
+
+export type Difficulty = 'facil' | 'normal' | 'dificil' | 'muy_dificil' | 'concepto' | 'debes_morir' | '1hit';
 
 export interface CustomCharData {
   name: string;
@@ -17,7 +19,7 @@ export interface CustomCharData {
   ultraAbility: string;
 }
 
-export type GameMode = '' | 'arcade' | 'survival' | 'versus' | 'vs_cpu' | 'training' | 'story' | 'adventure';
+export type GameMode = '' | 'arcade' | 'survival' | 'versus' | 'vs_cpu' | 'training' | 'story' | 'adventure' | 'boss_rush' | 'boss_select' | 'missions' | 'events' | 'mystery';
 
 export interface Controls {
   up: string; down: string; left: string; right: string;
@@ -67,3 +69,23 @@ export interface ArcadeStage {
   label: string;
   description: string;
 }
+
+export interface DifficultyInfo {
+  id: Difficulty;
+  label: string;
+  color: string;
+  hpMult: number;
+  dmgMult: number;
+  playerHp: number; // -1 = normal
+  description: string;
+}
+
+export const DIFFICULTIES: DifficultyInfo[] = [
+  { id: 'facil', label: 'FÁCIL', color: '#00ff66', hpMult: 0.5, dmgMult: 0.5, playerHp: -1, description: 'Enemigos débiles y lentos' },
+  { id: 'normal', label: 'NORMAL', color: '#00ffff', hpMult: 1, dmgMult: 1, playerHp: -1, description: 'Experiencia equilibrada' },
+  { id: 'dificil', label: 'DIFÍCIL', color: '#ffff00', hpMult: 1.5, dmgMult: 1.5, playerHp: -1, description: 'Enemigos más resistentes y agresivos' },
+  { id: 'muy_dificil', label: 'MUY DIFÍCIL', color: '#ff8c00', hpMult: 2, dmgMult: 2, playerHp: -1, description: 'Combates brutales sin piedad' },
+  { id: 'concepto', label: 'CONCEPTO', color: '#ff0000', hpMult: 3, dmgMult: 3, playerHp: -1, description: 'Solo los mejores sobreviven' },
+  { id: 'debes_morir', label: 'TU DEBES MORIR', color: '#aa0000', hpMult: 2, dmgMult: 999, playerHp: 1, description: 'Un solo golpe te mata. Sobrevive.' },
+  { id: '1hit', label: '1 HIT', color: '#ffffff', hpMult: 1, dmgMult: 999, playerHp: 1, description: 'Un golpe mata a cualquiera. Tú o ellos.' },
+];

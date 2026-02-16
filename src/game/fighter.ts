@@ -23,6 +23,7 @@ export class Fighter {
   invulnTimer: number; isIntangible: boolean;
   damageBoost: number;
   sizeScale: number;
+  isBigBang: boolean;
 
   constructor(id: number, charIdx: number, x: number, side: number, controls: Controls, isAI = false, skinId: string | null = null, customData: CustomCharData | null = null) {
     this.id = id; this.charIdx = charIdx;
@@ -47,6 +48,7 @@ export class Fighter {
     this.handMode = 'normal'; this.handTimer = 0; this.specialTrail = 0;
     this.isTransformed = false; this.transformTimer = 0; this.baseName = '';
     this.invulnTimer = 0; this.isIntangible = false; this.damageBoost = 1;
+    this.isBigBang = false;
   }
 
   reset(x: number, side: number) {
@@ -69,15 +71,6 @@ export class Fighter {
     // Skin speed buffs
     if (this.isKaitoAsesino() || this.isKaitoDemonio()) this.data.speed = 10.5;
 
-    // Transform tick
-    if (this.isTransformed) {
-      this.transformTimer--;
-      if (this.transformTimer <= 0) {
-        this.isTransformed = false;
-        this.data.name = this.baseName;
-      }
-    }
-
     // Invuln tick
     if (this.isKaitoDemonio()) {
       if (this.invulnTimer > 0) {
@@ -87,7 +80,9 @@ export class Fighter {
     }
 
     // Energy regen
-    if (game.mode === 'training') this.energy = 300;
+    if (game.mode === 'training' && game.trainingEnergy === 'infinite') this.energy = 300;
+    else if (game.mode === 'training' && game.trainingEnergy === 'none') this.energy = 0;
+    else if (this.isBigBang) this.energy = 300; // Big Bang infinite energy
     else if (this.energy < 300 && !this.isBlocking) this.energy += 0.6;
 
     if (this.isBlocking) {
@@ -129,10 +124,15 @@ export class Fighter {
       if (this.charIdx === 1) game.spawnParticles(this.x, this.y + 20, '#ffff00', 1, 2);
     }
 
+    // Big Bang always flies
+    if (this.isBigBang) {
+      this.isFlying = true;
+      this.y = Math.max(100, Math.min(350, this.y));
+    }
+
     this.squashX += (1 - this.squashX) * 0.15;
     this.squashY += (1 - this.squashY) * 0.15;
     if (this.hitFlash > 0) this.hitFlash--;
-    // Extended stage boundaries
     this.x = Math.max(30, Math.min(CANVAS_W - 30, this.x));
     this.y = Math.max(30, Math.min(450, this.y));
   }
@@ -172,9 +172,11 @@ export class Fighter {
     if (opp.comboHits >= 3 && this.energy > 10 && Math.random() < 0.7) this.isBlocking = true;
     else this.isBlocking = false;
 
-    if (game.mode === 'training') return;
+    if (game.mode === 'training' && game.trainingAI === 'dummy') return;
+    
     const aggression = game.mode === 'survival' ? 0.05 * game.round : 0;
     const dx = opp.x - this.x; const dist = Math.hypot(dx, opp.y - this.y);
+    
     if (Math.abs(dx) > 70) {
       this.side = Math.sign(dx);
       const dashProb = (dist > 250) ? 0.15 : 0.05;
@@ -186,18 +188,81 @@ export class Fighter {
     if (dist > 100 && dist < 300 && Math.random() < 0.05 + aggression) this.attack('special', game);
     if (this.energy >= 100 && Math.random() < 0.02 + aggression) this.attack('super', game);
     if (this.energy >= 300 && Math.random() < 0.008 + aggression) this.attack('ultra', game);
+
+    // Big Bang special AI
+    if (this.isBigBang) {
+      // Move vertically too
+      if (Math.random() < 0.05) this.vy = (Math.random() - 0.5) * 8;
+      // More frequent attacks
+      if (this.energy >= 100 && Math.random() < 0.04) this.attack('special', game);
+      if (this.energy >= 100 && Math.random() < 0.025) this.attack('super', game);
+      if (this.energy >= 300 && Math.random() < 0.015) this.attack('ultra', game);
+    }
   }
 
-  tryTransform(game: any) {
-    if (this.charIdx !== 0 || this.energy < 300 || this.isTransformed) return;
-    this.energy -= 300; this.isTransformed = true; this.transformTimer = 60 * 20;
-    this.baseName = this.data.name; this.data.name = 'RAGE EDOWADO';
+  // Removed Rage Edowado transform
+  tryTransform(_game: any) {
+    // Transformation system removed
   }
 
   attack(type: string, game: any) {
     const opp = (this.id === 1) ? game.p2 : game.p1;
     const dist = Math.hypot(this.x - opp.x, this.y - opp.y);
     this.squashX = 1.1; this.squashY = 0.9;
+
+    // === BIG BANG ATTACKS ===
+    if (this.isBigBang) {
+      if (type === 'special' && this.energy >= 49.5) {
+        this.energy -= 49.5;
+        playSpecialSound();
+        game.shake = 20;
+        // 4 lightning rays from above with gaps between them
+        game.texts.push(new FloatingText(this.x, this.y - 50, 'RAYOS DIVINOS', '#ffffff'));
+        for (let i = 0; i < 4; i++) {
+          const rx = 80 + i * 150;
+          game.spawnBigBangLightning(rx);
+        }
+        game.trackStat('totalSpecials');
+        return;
+      }
+      if (type === 'super' && this.energy >= 100) {
+        this.energy -= 100;
+        playSuperSound();
+        game.flashScreen();
+        game.shake = 25;
+        // 20 bouncing white spheres
+        game.texts.push(new FloatingText(this.x, this.y - 50, 'ESFERAS CAÓTICAS', '#ffffff'));
+        for (let i = 0; i < 20; i++) {
+          const angle = (Math.PI * 2 / 20) * i;
+          const speed = 4 + Math.random() * 3;
+          game.spawnProjectile(this.x, this.y, Math.cos(angle) * speed, Math.sin(angle) * speed, '#ffffff', this, 'bigbang_bounce');
+        }
+        game.trackStat('totalSupers');
+        return;
+      }
+      if (type === 'ultra' && this.energy >= 300) {
+        this.energy -= 300;
+        playSuperSound();
+        game.flashScreen();
+        game.shake = 40;
+        // Attractor star in center - instant kill on contact
+        game.texts.push(new FloatingText(320, 200, 'ESTRELLA ATRACTORA', '#ffff00'));
+        game.spawnAttractorStar();
+        game.trackStat('totalUltras');
+        return;
+      }
+      // Big Bang basic hit - still deals damage
+      if (type === 'hit' && dist < 80) {
+        opp.takeDamage(2, true);
+        opp.vx = this.side * 12;
+        opp.vy = -8;
+        game.spawnParticles(opp.x, opp.y, '#fff', 15, 3);
+        game.spawnShockwave(opp.x, opp.y, '#ffffff');
+        game.shake = 10;
+        return;
+      }
+      return;
+    }
 
     // Skin overrides for Kaito skins
     if ((this.isKaitoAsesino() || this.isKaitoDemonio()) && type === 'super' && this.energy >= 100) {
@@ -222,34 +287,17 @@ export class Fighter {
       return;
     }
 
-    // Transform overrides
-    if (this.isTransformed && this.charIdx === 0) {
-      if (type === 'hit') this.damageBoost = 1.6;
-      if (type === 'special') {
-        for (let i = 0; i < 3; i++) game.spawnProjectile(this.x, this.y - 10 + i * 10, this.side * 12, 0, '#ff0000', this, 'rhombus');
-        game.trackStat('totalSpecials');
-        return;
-      }
-      if (type === 'super') {
-        this.x = opp.x - this.side * 40;
-        for (let i = 0; i < 5; i++) { opp.takeDamage(2, true); game.spawnExplosion(opp.x, opp.y, '#ff0000'); }
-        game.trackStat('totalSupers');
-        return;
-      }
-    }
-
     // === CUSTOM CHARACTER ATTACKS ===
     if (this.customData && type !== 'hit') {
       const effectColor = this.customData.effectColor;
+      const ability = type === 'special' ? this.customData.specialAbility : type === 'super' ? this.customData.superAbility : this.customData.ultraAbility;
 
       if (type === 'special' && this.energy >= 49.5) {
         this.energy -= 49.5;
         playSpecialSound();
         game.spawnShockwave(this.x, this.y, effectColor);
         game.shake = 14; game.hitStop = 6;
-        // Show ability name
-        game.texts.push(new FloatingText(this.x, this.y - 50, this.customData.specialAbility.toUpperCase(), effectColor));
-        // Projectile attack
+        game.texts.push(new FloatingText(this.x, this.y - 50, ability.toUpperCase(), effectColor));
         game.spawnProjectile(this.x, this.y, this.side * 11, 0, effectColor, this, 'rhombus');
         game.spawnParticles(this.x, this.y, effectColor, 25, 3);
         game.trackStat('totalSpecials');
@@ -262,9 +310,7 @@ export class Fighter {
         playSuperSound();
         game.flashScreen();
         game.shake = 25; game.hitStop = 12;
-        // Show ability name
-        game.texts.push(new FloatingText(this.x, this.y - 50, this.customData.superAbility.toUpperCase(), '#ffcc00'));
-        // Area explosion
+        game.texts.push(new FloatingText(this.x, this.y - 50, ability.toUpperCase(), '#ffcc00'));
         if (dist < 120) {
           opp.takeDamage(8, true);
           opp.vx = this.side * 15; opp.vy = -12;
@@ -284,15 +330,12 @@ export class Fighter {
         playSuperSound();
         game.flashScreen();
         game.shake = 40; game.hitStop = 18;
-        // Show ability name
-        game.texts.push(new FloatingText(this.x, this.y - 60, this.customData.ultraAbility.toUpperCase(), '#ff4400'));
-        // Devastating attack
+        game.texts.push(new FloatingText(this.x, this.y - 60, ability.toUpperCase(), '#ff4400'));
         if (dist < 150) {
           opp.takeDamage(20, true);
           opp.vx = this.side * 25; opp.vy = -18;
           game.trackStat('totalDamage', 20);
         }
-        // Multiple explosions
         for (let i = 0; i < 5; i++) {
           setTimeout(() => {
             game.spawnExplosion(this.x + this.side * (20 + i * 30), this.y - 10 + i * 5, effectColor);
@@ -340,8 +383,10 @@ export class Fighter {
       game.shake = 14; game.hitStop = 6;
       game.trackStat('totalSpecials');
       if (this.charIdx === 0) {
+        game.texts.push(new FloatingText(this.x, this.y - 50, 'ROMBO CÓSMICO', '#00ffff'));
         game.spawnProjectile(this.x, this.y, this.side * 12, 0, '#00ffff', this, 'rhombus');
       } else {
+        game.texts.push(new FloatingText(this.x, this.y - 50, 'ESTELA DORADA', '#ffff00'));
         this.vx = this.side * 32; this.specialTrail = 45;
         game.spawnParticles(this.x, this.y, '#ffff00', 35, 3);
         if (dist < 65) {
@@ -355,16 +400,23 @@ export class Fighter {
       this.energy -= 100; game.flashScreen();
       game.trackStat('totalSupers');
       if (this.charIdx === 0) {
+        game.texts.push(new FloatingText(this.x, this.y - 50, 'IMPACTO ROJO', '#ff0000'));
         if (dist < 110) { opp.takeDamage(8, true); game.shake = 28; game.hitStop = 14; game.spawnExplosion(opp.x, opp.y, '#ff0000'); game.trackStat('totalDamage', 8); }
       } else {
+        game.texts.push(new FloatingText(this.x, this.y - 50, 'ESFERA REBOTANTE', '#ffff00'));
         this.handMode = 'slam'; this.handTimer = 20;
         game.spawnProjectile(this.x, this.y, 6, 6, '#ffff00', this, 'bounce');
       }
     } else if (type === 'ultra' && this.energy >= 300) {
       this.energy -= 300; game.flashScreen();
       game.trackStat('totalUltras');
-      if (this.charIdx === 0) game.spawnProjectile(this.x, this.y, 0, 0, '#ffffff', this, 'homing');
-      else game.startTimeStop(this);
+      if (this.charIdx === 0) {
+        game.texts.push(new FloatingText(this.x, this.y - 50, 'PERSECUCIÓN BLANCA', '#ffffff'));
+        game.spawnProjectile(this.x, this.y, 0, 0, '#ffffff', this, 'homing');
+      } else {
+        game.texts.push(new FloatingText(this.x, this.y - 50, 'DETENCIÓN TEMPORAL', '#ffff00'));
+        game.startTimeStop(this);
+      }
     }
   }
 
@@ -389,11 +441,6 @@ export class Fighter {
     }
     if (this.isDodging) ctx.globalAlpha = 0.5;
     if (this.isKaitoDemonio() && this.isIntangible) ctx.globalAlpha = 0.55;
-
-    // Transform glow
-    if (this.isTransformed && this.charIdx === 0) {
-      ctx.shadowColor = '#ff0000'; ctx.shadowBlur = 20;
-    }
 
     ctx.translate(this.x, this.y);
     ctx.scale(this.side * this.squashX, this.squashY);
@@ -421,7 +468,47 @@ export class Fighter {
     const demonio = this.skinId === 'demonioBlanco';
     const demonio2 = this.skinId === 'demonioBlanco2';
 
-    // Custom character - draw as ball
+    // Big Bang - all white flying character
+    if (this.isBigBang) {
+      // Glow aura
+      ctx.save();
+      ctx.globalAlpha = 0.3 + Math.sin(this.animTimer * 0.08) * 0.15;
+      ctx.fillStyle = '#ffffff';
+      ctx.beginPath(); ctx.arc(this.x, this.y, 40, 0, Math.PI * 2); ctx.fill();
+      ctx.restore();
+      // Body
+      ctx.beginPath(); ctx.arc(this.x, this.y, 25, 0, Math.PI * 2);
+      ctx.fillStyle = '#ffffff'; ctx.fill();
+      ctx.strokeStyle = '#ddd'; ctx.lineWidth = 2; ctx.stroke();
+      // White clothes
+      ctx.beginPath(); (ctx as any).roundRect(this.x - 25, this.y, 50, 11, 0);
+      ctx.fillStyle = '#eeeeee'; ctx.fill(); ctx.stroke();
+      // Pants
+      ctx.save(); ctx.translate(this.x, this.y + 11); ctx.scale(1, 0.6);
+      ctx.beginPath(); ctx.arc(0, 0, 23, 0, Math.PI);
+      ctx.fillStyle = '#dddddd'; ctx.fill(); ctx.stroke(); ctx.restore();
+      // Hair - white
+      ctx.save(); ctx.translate(this.x, this.y - 10); ctx.scale(1, 0.7);
+      ctx.beginPath(); ctx.arc(0, 0, 22, Math.PI, 0);
+      ctx.fillStyle = '#ffffff'; ctx.fill(); ctx.stroke(); ctx.restore();
+      // Eyes - bright white with glow
+      ctx.fillStyle = '#ffff00'; const eyeX = this.x + 6;
+      ctx.beginPath(); ctx.arc(eyeX - 4, this.y - 6, 3, 0, Math.PI * 2);
+      ctx.strokeStyle = '#fff'; ctx.lineWidth = 1.5; ctx.stroke(); ctx.fill();
+      ctx.beginPath(); ctx.arc(eyeX + 4, this.y - 6, 3, 0, Math.PI * 2); ctx.stroke(); ctx.fill();
+      // Flight particles
+      ctx.globalAlpha = 0.5;
+      for (let i = 0; i < 3; i++) {
+        const px = this.x + (Math.random() - 0.5) * 40;
+        const py = this.y + 20 + Math.random() * 10;
+        ctx.fillStyle = '#ffffff';
+        ctx.beginPath(); ctx.arc(px, py, 1 + Math.random() * 2, 0, Math.PI * 2); ctx.fill();
+      }
+      ctx.globalAlpha = 1;
+      return;
+    }
+
+    // Custom character
     if (this.customData) {
       const s = this.sizeScale;
       const r = 25 * s;
@@ -429,20 +516,7 @@ export class Fighter {
       ctx.beginPath(); ctx.arc(this.x, this.y, r, 0, Math.PI * 2);
       ctx.fillStyle = this.customData.skinColor; ctx.fill();
       ctx.strokeStyle = '#000'; ctx.lineWidth = 2; ctx.stroke();
-      // Hair - TALLER
-      ctx.save(); ctx.translate(this.x, this.y - r * 0.55);
-      ctx.beginPath(); ctx.arc(0, 0, r * 0.8, Math.PI, 0);
-      ctx.lineTo(r * 0.5, -r * 0.5);
-      ctx.lineTo(r * 0.2, -r * 0.35);
-      ctx.lineTo(0, -r * 0.6);
-      ctx.lineTo(-r * 0.2, -r * 0.3);
-      ctx.lineTo(-r * 0.5, -r * 0.45);
-      ctx.lineTo(-r * 0.8, 0);
-      ctx.closePath();
-      ctx.fillStyle = this.customData.hairColor; ctx.fill();
-      ctx.strokeStyle = '#000'; ctx.lineWidth = 1.5; ctx.stroke();
-      ctx.restore();
-      // Clothes band
+      // Clothes
       ctx.beginPath(); (ctx as any).roundRect(this.x - r, this.y, r * 2, r * 0.44, 0);
       ctx.fillStyle = this.customData.clothesColor; ctx.fill(); ctx.stroke();
       // Pants
@@ -453,18 +527,19 @@ export class Fighter {
       ctx.fillStyle = this.customData.shoesColor;
       ctx.beginPath(); ctx.arc(this.x - r * 0.4, this.y + r * 0.85, r * 0.22, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
       ctx.beginPath(); ctx.arc(this.x + r * 0.4, this.y + r * 0.85, r * 0.22, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+      // Hair - matching HTML reference style (at y-10, scale 0.7)
+      ctx.save(); ctx.translate(this.x, this.y - 10 * s); ctx.scale(1, 0.7);
+      ctx.beginPath(); ctx.arc(0, 0, 22 * s, Math.PI, 0);
+      ctx.fillStyle = this.customData.hairColor; ctx.fill();
+      ctx.strokeStyle = '#000'; ctx.lineWidth = 1.5; ctx.stroke(); ctx.restore();
       // Eyes
       ctx.fillStyle = this.customData.eyesColor;
       const eyeX = this.x + 6 * s;
-      ctx.beginPath(); ctx.arc(eyeX - 4 * s, this.y - 6 * s, 3.5 * s, 0, Math.PI * 2);
+      ctx.beginPath(); ctx.arc(eyeX - 4 * s, this.y - 6 * s, 3 * s, 0, Math.PI * 2);
       ctx.strokeStyle = '#000'; ctx.lineWidth = 1.5; ctx.stroke(); ctx.fill();
-      ctx.beginPath(); ctx.arc(eyeX + 4 * s, this.y - 6 * s, 3.5 * s, 0, Math.PI * 2); ctx.stroke(); ctx.fill();
-      // Pupils
-      ctx.fillStyle = '#000';
-      ctx.beginPath(); ctx.arc(eyeX - 3 * s, this.y - 5.5 * s, 1.5 * s, 0, Math.PI * 2); ctx.fill();
-      ctx.beginPath(); ctx.arc(eyeX + 5 * s, this.y - 5.5 * s, 1.5 * s, 0, Math.PI * 2); ctx.fill();
+      ctx.beginPath(); ctx.arc(eyeX + 4 * s, this.y - 6 * s, 3 * s, 0, Math.PI * 2); ctx.stroke(); ctx.fill();
       // Effect aura
-      if (this.specialTrail > 0 || this.isTransformed) {
+      if (this.specialTrail > 0) {
         ctx.globalAlpha = 0.2;
         ctx.strokeStyle = this.customData.effectColor; ctx.lineWidth = 3;
         ctx.beginPath(); ctx.arc(this.x, this.y, r * 1.6, 0, Math.PI * 2); ctx.stroke();
@@ -473,47 +548,50 @@ export class Fighter {
       return;
     }
 
+    // === EXACT HTML REFERENCE STYLE ===
     if (this.charIdx === 0) { // EDOWADO
+      // PIEL
       ctx.beginPath(); ctx.arc(this.x, this.y, 25, 0, Math.PI * 2);
-      ctx.fillStyle = '#f5deb3'; ctx.fill(); ctx.strokeStyle = '#000'; ctx.lineWidth = 2; ctx.stroke();
+      ctx.fillStyle = '#f5deb3'; ctx.fill();
+      ctx.strokeStyle = '#000'; ctx.lineWidth = 2; ctx.stroke();
+      // ROPA
       ctx.beginPath(); (ctx as any).roundRect(this.x - 25, this.y, 50, 11, 0);
       ctx.fillStyle = '#b00000'; ctx.fill(); ctx.stroke();
+      // PANTALONES
       ctx.save(); ctx.translate(this.x, this.y + 11); ctx.scale(1, 0.6);
       ctx.beginPath(); ctx.arc(0, 0, 23, 0, Math.PI);
       ctx.fillStyle = '#000'; ctx.fill(); ctx.stroke(); ctx.restore();
-      // Hair - taller spiky
-      ctx.save(); ctx.translate(this.x, this.y - 12);
+      // PELO (exact HTML: translate y-10, scale 0.7, arc semicircle)
+      ctx.save(); ctx.translate(this.x, this.y - 10); ctx.scale(1, 0.7);
       ctx.beginPath(); ctx.arc(0, 0, 22, Math.PI, 0);
-      ctx.lineTo(15, -12); ctx.lineTo(8, -8); ctx.lineTo(4, -16); ctx.lineTo(-2, -6);
-      ctx.lineTo(-8, -14); ctx.lineTo(-15, -10);
-      ctx.closePath();
-      ctx.fillStyle = '#5a3a1a'; ctx.fill(); ctx.strokeStyle = '#000'; ctx.lineWidth = 1.5; ctx.stroke();
-      ctx.restore();
+      ctx.fillStyle = '#5a3a1a'; ctx.fill(); ctx.stroke(); ctx.restore();
+      // OJOS
       ctx.fillStyle = '#00ffff'; const eyeX = this.x + 6;
       ctx.beginPath(); ctx.arc(eyeX - 4, this.y - 6, 3, 0, Math.PI * 2);
       ctx.strokeStyle = '#000'; ctx.lineWidth = 1.5; ctx.stroke(); ctx.fill();
       ctx.beginPath(); ctx.arc(eyeX + 4, this.y - 6, 3, 0, Math.PI * 2); ctx.stroke(); ctx.fill();
     } else if (this.charIdx === 1) { // KAITO
+      // PIEL
       ctx.beginPath(); ctx.arc(this.x, this.y, 25, 0, Math.PI * 2);
       ctx.fillStyle = demonio ? '#000000' : '#f5d1ad'; ctx.fill();
       ctx.strokeStyle = demonio ? '#222' : '#000'; ctx.lineWidth = 2; ctx.stroke();
+      // ROPA
       ctx.beginPath(); (ctx as any).roundRect(this.x - 25, this.y, 50, 11, 0);
       ctx.fillStyle = (demonio || demonio2) ? '#1a1a1a' : '#ffffff'; ctx.fill();
       ctx.strokeStyle = '#000000'; ctx.lineWidth = 2; ctx.stroke();
+      // PANTALONES
       ctx.save(); ctx.translate(this.x, this.y + 11); ctx.scale(1, 0.6);
       ctx.beginPath(); ctx.arc(0, 0, 23, 0, Math.PI);
       ctx.fillStyle = '#000'; ctx.fill(); ctx.stroke(); ctx.restore();
-      // Hair - taller
-      ctx.save(); ctx.translate(this.x, this.y - 12);
+      // PELO (exact HTML: translate y-10, scale 0.7)
+      ctx.save(); ctx.translate(this.x, this.y - 10); ctx.scale(1, 0.7);
       ctx.beginPath(); ctx.arc(0, 0, 22, Math.PI, 0);
-      ctx.lineTo(14, -14); ctx.lineTo(7, -10); ctx.lineTo(0, -18); ctx.lineTo(-7, -10); ctx.lineTo(-14, -14);
-      ctx.closePath();
-      ctx.fillStyle = '#ffffff'; ctx.fill(); ctx.strokeStyle = '#000'; ctx.lineWidth = 1.5; ctx.stroke();
-      ctx.restore();
-      ctx.fillStyle = '#ffff00'; const eyeX = this.x + 6;
-      ctx.beginPath(); ctx.arc(eyeX - 4, this.y - 6, 3, 0, Math.PI * 2);
+      ctx.fillStyle = '#ffffff'; ctx.fill(); ctx.stroke(); ctx.restore();
+      // OJOS
+      ctx.fillStyle = '#ffff00'; const eyeX2 = this.x + 6;
+      ctx.beginPath(); ctx.arc(eyeX2 - 4, this.y - 6, 3, 0, Math.PI * 2);
       ctx.strokeStyle = '#000'; ctx.lineWidth = 1.5; ctx.stroke(); ctx.fill();
-      ctx.beginPath(); ctx.arc(eyeX + 4, this.y - 6, 3, 0, Math.PI * 2); ctx.stroke(); ctx.fill();
+      ctx.beginPath(); ctx.arc(eyeX2 + 4, this.y - 6, 3, 0, Math.PI * 2); ctx.stroke(); ctx.fill();
     }
   }
 
@@ -539,6 +617,7 @@ export class Fighter {
     let handColor = '#f5d1ad';
     if (this.customData) handColor = this.customData.handsColor;
     else if (this.charIdx === 0) handColor = '#d4af37';
+    else if (this.isBigBang) handColor = '#ffffff';
     if (this.skinId === 'demonioBlanco') handColor = '#000000';
     if (this.skinId === 'demonioBlanco2') handColor = '#444444';
     ctx.fillStyle = handColor;

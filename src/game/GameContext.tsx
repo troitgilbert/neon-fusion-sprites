@@ -12,7 +12,9 @@ interface GameContextType {
   setGameState: (s: GameState, mode?: GameMode) => void;
 }
 
+// Use a module-level variable to survive HMR
 const GameCtx = createContext<GameContextType | null>(null);
+(GameCtx as any).displayName = 'GameContext';
 
 export const useGame = () => {
   const ctx = useContext(GameCtx);
@@ -23,7 +25,10 @@ export const useGame = () => {
 const CHEAT_CODE = 'DINERO';
 
 export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const engineRef = useRef(new GameEngine());
+  const engineRef = useRef<GameEngine | null>(null);
+  if (!engineRef.current) {
+    engineRef.current = new GameEngine();
+  }
   const [gameState, setGameStateLocal] = useState<GameState>('MENU');
   const [coins, setCoins] = useState(100);
   const [announcerText, setAnnouncerText] = useState('');
@@ -32,7 +37,7 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const cheatBufferRef = useRef('');
 
   useEffect(() => {
-    const engine = engineRef.current;
+    const engine = engineRef.current!;
     engine.onStateChange = (s) => setGameStateLocal(s);
     engine.onCoinsChange = (c) => setCoins(c);
     engine.onAnnouncerText = (t) => setAnnouncerText(t);
@@ -70,11 +75,11 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
   }, []);
 
   const setGameState = useCallback((s: GameState, mode?: GameMode) => {
-    engineRef.current.setState(s, mode);
+    engineRef.current!.setState(s, mode);
   }, []);
 
   return (
-    <GameCtx.Provider value={{ engine: engineRef.current, gameState, coins, announcerText, achievementPopup, cheatNotification, setGameState }}>
+    <GameCtx.Provider value={{ engine: engineRef.current!, gameState, coins, announcerText, achievementPopup, cheatNotification, setGameState }}>
       {children}
     </GameCtx.Provider>
   );

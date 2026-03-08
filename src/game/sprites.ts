@@ -87,6 +87,58 @@ export function drawEdowadoSprite(
   if (!data) return;
 
   const { keys, speed } = data;
+
+  // For idle: smooth crossfade between frames for fluid hand movement
+  if (state === 'idle' && keys.length === 2) {
+    const img1 = imageCache.get(keys[0]);
+    const img2 = imageCache.get(keys[1]);
+
+    if (!img1 && !img2) {
+      ctx.save();
+      ctx.fillStyle = '#c02020';
+      ctx.fillRect(x - 15 * scale, y - 40 * scale, 30 * scale, 45 * scale);
+      ctx.restore();
+      return;
+    }
+
+    // Use a sine wave for smooth 0→1→0 blend (period ~120 frames ≈ 2s at 60fps)
+    const blend = (Math.sin(frame * 0.04) + 1) / 2; // 0..1 smoothly
+
+    const refImg = img1 || img2!;
+    const targetHeight = 85 * scale;
+    const aspect = refImg.width / refImg.height;
+    const targetWidth = targetHeight * aspect;
+
+    const breathScale = 1 + Math.sin(frame * 0.06) * 0.012;
+    const breathY = Math.sin(frame * 0.06) * 1.5;
+
+    ctx.save();
+    ctx.imageSmoothingEnabled = true;
+    ctx.imageSmoothingQuality = 'high';
+    ctx.translate(x, y);
+    ctx.scale(side, 1);
+
+    const dx = -targetWidth / 2;
+    const dy = -targetHeight + 15 - breathY;
+    const dw = targetWidth * breathScale;
+    const dh = targetHeight * breathScale;
+
+    // Draw frame 1 with (1 - blend) opacity
+    if (img1) {
+      ctx.globalAlpha = 1 - blend;
+      ctx.drawImage(img1, dx, dy, dw, dh);
+    }
+    // Draw frame 2 with blend opacity
+    if (img2) {
+      ctx.globalAlpha = blend;
+      ctx.drawImage(img2, dx, dy, dw, dh);
+    }
+
+    ctx.globalAlpha = 1;
+    ctx.restore();
+    return;
+  }
+
   const frameIdx = Math.floor(frame * speed) % keys.length;
   const img = imageCache.get(keys[frameIdx]);
 
@@ -98,7 +150,6 @@ export function drawEdowadoSprite(
     return;
   }
 
-  // Target sprite height in game units
   const targetHeight = 85 * scale;
   const aspect = img.width / img.height;
   const targetWidth = targetHeight * aspect;
@@ -109,17 +160,12 @@ export function drawEdowadoSprite(
   ctx.translate(x, y);
   ctx.scale(side, 1);
 
-  // Breathing effect for idle
-  const breathScale = state === 'idle' ? 1 + Math.sin(frame * 0.06) * 0.012 : 1;
-  const breathY = state === 'idle' ? Math.sin(frame * 0.06) * 1.5 : 0;
-
-  // Draw centered at feet position, shifted down
   ctx.drawImage(
     img,
     -targetWidth / 2,
-    -targetHeight + 15 - breathY,
-    targetWidth * breathScale,
-    targetHeight * breathScale
+    -targetHeight + 15,
+    targetWidth,
+    targetHeight
   );
 
   ctx.restore();

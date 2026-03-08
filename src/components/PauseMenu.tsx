@@ -10,6 +10,7 @@ const PauseMenu: React.FC = () => {
     border: '1px solid #87ceeb', color: '#87ceeb', padding: 12, margin: 6, width: 280,
     cursor: 'pointer', textTransform: 'uppercase', fontWeight: 'bold', letterSpacing: 2,
     fontFamily: "'Orbitron', monospace", display: 'block',
+    transition: 'all 0.25s cubic-bezier(0.16, 1, 0.3, 1)',
   };
 
   const selectStyle: React.CSSProperties = {
@@ -19,17 +20,17 @@ const PauseMenu: React.FC = () => {
   };
 
   return (
-    <div className="absolute inset-0 z-10 flex items-center justify-center" style={{ background: 'rgba(0,0,0,0.85)', backdropFilter: 'blur(4px)' }}>
-      <div style={{
+    <div className="absolute inset-0 z-10 flex items-center justify-center anim-screen-fade scanline-overlay" style={{ background: 'rgba(0,0,0,0.85)', backdropFilter: 'blur(4px)' }}>
+      <div className="anim-screen-zoom anim-neon-flash" style={{
         border: '2px solid #87ceeb', boxShadow: '0 0 20px rgba(0,255,255,.4)',
         background: 'rgba(10,10,20,0.95)', padding: 25, textAlign: 'center', transform: 'skew(-2deg)',
         minWidth: 320,
       }}>
-        <h2 style={{ color: '#00ffff', textShadow: '0 0 10px #00ffff', marginBottom: 15 }}>PAUSA</h2>
-        <button onClick={() => engine.resume()} style={btnStyle}>Continuar</button>
-        <button onClick={() => setGameState('CONFIG')} style={btnStyle}>Configuración</button>
-        <button onClick={() => engine.restart()} style={btnStyle}>Reiniciar</button>
-        <button onClick={() => engine.goToMainMenu()} style={btnStyle}>Menú Principal</button>
+        <h2 className="anim-title-slam" style={{ color: '#00ffff', textShadow: '0 0 10px #00ffff', marginBottom: 15 }}>PAUSA</h2>
+        <button onMouseEnter={e => { e.currentTarget.style.transform = 'translateX(6px) scale(1.04)'; e.currentTarget.style.borderColor = '#00ffff'; e.currentTarget.style.boxShadow = '0 0 20px rgba(0,255,255,0.4)'; }} onMouseLeave={e => { e.currentTarget.style.transform = ''; e.currentTarget.style.borderColor = '#87ceeb'; e.currentTarget.style.boxShadow = ''; }} onClick={() => engine.resume()} style={{...btnStyle, animation: 'itemCascade 0.4s cubic-bezier(0.16,1,0.3,1) 0.1s both'}}>Continuar</button>
+        <button onMouseEnter={e => { e.currentTarget.style.transform = 'translateX(6px) scale(1.04)'; e.currentTarget.style.borderColor = '#00ffff'; e.currentTarget.style.boxShadow = '0 0 20px rgba(0,255,255,0.4)'; }} onMouseLeave={e => { e.currentTarget.style.transform = ''; e.currentTarget.style.borderColor = '#87ceeb'; e.currentTarget.style.boxShadow = ''; }} onClick={() => setGameState('CONFIG')} style={{...btnStyle, animation: 'itemCascade 0.4s cubic-bezier(0.16,1,0.3,1) 0.2s both'}}>Configuración</button>
+        <button onMouseEnter={e => { e.currentTarget.style.transform = 'translateX(6px) scale(1.04)'; e.currentTarget.style.borderColor = '#00ffff'; e.currentTarget.style.boxShadow = '0 0 20px rgba(0,255,255,0.4)'; }} onMouseLeave={e => { e.currentTarget.style.transform = ''; e.currentTarget.style.borderColor = '#87ceeb'; e.currentTarget.style.boxShadow = ''; }} onClick={() => engine.restart()} style={{...btnStyle, animation: 'itemCascade 0.4s cubic-bezier(0.16,1,0.3,1) 0.3s both'}}>Reiniciar</button>
+        <button onMouseEnter={e => { e.currentTarget.style.transform = 'translateX(6px) scale(1.04)'; e.currentTarget.style.borderColor = '#00ffff'; e.currentTarget.style.boxShadow = '0 0 20px rgba(0,255,255,0.4)'; }} onMouseLeave={e => { e.currentTarget.style.transform = ''; e.currentTarget.style.borderColor = '#87ceeb'; e.currentTarget.style.boxShadow = ''; }} onClick={() => engine.goToMainMenu()} style={{...btnStyle, animation: 'itemCascade 0.4s cubic-bezier(0.16,1,0.3,1) 0.4s both'}}>Menú Principal</button>
 
         {isTraining && (
           <div style={{ marginTop: 20, borderTop: '1px solid rgba(0,255,255,0.2)', paddingTop: 15 }}>

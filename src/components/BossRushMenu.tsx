@@ -14,17 +14,18 @@ const BossRushMenu: React.FC = () => {
   const { engine, setGameState } = useGame();
 
   return (
-    <div className="fixed inset-0 z-50 flex flex-col items-center justify-center" style={{ background: 'linear-gradient(180deg, #0a0a2e, #1a0000, #000)' }}>
-      <h1 style={{ color: '#ff4444', fontFamily: "'Orbitron', monospace", fontSize: 36, letterSpacing: 6, marginBottom: 15, textShadow: '0 0 30px #ff0000' }}>
+    <div className="fixed inset-0 z-50 flex flex-col items-center justify-center anim-screen-shutter" style={{ background: 'linear-gradient(180deg, #0a0a2e, #1a0000, #000)' }}>
+      <h1 className="anim-title-slam" style={{ color: '#ff4444', fontFamily: "'Orbitron', monospace", fontSize: 36, letterSpacing: 6, marginBottom: 15, textShadow: '0 0 30px #ff0000' }}>
         BOSS RUSH
       </h1>
-      <p style={{ color: '#87ceeb', fontSize: 13, marginBottom: 40 }}>Derrota a todos los jefes en secuencia</p>
+      <p className="anim-text-reveal" style={{ color: '#87ceeb', fontSize: 13, marginBottom: 40 }}>Derrota a todos los jefes en secuencia</p>
 
       <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', justifyContent: 'center', maxWidth: 700 }}>
         {BOSSES.map((b, i) => (
-          <div key={b.name} style={{
+          <div key={b.name} className="game-card-transition" style={{
             padding: '12px 18px', background: 'rgba(0,0,0,0.6)', border: `1px solid ${b.color}30`,
             textAlign: 'center', minWidth: 120,
+            animation: `itemCascade 0.4s cubic-bezier(0.16,1,0.3,1) ${0.08 * i}s both`,
           }}>
             <div style={{ color: b.color, fontFamily: "'Orbitron', monospace", fontSize: 11, letterSpacing: 2, fontWeight: 900 }}>
               {i + 1}. {b.name}

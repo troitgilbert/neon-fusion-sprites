@@ -6,11 +6,11 @@ const DatingMenu: React.FC = () => {
   const { setGameState } = useGame();
 
   return (
-    <div className="fixed inset-0 z-50 flex flex-col items-center justify-center" style={{ background: 'linear-gradient(135deg, #1a0020, #2a0040, #1a0020)' }}>
-      <h1 style={{ color: '#ff88cc', fontFamily: "'Orbitron', monospace", fontSize: 36, letterSpacing: 6, marginBottom: 15, textShadow: '0 0 25px #ff00aa' }}>
+    <div className="fixed inset-0 z-50 flex flex-col items-center justify-center anim-screen-wipe" style={{ background: 'linear-gradient(135deg, #1a0020, #2a0040, #1a0020)' }}>
+      <h1 className="anim-title-slam" style={{ color: '#ff88cc', fontFamily: "'Orbitron', monospace", fontSize: 36, letterSpacing: 6, marginBottom: 15, textShadow: '0 0 25px #ff00aa' }}>
         CITAS
       </h1>
-      <p style={{ color: '#cc88ff', fontSize: 13, marginBottom: 50 }}>Elige tu preferencia</p>
+      <p className="anim-text-reveal" style={{ color: '#cc88ff', fontSize: 13, marginBottom: 50 }}>Elige tu preferencia</p>
 
       <div style={{ display: 'flex', gap: 30 }}>
         {[

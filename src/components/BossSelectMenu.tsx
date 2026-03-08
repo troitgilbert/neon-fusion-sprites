@@ -21,8 +21,8 @@ const BossSelectMenu: React.FC = () => {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex flex-col items-center justify-center" style={{ background: 'linear-gradient(180deg, #0a0a2e, #000)' }}>
-      <h1 style={{ color: '#ff8c00', fontFamily: "'Orbitron', monospace", fontSize: 32, letterSpacing: 6, marginBottom: 40, textShadow: '0 0 25px #ff6600' }}>
+    <div className="fixed inset-0 z-50 flex flex-col items-center justify-center anim-screen-glitch" style={{ background: 'linear-gradient(180deg, #0a0a2e, #000)' }}>
+      <h1 className="anim-title-slam" style={{ color: '#ff8c00', fontFamily: "'Orbitron', monospace", fontSize: 32, letterSpacing: 6, marginBottom: 40, textShadow: '0 0 25px #ff6600' }}>
         SELECCIÓN DE JEFES
       </h1>
 

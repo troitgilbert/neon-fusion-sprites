@@ -34,13 +34,12 @@ const ArcadeTower: React.FC = () => {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex" style={{
+    <div className="fixed inset-0 z-50 flex anim-screen-slide-up scanline-overlay" style={{
       background: 'linear-gradient(180deg, #0a0a2e 0%, #000 100%)',
-      animation: 'fadeIn 0.5s ease-out',
     }}>
       {/* Tower on the left */}
       <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: 20 }}>
-        <h2 style={{ color: '#ffcc33', fontFamily: "'Orbitron', monospace", fontSize: 'clamp(18px, 3vw, 28px)', letterSpacing: 4, marginBottom: 20, textShadow: '0 0 15px #ff6600' }}>
+        <h2 className="anim-title-slam" style={{ color: '#ffcc33', fontFamily: "'Orbitron', monospace", fontSize: 'clamp(18px, 3vw, 28px)', letterSpacing: 4, marginBottom: 20, textShadow: '0 0 15px #ff6600' }}>
           TORRE ARCADE
         </h2>
         <div style={{ display: 'flex', flexDirection: 'column-reverse', gap: 4, maxHeight: '70vh', overflowY: 'auto' }}>

@@ -24,10 +24,10 @@ const MissionsMenu: React.FC = () => {
   const selected = missions[selectedIdx];
 
   return (
-    <div className="fixed inset-0 z-50 flex" style={{ background: 'linear-gradient(135deg, #0a0a2e 0%, #1a0a3e 50%, #0a0a2e 100%)' }}>
+    <div className="fixed inset-0 z-50 flex anim-screen-slide-up" style={{ background: 'linear-gradient(135deg, #0a0a2e 0%, #1a0a3e 50%, #0a0a2e 100%)' }}>
       {/* Mission list */}
       <div style={{ flex: 1, padding: 30, overflowY: 'auto', borderRight: '2px solid rgba(255,255,255,0.1)' }}>
-        <h2 style={{ color: '#ffcc33', fontFamily: "'Orbitron', monospace", fontSize: 28, letterSpacing: 4, marginBottom: 25, textShadow: '0 0 15px #ff6600' }}>
+        <h2 className="anim-title-slam" style={{ color: '#ffcc33', fontFamily: "'Orbitron', monospace", fontSize: 28, letterSpacing: 4, marginBottom: 25, textShadow: '0 0 15px #ff6600' }}>
           MISIONES
         </h2>
         {missions.map((m, i) => (

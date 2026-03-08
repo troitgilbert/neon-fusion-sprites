@@ -63,8 +63,8 @@ const MindGamesMenu: React.FC = () => {
 
   if (phase === 'select_game') {
     return (
-      <div className="fixed inset-0 z-50 flex flex-col items-center justify-center" style={{ background: 'linear-gradient(135deg, #0a0a2e, #1a1a3e)' }}>
-        <h1 style={{ color: '#ffcc33', fontFamily: "'Orbitron', monospace", fontSize: 32, letterSpacing: 4, marginBottom: 40, textShadow: '0 0 15px #ff6600' }}>
+      <div className="fixed inset-0 z-50 flex flex-col items-center justify-center anim-screen-zoom" style={{ background: 'linear-gradient(135deg, #0a0a2e, #1a1a3e)' }}>
+        <h1 className="anim-title-slam" style={{ color: '#ffcc33', fontFamily: "'Orbitron', monospace", fontSize: 32, letterSpacing: 4, marginBottom: 40, textShadow: '0 0 15px #ff6600' }}>
           JUEGOS MENTALES
         </h1>
         <div onClick={() => { setPhase('select_opponent'); playConfirmSound(); }} style={{

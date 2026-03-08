@@ -65,8 +65,8 @@ const DocumentsMenu: React.FC = () => {
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex flex-col items-center justify-center" style={{ background: 'linear-gradient(135deg, #0a0a2e, #0a1040)' }}>
-      <h1 style={{ color: '#87ceeb', fontFamily: "'Orbitron', monospace", fontSize: 32, letterSpacing: 6, marginBottom: 50, textShadow: '0 0 15px #00ffff' }}>
+    <div className="fixed inset-0 z-50 flex flex-col items-center justify-center anim-screen-fade" style={{ background: 'linear-gradient(135deg, #0a0a2e, #0a1040)' }}>
+      <h1 className="anim-title-slam" style={{ color: '#87ceeb', fontFamily: "'Orbitron', monospace", fontSize: 32, letterSpacing: 6, marginBottom: 50, textShadow: '0 0 15px #00ffff' }}>
         DOCUMENTOS
       </h1>
 

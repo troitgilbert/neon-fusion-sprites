@@ -1187,6 +1187,15 @@ const CharacterSelect: React.FC = () => {
     return skins;
   };
 
+  // Pre-compute skin-related display data (must be before early returns)
+  const p1CharBase = engine.p1Choice !== null && engine.p1Choice < 100 ? charRenderData[engine.p1Choice] : null;
+  const p1CharWithSkin = React.useMemo(() => {
+    if (!p1CharBase || !engine.selectedSkins.p1) return p1CharBase;
+    const overrides = SKIN_COLOR_MAP[p1CharBase.name]?.[engine.selectedSkins.p1];
+    if (!overrides) return p1CharBase;
+    return { ...p1CharBase, ...overrides };
+  }, [p1CharBase, engine.selectedSkins.p1]);
+
   // Custom character submenu
   if (showCustomMenu) {
     return (

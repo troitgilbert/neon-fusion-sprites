@@ -755,9 +755,9 @@ const BgCanvas: React.FC = () => {
       ctx.rotate(0.35 + Math.sin(time * 0.0001) * 0.04);
       const dustGrad = ctx.createLinearGradient(-W, 0, W, 0);
       dustGrad.addColorStop(0, 'transparent');
-      dustGrad.addColorStop(0.25, 'rgba(200,110,30,1)');
-      dustGrad.addColorStop(0.5, 'rgba(180,90,20,1)');
-      dustGrad.addColorStop(0.75, 'rgba(160,75,15,1)');
+      dustGrad.addColorStop(0.25, 'rgba(120,120,130,1)');
+      dustGrad.addColorStop(0.5, 'rgba(100,100,110,1)');
+      dustGrad.addColorStop(0.75, 'rgba(80,80,90,1)');
       dustGrad.addColorStop(1, 'transparent');
       ctx.fillStyle = dustGrad;
       ctx.fillRect(-W, -H * 0.12, W * 2, H * 0.24);

@@ -274,11 +274,16 @@ function drawGameSprite(
   charIdx: number, char: CharRenderData | null, customChar: CustomCharData | null,
   side: number, time: number, scale: number
 ) {
+  if (charIdx === 0 && !customChar) {
+    const previewState = Math.abs(Math.sin(time * 0.06)) > 0.7 ? 'walk' : 'idle';
+    drawEdowadoSprite(ctx, x, y + 10 * scale, previewState, time, side, Math.max(0.9, scale * 1.5));
+    return;
+  }
+
   const s = scale;
   ctx.save();
   ctx.translate(x, y);
   ctx.scale(side * s, s);
-  // Breathing
   const breath = Math.sin(time * 0.1) * 0.03;
   ctx.scale(1, 1 + breath);
   ctx.translate(-x / (side * s), -y / s);
@@ -292,28 +297,22 @@ function drawGameSprite(
   const cx = x / (side * s);
   const cy = y / s;
 
-  // Body sphere
   ctx.beginPath(); ctx.arc(cx, cy, 25, 0, Math.PI * 2);
   ctx.fillStyle = skinC; ctx.fill();
   ctx.strokeStyle = '#000'; ctx.lineWidth = 2; ctx.stroke();
-  // Clothes
   ctx.beginPath(); (ctx as any).roundRect(cx - 25, cy, 50, 11, 0);
   ctx.fillStyle = clothC; ctx.fill(); ctx.stroke();
-  // Pants
   ctx.save(); ctx.translate(cx, cy + 11); ctx.scale(1, 0.6);
   ctx.beginPath(); ctx.arc(0, 0, 23, 0, Math.PI);
   ctx.fillStyle = pantsC; ctx.fill(); ctx.stroke(); ctx.restore();
-  // Hair
   ctx.save(); ctx.translate(cx, cy - 10); ctx.scale(1, 0.7);
   ctx.beginPath(); ctx.arc(0, 0, 22, Math.PI, 0);
   ctx.fillStyle = hairC; ctx.fill(); ctx.stroke(); ctx.restore();
-  // Eyes
   ctx.fillStyle = eyeC;
   const ex = cx + 6;
   ctx.beginPath(); ctx.arc(ex - 4, cy - 6, 3, 0, Math.PI * 2);
   ctx.strokeStyle = '#000'; ctx.lineWidth = 1.5; ctx.stroke(); ctx.fill();
   ctx.beginPath(); ctx.arc(ex + 4, cy - 6, 3, 0, Math.PI * 2); ctx.stroke(); ctx.fill();
-  // Hands (idle swing)
   const handPhase = time * 0.08;
   const swing = Math.sin(handPhase) * 6;
   const lx = cx + 18 + swing;

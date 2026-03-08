@@ -297,7 +297,26 @@ export class Fighter {
         this.attack('hit', game);
       }
     }
-    if (justPressed[c.spec]) this.attack('special', game);
+    if (justPressed[c.spec]) {
+      if (!this.customData && this.charIdx === 0) {
+        const fwdKey = this.side === 1 ? c.right : c.left;
+        if (!this.isGrounded && keys[c.down]) {
+          this.attack('crystal_descend', game);
+        } else if (!this.isGrounded && keys[fwdKey]) {
+          this.attack('crystal_impact', game);
+        } else if (keys[fwdKey]) {
+          this.attack('crystal_invocation', game);
+        } else if (keys[c.down]) {
+          this.attack('crystal_bounce_shot', game);
+        } else if (keys[c.up]) {
+          this.attack('crystal_curve_shot', game);
+        } else {
+          this.attack('special', game);
+        }
+      } else {
+        this.attack('special', game);
+      }
+    }
     if (justPressed[c.super]) this.attack('super', game);
     if (justPressed[c.ultra]) this.attack('ultra', game);
 

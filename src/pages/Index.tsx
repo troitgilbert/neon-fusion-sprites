@@ -195,10 +195,12 @@ const GameApp: React.FC = () => {
   );
 };
 
-const Index: React.FC = () => (
-  <GameProvider>
-    <GameApp />
-  </GameProvider>
-);
+const Index: React.FC = () => {
+  return (
+    <GameProvider>
+      <GameApp />
+    </GameProvider>
+  );
+};
 
 export default Index;

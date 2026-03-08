@@ -8,7 +8,7 @@ import idle4Img from '@/assets/edowado-idle4.png';
 import idle5Img from '@/assets/edowado-idle5.png';
 import idle6Img from '@/assets/edowado-idle6.png';
 import idle7Img from '@/assets/edowado-idle7.png';
-import idle8Img from '@/assets/edowado-idle8.png';
+
 import walk1Img from '@/assets/edowado-walk1.png';
 import walk2Img from '@/assets/edowado-walk2.png';
 import walk3Img from '@/assets/edowado-walk3.png';
@@ -37,7 +37,7 @@ const SPRITE_SOURCES: Record<string, string> = {
   idle5: idle5Img,
   idle6: idle6Img,
   idle7: idle7Img,
-  idle8: idle8Img,
+  
   walk1: walk1Img,
   walk2: walk2Img,
   walk3: walk3Img,
@@ -75,7 +75,7 @@ export function preloadSprites(): Promise<void> {
 
 // Animation config
 const SPRITE_FRAMES: Record<SpriteState, { keys: string[]; speed: number }> = {
-  idle:   { keys: ['idle1', 'idle2', 'idle3', 'idle4', 'idle5', 'idle6', 'idle7', 'idle8'], speed: 0.08 },
+  idle:   { keys: ['idle1', 'idle2', 'idle3', 'idle4', 'idle5', 'idle6', 'idle7', 'idle6', 'idle5', 'idle4', 'idle3', 'idle2'], speed: 0.06 },
   walk:   { keys: ['walk1', 'walk2', 'walk3', 'walk4', 'walk5', 'walk6', 'walk7', 'walk8'], speed: 0.15 },
   attack: { keys: ['attack'],  speed: 0.2 },
   jump:   { keys: ['jump'],    speed: 0.1 },

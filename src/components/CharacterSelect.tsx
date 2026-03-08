@@ -1100,7 +1100,15 @@ const CharacterSelect: React.FC = () => {
 
   const isP2Turn = engine.p1Choice !== null && (engine.mode === 'versus' || engine.mode === 'vs_cpu') && engine.p2Choice === null;
 
+  const allReadyToFight = (() => {
+    const needsP2 = engine.mode === 'versus' || engine.mode === 'vs_cpu';
+    return needsP2
+      ? (engine.p1Choice !== null && engine.p2Choice !== null)
+      : (engine.p1Choice !== null);
+  })();
+
   const handleSelect = (idx: number) => {
+    if (allReadyToFight) return;
     playConfirmSound();
     setSelectFlash(idx);
     setTimeout(() => setSelectFlash(null), 300);

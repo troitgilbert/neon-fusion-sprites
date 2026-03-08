@@ -46,16 +46,50 @@ const GameApp: React.FC = () => {
       {/* Crystal counter */}
       {!inFight && gameState !== 'CREATOR' && gameState !== 'ACHIEVEMENTS' && gameState !== 'ADVENTURE_PLAY' && (
         <div style={{
-          position: 'fixed', top: 12, right: 16, color: '#00ffff',
-          fontWeight: 'bold', textShadow: '0 0 8px #00ffff', zIndex: 100,
-          background: 'rgba(0,0,0,0.7)', padding: '4px 14px', borderRadius: 0,
-          border: '1px solid rgba(0,212,255,0.2)', fontFamily: "'Orbitron', monospace",
-          borderBottom: '2px solid rgba(0,212,255,0.3)',
-          display: 'flex', alignItems: 'center', gap: 6,
-          fontSize: 'clamp(14px, 1.4vw, 20px)', letterSpacing: 1,
+          position: 'fixed', top: 14, right: 18, zIndex: 100,
+          display: 'flex', alignItems: 'center', gap: 0,
+          fontFamily: "'Orbitron', monospace",
         }}>
-          <img src={crystalIcon} alt="crystal" style={{ height: 'clamp(18px, 1.8vw, 28px)', filter: 'drop-shadow(0 0 6px #00bfff)' }} />
-          <span>{coins.toLocaleString()}</span>
+          {/* Crystal icon container */}
+          <div style={{
+            background: 'linear-gradient(135deg, rgba(0,60,120,0.9), rgba(0,30,80,0.95))',
+            border: '1.5px solid rgba(0,180,255,0.5)',
+            borderRight: 'none',
+            borderRadius: '6px 0 0 6px',
+            padding: '6px 8px',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            boxShadow: '0 0 15px rgba(0,150,255,0.3), inset 0 0 10px rgba(0,100,200,0.2)',
+          }}>
+            <img src={crystalIcon} alt="crystal" style={{
+              height: 'clamp(22px, 2.2vw, 34px)',
+              filter: 'drop-shadow(0 0 8px #00bfff) drop-shadow(0 0 3px #0066ff)',
+              animation: 'crystalPulse 2s ease-in-out infinite',
+            }} />
+          </div>
+          {/* Value container */}
+          <div style={{
+            background: 'linear-gradient(135deg, rgba(0,20,50,0.92), rgba(0,10,30,0.96))',
+            border: '1.5px solid rgba(0,180,255,0.4)',
+            borderLeft: '1px solid rgba(0,120,200,0.3)',
+            borderRadius: '0 6px 6px 0',
+            padding: '6px 14px 6px 10px',
+            display: 'flex', alignItems: 'center',
+            boxShadow: '0 0 15px rgba(0,150,255,0.2), inset 0 0 15px rgba(0,50,100,0.15)',
+          }}>
+            <span style={{
+              color: '#7fefff',
+              fontSize: 'clamp(13px, 1.3vw, 19px)',
+              fontWeight: 900,
+              letterSpacing: 2,
+              textShadow: '0 0 10px rgba(0,200,255,0.6), 0 0 20px rgba(0,150,255,0.3)',
+              background: 'linear-gradient(180deg, #b0f0ff 0%, #00d4ff 50%, #0088cc 100%)',
+              WebkitBackgroundClip: 'text',
+              WebkitTextFillColor: 'transparent',
+              backgroundClip: 'text',
+            }}>
+              {coins.toLocaleString()}
+            </span>
+          </div>
         </div>
       )}
 

@@ -534,7 +534,7 @@ const BigPortrait: React.FC<{
 
       // Breathing + idle sway
       const breathe = 1 + Math.sin(t * 0.04) * 0.02;
-      const sway = Math.sin(t * 0.025) * 3;
+      const sway = Math.sin(t * 0.025) * 1.5;
       const sc = Math.min(W, H) / 55;
 
       ctx.save();

@@ -320,7 +320,27 @@ export class Fighter {
         this.attack('special', game);
       }
     }
-    if (justPressed[c.super]) this.attack('super', game);
+    // Directional Super for Edowado
+    if (justPressed[c.super]) {
+      if (!this.customData && this.charIdx === 0) {
+        const fwdKey = this.side === 1 ? c.right : c.left;
+        if (!this.isGrounded && keys[c.down]) {
+          this.attack('super_presion', game);
+        } else if (!this.isGrounded && keys[fwdKey]) {
+          this.attack('super_agarre', game);
+        } else if (keys[c.down]) {
+          this.attack('super_impulso', game);
+        } else if (keys[c.up]) {
+          this.attack('super_cohete', game);
+        } else if (keys[fwdKey]) {
+          this.attack('super_atraccion', game);
+        } else {
+          this.attack('super', game);
+        }
+      } else {
+        this.attack('super', game);
+      }
+    }
     if (justPressed[c.ultra]) this.attack('ultra', game);
 
     if (this.dodgeCooldown > 0) this.dodgeCooldown--;

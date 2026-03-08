@@ -3,7 +3,6 @@ import { useGame } from '../game/GameContext';
 import { CHAR_DATA, SHOP_CATALOG } from '../game/constants';
 import type { CustomCharData } from '../game/types';
 import { playSelectSound, playConfirmSound } from '../game/audio';
-import { drawEdowadoSprite } from '../game/sprites';
 
 // ===== Color helpers =====
 function lightenColor(hex: string, amount: number): string {
@@ -231,16 +230,12 @@ const CanvasPortrait: React.FC<{
     frameRef.current++;
 
     const scale = size / 75;
-    if (char.idx === 0) {
-      drawEdowadoSprite(ctx, size / 2, size * 0.72, 'idle', frameRef.current, facing, Math.max(0.85, scale * 1.35));
-    } else {
-      drawCharOnCanvas(
-        ctx, size / 2, size / 2,
-        char.skinColor, char.hairColor, char.clothesColor,
-        char.pantsColor, char.eyeColor, char.handsColor,
-        scale, frameRef.current, facing
-      );
-    }
+    drawCharOnCanvas(
+      ctx, size / 2, size / 2,
+      char.skinColor, char.hairColor, char.clothesColor,
+      char.pantsColor, char.eyeColor, char.handsColor,
+      scale, frameRef.current, facing
+    );
 
     // Power aura for selected/hovered
     if (isSelected || isHovered) {
@@ -273,15 +268,11 @@ function drawGameSprite(
   charIdx: number, char: CharRenderData | null, customChar: CustomCharData | null,
   side: number, time: number, scale: number
 ) {
-  if (charIdx === 0 && !customChar) {
-    drawEdowadoSprite(ctx, x, y + 10 * scale, 'idle', time, side, Math.max(0.9, scale * 1.5));
-    return;
-  }
-
   const s = scale;
   ctx.save();
   ctx.translate(x, y);
   ctx.scale(side * s, s);
+  // Breathing
   const breath = Math.sin(time * 0.1) * 0.03;
   ctx.scale(1, 1 + breath);
   ctx.translate(-x / (side * s), -y / s);
@@ -295,22 +286,28 @@ function drawGameSprite(
   const cx = x / (side * s);
   const cy = y / s;
 
+  // Body sphere
   ctx.beginPath(); ctx.arc(cx, cy, 25, 0, Math.PI * 2);
   ctx.fillStyle = skinC; ctx.fill();
   ctx.strokeStyle = '#000'; ctx.lineWidth = 2; ctx.stroke();
+  // Clothes
   ctx.beginPath(); (ctx as any).roundRect(cx - 25, cy, 50, 11, 0);
   ctx.fillStyle = clothC; ctx.fill(); ctx.stroke();
+  // Pants
   ctx.save(); ctx.translate(cx, cy + 11); ctx.scale(1, 0.6);
   ctx.beginPath(); ctx.arc(0, 0, 23, 0, Math.PI);
   ctx.fillStyle = pantsC; ctx.fill(); ctx.stroke(); ctx.restore();
+  // Hair
   ctx.save(); ctx.translate(cx, cy - 10); ctx.scale(1, 0.7);
   ctx.beginPath(); ctx.arc(0, 0, 22, Math.PI, 0);
   ctx.fillStyle = hairC; ctx.fill(); ctx.stroke(); ctx.restore();
+  // Eyes
   ctx.fillStyle = eyeC;
   const ex = cx + 6;
   ctx.beginPath(); ctx.arc(ex - 4, cy - 6, 3, 0, Math.PI * 2);
   ctx.strokeStyle = '#000'; ctx.lineWidth = 1.5; ctx.stroke(); ctx.fill();
   ctx.beginPath(); ctx.arc(ex + 4, cy - 6, 3, 0, Math.PI * 2); ctx.stroke(); ctx.fill();
+  // Hands (idle swing)
   const handPhase = time * 0.08;
   const swing = Math.sin(handPhase) * 6;
   const lx = cx + 18 + swing;
@@ -544,11 +541,7 @@ const BigPortrait: React.FC<{
       ctx.translate(W / 2 + sway, H * 0.43);
       ctx.scale(breathe, breathe);
 
-      if (!customChar && char?.idx === 0) {
-        drawEdowadoSprite(ctx, 0, sc * 22, 'idle', t, facing, Math.max(1, sc * 1.45));
-      } else {
-        drawCharOnCanvas(ctx, 0, 0, skinC, hairC, clothC, pantsC, eyeC, handC, sc, t, facing);
-      }
+      drawCharOnCanvas(ctx, 0, 0, skinC, hairC, clothC, pantsC, eyeC, handC, sc, t, facing);
 
       // Energy particles orbiting
       ctx.globalAlpha = 0.5;

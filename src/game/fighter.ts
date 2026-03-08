@@ -2,7 +2,6 @@ import { CHAR_DATA, GROUND_Y, CANVAS_W } from './constants';
 import { FloatingText, PunchCircle } from './effects';
 import { playHitSound, playSpecialSound, playBlockSound, playSuperSound } from './audio';
 import type { Controls, CustomCharData } from './types';
-import { drawEdowadoSprite, getSpriteState, type SpriteState } from './sprites';
 
 const SPEED_MAP: Record<string, number> = { lento: 3.5, normal: 5, rapido: 7, velocista: 9.5 };
 const SIZE_MAP: Record<string, number> = { 'pequeño': 0.75, normal: 1, grande: 1.3 };
@@ -432,16 +431,6 @@ export class Fighter {
     this.hitFlash = 6;
   }
 
-  _getSpriteState(): SpriteState {
-    if (this.hitFlash > 0 && this.stun > 0) return 'hurt';
-    if (this.isBlocking) return 'block';
-    if (this.handMode === 'strike' || this.handMode === 'together' || this.handMode === 'slam') return 'attack';
-    if (this.isFlying) return 'fly';
-    if (!this.isGrounded) return 'jump';
-    if (Math.abs(this.vx) > 1.5) return 'walk';
-    return 'idle';
-  }
-
   draw(ctx: CanvasRenderingContext2D, game: any) {
     ctx.save();
 
@@ -453,42 +442,6 @@ export class Fighter {
     if (this.isDodging) ctx.globalAlpha = 0.5;
     if (this.isKaitoDemonio() && this.isIntangible) ctx.globalAlpha = 0.55;
 
-    // Edowado uses pixel-art sprite rendering
-    if (this.charIdx === 0 && !this.customData && !this.isBigBang) {
-      const state: SpriteState = getSpriteState(
-        this.hitFlash, this.stun, this.isBlocking,
-        this.handMode, this.isGrounded, this.vx,
-        this.isFlying, this.isDashing
-      );
-      
-      if (this.hitFlash > 0) { ctx.shadowBlur = 20; ctx.shadowColor = '#ffffff'; }
-      if (game.timeStopped && game.timeStopper !== this) ctx.filter = 'grayscale(100%)';
-
-      // Breathing effect for idle
-      const breath = (state === 'idle' && Math.abs(this.vx) < 1) ? Math.sin(this.animTimer * 0.1) * 0.02 : 0;
-      
-      ctx.translate(this.x, this.y);
-      ctx.scale(this.squashX, this.squashY + breath);
-      ctx.rotate(this.lean * this.side);
-      ctx.translate(-this.x, -this.y);
-      
-      drawEdowadoSprite(ctx, this.x, this.y, state, this.animTimer, this.side, 1.8);
-
-      // Hand hitbox for strikes
-      if (game.state === 'FIGHT' && this.handMode === 'strike') {
-        const hx = this.x + this.side * 25, hy = this.y + 8;
-        const opp = (this.id === 1) ? game.p2 : game.p1;
-        if (opp && Math.hypot(hx - opp.x, hy - opp.y) < 36) {
-          opp.takeDamage(1, true);
-          opp.vx = this.side * 6;
-          game.spawnParticles(opp.x, opp.y, '#fff', 6, 2);
-        }
-      }
-      ctx.restore();
-      return;
-    }
-
-    // Non-sprite / fallback drawing
     ctx.translate(this.x, this.y);
     ctx.scale(this.side * this.squashX, this.squashY);
     ctx.rotate(this.lean * this.side);
@@ -514,23 +467,6 @@ export class Fighter {
 
     ctx.restore();
   }
-
-  _drawSpriteHitbox(ctx: CanvasRenderingContext2D, game: any) {
-    // Invisible hitbox for hand strikes
-    const hx = this.x + this.side * 36 * 0.7, hy = this.y + 8, hr = 14;
-    if (game.state === 'FIGHT') {
-      const opp = (this.id === 1) ? game.p2 : game.p1;
-      if (Math.hypot(hx - opp.x, hy - opp.y) < hr + 22 && this.handMode === 'strike') {
-        opp.takeDamage(1, true);
-        opp.vx = this.side * 6;
-        game.spawnParticles(opp.x, opp.y, '#fff', 6, 2);
-      }
-    }
-  }
-
-
-
-
 
   _drawBody(ctx: CanvasRenderingContext2D) {
     const demonio = this.skinId === 'demonioBlanco';

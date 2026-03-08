@@ -1586,7 +1586,7 @@ const CharacterSelect: React.FC = () => {
         onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(255,204,51,0.25)'; e.currentTarget.style.boxShadow = 'none'; e.currentTarget.style.background = 'linear-gradient(180deg, rgba(255,204,51,0.08), rgba(255,204,51,0.03))'; }}
         >VOLVER</button>
         <div style={{
-          color: 'rgba(180,180,180,0.35)', fontFamily: "'Orbitron', monospace",
+          color: 'rgba(255,204,51,0.35)', fontFamily: "'Orbitron', monospace",
           fontSize: 'clamp(7px, 0.85vw, 10px)', letterSpacing: 3, textAlign: 'right',
           display: 'flex', alignItems: 'center', gap: 8,
         }}>

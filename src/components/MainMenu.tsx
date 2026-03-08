@@ -182,7 +182,7 @@ const MainMenu: React.FC = () => {
           RELIQUIA
         </h1>
         <h1 style={{
-          fontSize: 'clamp(24px, 4vw, 56px)',
+          fontSize: 'clamp(18px, 3vw, 42px)',
           fontWeight: 700,
           fontFamily: "'Orbitron', serif",
           letterSpacing: 'clamp(6px, 1.5vw, 20px)',

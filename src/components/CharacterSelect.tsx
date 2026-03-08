@@ -1417,7 +1417,7 @@ const CharacterSelect: React.FC = () => {
                               : isP1Selected
                                 ? 'linear-gradient(135deg, rgba(255,204,51,0.25), rgba(255,136,0,0.15))'
                                 : isHovered
-                                  ? `linear-gradient(135deg, rgba(40,35,20,0.95), rgba(30,25,15,0.9))`
+                                  ? `linear-gradient(135deg, rgba(50,42,15,0.95), rgba(35,30,10,0.92))`
                                   : 'linear-gradient(135deg, rgba(10,10,25,0.92), rgba(8,6,18,0.95))',
                             display: 'flex', alignItems: 'center', justifyContent: 'center',
                             transition: 'all 0.2s ease-out',

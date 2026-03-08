@@ -1290,16 +1290,6 @@ const CharacterSelect: React.FC = () => {
             fontFamily: "'Orbitron', monospace",
             fontSize: 11, letterSpacing: 4, color: '#3a6a9a', marginTop: 6,
           }}>PLAYER {skinSelectFor.pNum}</div>
-          {previewSkinId !== null && (
-            <div style={{
-              marginTop: 10, fontFamily: "'Orbitron', monospace",
-              fontSize: 10, letterSpacing: 3, color: '#5a9ae0',
-              padding: '4px 14px', border: '1px solid rgba(80,150,255,0.2)',
-              background: 'rgba(20,50,100,0.2)', borderRadius: 12,
-            }}>
-              {skins.find(s => s.id === previewSkinId)?.name || 'Original'}
-            </div>
-          )}
         </div>
 
         {/* RIGHT: Skin selection panel */}

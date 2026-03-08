@@ -34,9 +34,8 @@ const ArcadeTower: React.FC = () => {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex" style={{
+    <div className="fixed inset-0 z-50 flex anim-screen-slide-up scanline-overlay" style={{
       background: 'linear-gradient(180deg, #0a0a2e 0%, #000 100%)',
-      animation: 'fadeIn 0.5s ease-out',
     }}>
       {/* Tower on the left */}
       <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: 20 }}>

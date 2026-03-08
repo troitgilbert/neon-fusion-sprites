@@ -16,8 +16,9 @@ const FightHUD: React.FC = () => {
 
   const p1 = engine.p1;
   const p2 = engine.p2;
-  const p2Max = engine.mode === 'survival' ? 100 + engine.round * 10 : engine.mode === 'training' ? 9999 : 100;
-  const p1Pct = Math.max(0, p1.hp);
+  const p1Max = 70;
+  const p2Max = engine.mode === 'survival' ? 70 + engine.round * 10 : engine.mode === 'training' ? 9999 : 70;
+  const p1Pct = Math.max(0, (p1.hp / p1Max) * 100);
   const p2Pct = Math.max(0, (p2.hp / p2Max) * 100);
 
   const p1Name = p1.data.name;

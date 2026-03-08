@@ -381,22 +381,30 @@ export class Fighter {
       }
     }
 
-    // === EDOWADO DIRECTIONAL ATTACKS ===
+    // === DIRECTIONAL ATTACKS (all non-custom characters) ===
     if (type === 'hook_down') {
-      // Downward hook - hits grounded opponents hard
       this.handMode = 'slam'; this.handTimer = 15;
       this.vx = this.side * 10;
       if (dist < 65 && Math.abs(this.y - opp.y) < 50) {
         const dmg = 1.5 * this.damageBoost;
         opp.takeDamage(dmg, true);
         game.trackStat('totalDamage', dmg);
-        opp.vx = this.side * 6; opp.vy = 5; // Push down
+        opp.vx = this.side * 6; opp.vy = 5;
         opp.stun = 18;
-        game.texts.push(new FloatingText(opp.x, opp.y - 30, 'GANCHO', '#ff8800'));
+        if (this.charIdx === 1) {
+          // Kaito: Meteor Kick - golden slam
+          game.texts.push(new FloatingText(opp.x, opp.y - 30, 'PATADA METEORO', '#ffdd00'));
+          game.spawnParticles(opp.x, opp.y + 10, '#ffdd00', 22, 3);
+          game.spawnShockwave(opp.x, opp.y, '#ffdd00');
+          game.particles.push(new PunchCircle(opp.x, opp.y, '#ffdd00'));
+        } else {
+          // Edowado: Gancho
+          game.texts.push(new FloatingText(opp.x, opp.y - 30, 'GANCHO', '#ff8800'));
+          game.spawnParticles(opp.x, opp.y + 10, '#ff8800', 18, 3);
+          game.spawnShockwave(opp.x, opp.y, '#ff8800');
+          game.particles.push(new PunchCircle(opp.x, opp.y, '#ff8800'));
+        }
         game.hitStop = 8; game.shake = 15;
-        game.spawnParticles(opp.x, opp.y + 10, '#ff8800', 18, 3);
-        game.spawnShockwave(opp.x, opp.y, '#ff8800');
-        game.particles.push(new PunchCircle(opp.x, opp.y, '#ff8800'));
         playHitSound();
       }
       this.damageBoost = 1;
@@ -404,20 +412,30 @@ export class Fighter {
     }
 
     if (type === 'uppercut') {
-      // Uppercut - launches enemy into the air
       this.handMode = 'strike'; this.handTimer = 15;
       this.vx = this.side * 8;
       if (dist < 65 && Math.abs(this.y - opp.y) < 50) {
         const dmg = 1.8 * this.damageBoost;
         opp.takeDamage(dmg, true);
         game.trackStat('totalDamage', dmg);
-        opp.vx = this.side * 8; opp.vy = -20; // Launch upward!
+        opp.vx = this.side * 8; opp.vy = -20;
         opp.stun = 20;
-        game.texts.push(new FloatingText(opp.x, opp.y - 40, 'UPPERCUT', '#ffff00'));
+        if (this.charIdx === 1) {
+          // Kaito: Rising Flash - white/gold launch
+          game.texts.push(new FloatingText(opp.x, opp.y - 40, 'DESTELLO ASCENDENTE', '#ffffff'));
+          game.spawnParticles(opp.x, opp.y - 10, '#ffffff', 30, 3);
+          game.spawnShockwave(opp.x, opp.y, '#ffffff');
+          game.particles.push(new PunchCircle(opp.x, opp.y, '#ffffff'));
+          // Kaito launches himself a bit too
+          this.vy = -10;
+        } else {
+          // Edowado: Uppercut
+          game.texts.push(new FloatingText(opp.x, opp.y - 40, 'UPPERCUT', '#ffff00'));
+          game.spawnParticles(opp.x, opp.y - 10, '#ffff00', 25, 3);
+          game.spawnShockwave(opp.x, opp.y, '#ffff00');
+          game.particles.push(new PunchCircle(opp.x, opp.y, '#ffff00'));
+        }
         game.hitStop = 10; game.shake = 20;
-        game.spawnParticles(opp.x, opp.y - 10, '#ffff00', 25, 3);
-        game.spawnShockwave(opp.x, opp.y, '#ffff00');
-        game.particles.push(new PunchCircle(opp.x, opp.y, '#ffff00'));
         playSuperSound();
       }
       this.damageBoost = 1;
@@ -425,12 +443,8 @@ export class Fighter {
     }
 
     if (type === 'hit') {
-      // Alternating hands for Edowado
-      if (this.charIdx === 0 && !this.customData) {
-        this.handMode = this.handOrder > 0 ? 'punch_left' : 'punch_right';
-      } else {
-        this.handMode = 'together';
-      }
+      // Alternating hands for all characters
+      this.handMode = this.handOrder > 0 ? 'punch_left' : 'punch_right';
       this.handTimer = 12;
       const comboScale = Math.max(0.35, 1 - (this.comboHits * 0.08));
       const push = 8 + this.comboHits * 2.2;

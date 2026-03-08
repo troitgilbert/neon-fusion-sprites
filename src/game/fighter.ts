@@ -57,7 +57,7 @@ export class Fighter {
 
   reset(x: number, side: number) {
     this.x = x; this.y = 0; this.vx = 0; this.vy = 0;
-    this.side = side; this.hp = 100;
+    this.side = side; this.hp = 70;
     this.isFlying = false; this.stun = 0; this.isDashing = false;
     this.comboTimer = 0; this.squashX = 1; this.squashY = 1;
     this.hitFlash = 0; this.comboHits = 0; this.blockTime = 0;

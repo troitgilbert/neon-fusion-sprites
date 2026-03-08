@@ -476,6 +476,12 @@ export class Fighter {
       ctx.scale(1, 1 + breath);
     }
 
+    // Crouching visual - squash down
+    if (this.isCrouching) {
+      ctx.scale(1.2, 0.65);
+      ctx.translate(0, 12);
+    }
+
     if (this.hitFlash > 0) { ctx.shadowBlur = 20; ctx.shadowColor = '#ffffff'; }
     if (game.timeStopped && game.timeStopper !== this) ctx.filter = 'grayscale(100%)';
 
@@ -488,6 +494,120 @@ export class Fighter {
     // Draw character
     this._drawBody(ctx);
     this._drawHands(ctx, game);
+
+    ctx.restore();
+
+    // Stage lighting overlay
+    this._drawStageLighting(ctx, game);
+
+    // Emote display
+    if (this.emoteTimer > 0) {
+      this._drawEmote(ctx);
+    }
+  }
+
+  _drawStageLighting(ctx: CanvasRenderingContext2D, game: any) {
+    const stage = game.selectedStage || 'default';
+    ctx.save();
+
+    // Stage temperature tint on character
+    let tintColor = '';
+    let tintAlpha = 0;
+    let lightX = 0; // -1 left, 0 center, 1 right
+    let lightY = -1; // -1 top, 1 bottom
+    let rimColor = '';
+    let rimAlpha = 0;
+
+    if (stage === 'infierno') {
+      tintColor = '#ff3300'; tintAlpha = 0.12;
+      lightY = 1; // light from below (lava)
+      rimColor = '#ff6600'; rimAlpha = 0.25;
+    } else if (stage === 'cielo') {
+      tintColor = '#ffeedd'; tintAlpha = 0.08;
+      lightY = -1; // light from above (sun)
+      rimColor = '#ffd700'; rimAlpha = 0.15;
+    } else if (stage === 'nada') {
+      tintColor = '#220033'; tintAlpha = 0.15;
+      lightY = 0;
+      rimColor = '#6633aa'; rimAlpha = 0.08;
+    } else {
+      // Galaxia
+      tintColor = '#0044ff'; tintAlpha = 0.06;
+      lightY = -1;
+      rimColor = '#00ccff'; rimAlpha = 0.1;
+    }
+
+    // Ambient tint overlay
+    ctx.globalAlpha = tintAlpha;
+    ctx.globalCompositeOperation = 'overlay';
+    ctx.fillStyle = tintColor;
+    ctx.beginPath(); ctx.arc(this.x, this.y, 28, 0, Math.PI * 2); ctx.fill();
+
+    // Directional light highlight
+    ctx.globalCompositeOperation = 'screen';
+    const hlY = this.y + lightY * -12;
+    const hlGrad = ctx.createRadialGradient(this.x, hlY, 0, this.x, this.y, 30);
+    hlGrad.addColorStop(0, rimColor);
+    hlGrad.addColorStop(1, 'transparent');
+    ctx.globalAlpha = rimAlpha * (0.8 + Math.sin(this.animTimer * 0.05) * 0.2);
+    ctx.fillStyle = hlGrad;
+    ctx.beginPath(); ctx.arc(this.x, this.y, 30, 0, Math.PI * 2); ctx.fill();
+
+    // Rim light (edge glow)
+    ctx.globalCompositeOperation = 'lighter';
+    ctx.globalAlpha = rimAlpha * 0.5;
+    ctx.strokeStyle = rimColor;
+    ctx.lineWidth = 1.5;
+    const rimAngle = lightY < 0 ? Math.PI * 0.8 : Math.PI * 1.8;
+    ctx.beginPath();
+    ctx.arc(this.x, this.y, 20, rimAngle - 0.8, rimAngle + 0.8);
+    ctx.stroke();
+
+    // Shadow on opposite side of light
+    ctx.globalCompositeOperation = 'multiply';
+    ctx.globalAlpha = 0.08;
+    const shadowGrad = ctx.createRadialGradient(this.x, this.y + lightY * 15, 5, this.x, this.y, 28);
+    shadowGrad.addColorStop(0, '#000000');
+    shadowGrad.addColorStop(1, 'transparent');
+    ctx.fillStyle = shadowGrad;
+    ctx.beginPath(); ctx.arc(this.x, this.y, 28, 0, Math.PI * 2); ctx.fill();
+
+    ctx.restore();
+  }
+
+  _drawEmote(ctx: CanvasRenderingContext2D) {
+    ctx.save();
+    const progress = this.emoteTimer / 90;
+    const fadeIn = Math.min(1, (90 - this.emoteTimer) / 15);
+    const fadeOut = Math.min(1, this.emoteTimer / 15);
+    ctx.globalAlpha = fadeIn * fadeOut;
+
+    const ex = this.x;
+    const ey = this.y - 45 - Math.sin((90 - this.emoteTimer) * 0.1) * 5;
+
+    // Bubble
+    ctx.fillStyle = 'rgba(255,255,255,0.9)';
+    ctx.beginPath();
+    ctx.arc(ex, ey, 14, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.strokeStyle = '#333';
+    ctx.lineWidth = 1.5;
+    ctx.stroke();
+    // Triangle pointer
+    ctx.fillStyle = 'rgba(255,255,255,0.9)';
+    ctx.beginPath();
+    ctx.moveTo(ex - 4, ey + 13);
+    ctx.lineTo(ex + 2, ey + 13);
+    ctx.lineTo(ex, ey + 20);
+    ctx.fill();
+
+    // Emote content
+    ctx.font = "bold 14px sans-serif";
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    const emotes = ['😤', '💪', '🔥', '⭐'];
+    ctx.fillStyle = '#000';
+    ctx.fillText(emotes[this.emoteType] || '😤', ex, ey);
 
     ctx.restore();
   }

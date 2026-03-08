@@ -757,7 +757,7 @@ const CharacterSelect: React.FC = () => {
               const cols = Math.min(allItems.length, 4);
               const hexW = Math.min(window.innerWidth * 0.11, 100);
               const hexH = hexW * 1.155;
-              const rows: typeof allItems[][] = [];
+              const rows: (typeof allItems[number])[][] = [];
               for (let r = 0; r < Math.ceil(allItems.length / cols); r++) {
                 rows.push(allItems.slice(r * cols, r * cols + cols));
               }

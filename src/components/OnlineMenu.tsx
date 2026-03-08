@@ -108,10 +108,10 @@ const OnlineMenu: React.FC = () => {
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex flex-col items-center justify-center" style={{
+    <div className="fixed inset-0 z-50 flex flex-col items-center justify-center anim-screen-wipe" style={{
       background: 'linear-gradient(135deg, #0a0a2e 0%, #001a3a 50%, #0a0a2e 100%)',
     }}>
-      <h1 style={{
+      <h1 className="anim-title-slam" style={{
         color: '#00ffff', fontFamily: "'Orbitron', monospace", fontSize: 'clamp(28px, 5vw, 48px)',
         letterSpacing: 6, textShadow: '0 0 20px #00ffff, 0 0 40px #00888850',
         marginBottom: 15, fontWeight: 900,

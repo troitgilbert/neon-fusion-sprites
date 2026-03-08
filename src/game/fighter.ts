@@ -188,7 +188,18 @@ export class Fighter {
 
     // Directional hits for all characters
     if (justPressed[c.hit]) {
-      if (!this.customData && keys[c.down]) {
+      if (!this.customData && !this.isGrounded && keys[c.down]) {
+        // Air + Down + Hit = Temblor
+        this.attack('temblor', game);
+      } else if (!this.customData && !this.isGrounded) {
+        const fwdKey = this.side === 1 ? c.right : c.left;
+        if (keys[fwdKey]) {
+          // Air + Forward + Hit = Gancho hacia abajo
+          this.attack('air_hook_down', game);
+        } else {
+          this.attack('hit', game);
+        }
+      } else if (!this.customData && keys[c.down]) {
         this.attack('hook_down', game);
       } else if (!this.customData && keys[c.up]) {
         this.attack('uppercut', game);

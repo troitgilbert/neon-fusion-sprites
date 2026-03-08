@@ -25,7 +25,10 @@ export const useGame = () => {
 const CHEAT_CODE = 'DINERO';
 
 export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const engineRef = useRef(new GameEngine());
+  const engineRef = useRef<GameEngine | null>(null);
+  if (!engineRef.current) {
+    engineRef.current = new GameEngine();
+  }
   const [gameState, setGameStateLocal] = useState<GameState>('MENU');
   const [coins, setCoins] = useState(100);
   const [announcerText, setAnnouncerText] = useState('');

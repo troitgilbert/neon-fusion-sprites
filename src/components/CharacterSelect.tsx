@@ -535,10 +535,10 @@ const BigPortrait: React.FC<{
       // Breathing + idle sway
       const breathe = 1 + Math.sin(t * 0.04) * 0.02;
       const sway = Math.sin(t * 0.025) * 3;
-      const sc = Math.min(W, H) / 48;
+      const sc = Math.min(W, H) / 72;
 
       ctx.save();
-      ctx.translate(W / 2 + sway, H * 0.42);
+      ctx.translate(W / 2 + sway, H * 0.45);
       ctx.scale(breathe, breathe);
 
       drawCharOnCanvas(ctx, 0, 0, skinC, hairC, clothC, pantsC, eyeC, handC, sc, t, facing);

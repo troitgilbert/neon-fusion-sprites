@@ -63,7 +63,7 @@ export function preloadSprites(): Promise<void> {
 
 // Animation config
 const SPRITE_FRAMES: Record<SpriteState, { keys: string[]; speed: number }> = {
-  idle:   { keys: ['idle'], speed: 0.03 },
+  idle:   { keys: ['idle1', 'idle2'], speed: 0.025 },
   walk:   { keys: ['walk1', 'walk2', 'walk3', 'walk4', 'walk5', 'walk6', 'walk7', 'walk8'], speed: 0.15 },
   attack: { keys: ['attack'],  speed: 0.2 },
   jump:   { keys: ['jump'],    speed: 0.1 },

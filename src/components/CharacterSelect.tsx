@@ -534,7 +534,7 @@ const BigPortrait: React.FC<{
 
       // Breathing + idle sway
       const breathe = 1 + Math.sin(t * 0.04) * 0.02;
-      const sway = Math.sin(t * 0.025) * 3;
+      const sway = Math.sin(t * 0.025) * 1.5;
       const sc = Math.min(W, H) / 55;
 
       ctx.save();
@@ -1084,7 +1084,7 @@ const CharacterSelect: React.FC = () => {
           position: 'absolute', inset: 0, display: 'flex', justifyContent: 'space-between', zIndex: 1,
           pointerEvents: 'none', padding: '0 clamp(10px, 3vw, 40px)',
         }}>
-          <div style={{ width: 'clamp(140px, 22vw, 280px)', height: '100%', position: 'relative' }}>
+          <div style={{ width: 'clamp(170px, 25vw, 340px)', height: '100%', position: 'relative' }}>
             <BigPortrait char={displayP1 || null} customChar={p1Custom} color="#00ffff" facing={1} label="P1" />
             <div style={{ position: 'absolute', bottom: 10, left: 0, right: 0, textAlign: 'center' }}>
               <div style={{
@@ -1094,7 +1094,7 @@ const CharacterSelect: React.FC = () => {
               }}>{p1Name}</div>
             </div>
           </div>
-          <div style={{ width: 'clamp(140px, 22vw, 280px)', height: '100%', position: 'relative' }}>
+          <div style={{ width: 'clamp(170px, 25vw, 340px)', height: '100%', position: 'relative' }}>
             <BigPortrait char={displayP2 || null} customChar={null} color="#ff8c00" facing={-1} label="P2" />
             <div style={{ position: 'absolute', bottom: 10, left: 0, right: 0, textAlign: 'center' }}>
               <div style={{

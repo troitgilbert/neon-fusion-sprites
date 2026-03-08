@@ -1548,15 +1548,15 @@ const CharacterSelect: React.FC = () => {
           <span style={{ color: 'rgba(0,255,255,0.4)' }}>◆</span> 1P: WASD + F/G/H
         </div>
         <button onClick={() => setGameState('MENU')} style={{
-          padding: '7px 30px', background: 'linear-gradient(180deg, rgba(255,204,51,0.08), rgba(255,204,51,0.03))',
-          border: '1px solid rgba(255,204,51,0.25)', color: '#ffcc33',
+          padding: '7px 30px', background: 'linear-gradient(180deg, rgba(180,180,180,0.08), rgba(180,180,180,0.03))',
+          border: '1px solid rgba(180,180,180,0.25)', color: '#cccccc',
           cursor: 'pointer', fontFamily: "'Orbitron', monospace",
           fontSize: 'clamp(8px, 1.1vw, 11px)', letterSpacing: 5,
-          transition: 'all 0.3s', textShadow: '0 0 8px #ffcc3330',
+          transition: 'all 0.3s', textShadow: '0 0 8px rgba(200,200,200,0.2)',
           position: 'relative', overflow: 'hidden',
         }}
-        onMouseEnter={e => { e.currentTarget.style.borderColor = '#ffcc33'; e.currentTarget.style.boxShadow = '0 0 20px #ffcc3330, inset 0 0 20px #ffcc3310'; e.currentTarget.style.background = 'linear-gradient(180deg, rgba(255,204,51,0.15), rgba(255,204,51,0.05))'; }}
-        onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(255,204,51,0.25)'; e.currentTarget.style.boxShadow = 'none'; e.currentTarget.style.background = 'linear-gradient(180deg, rgba(255,204,51,0.08), rgba(255,204,51,0.03))'; }}
+        onMouseEnter={e => { e.currentTarget.style.borderColor = '#cccccc'; e.currentTarget.style.boxShadow = '0 0 20px rgba(200,200,200,0.2), inset 0 0 20px rgba(200,200,200,0.06)'; e.currentTarget.style.background = 'linear-gradient(180deg, rgba(180,180,180,0.15), rgba(180,180,180,0.05))'; }}
+        onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(180,180,180,0.25)'; e.currentTarget.style.boxShadow = 'none'; e.currentTarget.style.background = 'linear-gradient(180deg, rgba(180,180,180,0.08), rgba(180,180,180,0.03))'; }}
         >VOLVER</button>
         <div style={{
           color: 'rgba(255,204,51,0.35)', fontFamily: "'Orbitron', monospace",

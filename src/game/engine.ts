@@ -660,7 +660,7 @@ export class GameEngine {
         ctx.globalAlpha = life * 0.65;
         const colors = ['#ff1100', '#ff3300', '#ff5500', '#ff7700', '#ff9900', '#ffbb00', '#ffdd44', '#ffee88'];
         ctx.fillStyle = colors[i % colors.length];
-        const sz = 1 + Math.sin(t * 5 + i * 0.7) * 1.2 + life * 2.5;
+        const sz = Math.max(0.1, 1 + Math.sin(t * 5 + i * 0.7) * 1.2 + life * 2.5);
         ctx.beginPath();
         ctx.arc(fx + Math.sin(t * 3 + i) * 3, fy, sz, 0, Math.PI * 2);
         ctx.fill();

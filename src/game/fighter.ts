@@ -71,6 +71,11 @@ export class Fighter {
     this._invocationX = 0;
     this._invocationTimer = 0;
     this._pendingImpactoCristalico = false;
+    this._agarreActive = false;
+    this._agarreVx = 0;
+    this._agarreVy = 0;
+    this._agarreBounces = 0;
+    this._pendingCohete = false;
   }
 
   reset(x: number, side: number) {

@@ -1188,6 +1188,7 @@ const CharacterSelect: React.FC = () => {
               for (let r = 0; r < Math.ceil(allItems.length / cols); r++) {
                 rows.push(allItems.slice(r * cols, r * cols + cols));
               }
+              let flatIdx = 0;
               return rows.map((row, rIdx) => (
                 <div key={rIdx} style={{
                   display: 'flex', gap: 2, justifyContent: 'center',
@@ -1195,6 +1196,8 @@ const CharacterSelect: React.FC = () => {
                   marginLeft: rIdx % 2 !== 0 ? hexW * 0.52 : 0,
                 }}>
                   {row.map((item) => {
+                    const myFlatIdx = flatIdx++;
+                    const isCursor = cursorIdx === myFlatIdx;
                     if (item.type === 'char') {
                       const ch = item.ch!;
                       const i = item.i;

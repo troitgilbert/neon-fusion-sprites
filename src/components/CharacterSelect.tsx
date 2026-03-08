@@ -1184,114 +1184,177 @@ const CharacterSelect: React.FC = () => {
     };
 
     return (
-      <div className="fixed inset-0 z-50 flex items-center justify-center" style={{
-        background: 'radial-gradient(ellipse at 40% 30%, rgba(10,25,60,0.95), rgba(2,6,18,0.98) 70%)',
-        backdropFilter: 'blur(16px)',
-        animation: 'skinFadeIn 0.4s cubic-bezier(0.16,1,0.3,1)',
+      <div className="fixed inset-0 z-50 flex" style={{
+        background: 'radial-gradient(ellipse at 30% 20%, rgba(8,20,55,0.97), rgba(2,4,12,0.99) 75%)',
+        backdropFilter: 'blur(20px)',
+        animation: 'skinFadeIn 0.5s cubic-bezier(0.16,1,0.3,1)',
       }}>
-        {/* Subtle star dots */}
+        {/* Animated nebula blobs */}
         <div style={{ position: 'absolute', inset: 0, overflow: 'hidden', pointerEvents: 'none' }}>
-          {Array.from({ length: 40 }).map((_, i) => (
+          <div style={{
+            position: 'absolute', width: '60vw', height: '60vw', borderRadius: '50%',
+            left: '-15%', top: '-20%',
+            background: 'radial-gradient(circle, rgba(20,60,140,0.12), transparent 70%)',
+            animation: 'nebulaFloat 12s ease-in-out infinite alternate',
+          }} />
+          <div style={{
+            position: 'absolute', width: '50vw', height: '50vw', borderRadius: '50%',
+            right: '-10%', bottom: '-15%',
+            background: 'radial-gradient(circle, rgba(15,40,100,0.1), transparent 70%)',
+            animation: 'nebulaFloat 15s ease-in-out 3s infinite alternate-reverse',
+          }} />
+          {/* Stars */}
+          {Array.from({ length: 60 }).map((_, i) => (
             <div key={i} style={{
               position: 'absolute',
-              left: `${(i * 37 + 13) % 100}%`, top: `${(i * 53 + 7) % 100}%`,
-              width: i % 3 === 0 ? 2 : 1, height: i % 3 === 0 ? 2 : 1,
-              background: '#6aa0dd', borderRadius: '50%',
-              opacity: 0.15 + (i % 5) * 0.08,
-              animation: `starTwinkle ${2 + (i % 3)}s ease-in-out ${(i % 7) * 0.3}s infinite alternate`,
+              left: `${(i * 31 + 17) % 100}%`, top: `${(i * 47 + 11) % 100}%`,
+              width: i % 4 === 0 ? 2.5 : i % 3 === 0 ? 1.5 : 1,
+              height: i % 4 === 0 ? 2.5 : i % 3 === 0 ? 1.5 : 1,
+              background: i % 5 === 0 ? '#aaccff' : '#5588bb',
+              borderRadius: '50%',
+              boxShadow: i % 4 === 0 ? '0 0 4px #6aa0dd' : 'none',
+              opacity: 0.15 + (i % 6) * 0.06,
+              animation: `starTwinkle ${1.5 + (i % 4) * 0.8}s ease-in-out ${(i % 9) * 0.2}s infinite alternate`,
             }} />
           ))}
+          {/* Scan line */}
+          <div style={{
+            position: 'absolute', left: 0, right: 0, height: 1,
+            background: 'linear-gradient(90deg, transparent, rgba(80,160,255,0.08), transparent)',
+            animation: 'scanLine 6s linear infinite',
+          }} />
         </div>
 
-        <div style={{ position: 'relative', zIndex: 2, maxWidth: 680, width: '92%', textAlign: 'center' }}>
-          {/* Title */}
+        {/* LEFT: Large character showcase */}
+        <div style={{
+          flex: '0 0 38%', display: 'flex', flexDirection: 'column',
+          alignItems: 'center', justifyContent: 'center',
+          position: 'relative', zIndex: 2,
+        }}>
+          {/* Spotlight glow behind character */}
+          <div style={{
+            position: 'absolute', width: '80%', height: '80%',
+            background: `radial-gradient(circle, ${renderCh.eyeColor}10, transparent 60%)`,
+            pointerEvents: 'none',
+          }} />
+          <CanvasPortrait char={renderCh} size={180} isSelected facing={1} />
+          <div style={{
+            marginTop: 16,
+            fontFamily: "'Orbitron', monospace",
+            fontSize: 28, fontWeight: 900, letterSpacing: 6,
+            background: 'linear-gradient(180deg, #ffffff, #7ab8ff 60%, #3a6aaa)',
+            WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
+            filter: 'drop-shadow(0 0 10px rgba(80,160,255,0.4))',
+          }}>{ch.name}</div>
+          <div style={{
+            fontFamily: "'Orbitron', monospace",
+            fontSize: 11, letterSpacing: 4, color: '#3a6a9a', marginTop: 6,
+            textTransform: 'uppercase',
+          }}>PLAYER {skinSelectFor.pNum}</div>
+        </div>
+
+        {/* RIGHT: Skin selection panel */}
+        <div style={{
+          flex: 1, display: 'flex', flexDirection: 'column',
+          justifyContent: 'center', padding: '40px 5% 40px 20px',
+          position: 'relative', zIndex: 2,
+        }}>
+          {/* Section title */}
           <h2 style={{
             fontFamily: "'Orbitron', monospace",
-            fontSize: 'clamp(24px, 4vw, 40px)',
-            fontWeight: 900,
-            letterSpacing: 6,
-            marginBottom: 8,
-            background: 'linear-gradient(180deg, #f0f6ff 0%, #7ab8ff 45%, #3a80cc 80%)',
+            fontSize: 'clamp(18px, 3vw, 28px)',
+            fontWeight: 900, letterSpacing: 8, marginBottom: 4,
+            background: 'linear-gradient(180deg, #e8f4ff, #5a9ae0 70%)',
             WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
-            filter: 'drop-shadow(0 0 15px rgba(80,160,255,0.5)) drop-shadow(0 2px 6px rgba(0,0,0,0.9))',
+            filter: 'drop-shadow(0 0 8px rgba(80,160,255,0.3))',
           }}>
-            ELIGE ESTILO
+            SELECCIONAR ESTILO
           </h2>
           <div style={{
-            fontFamily: "'Orbitron', monospace",
-            fontSize: 'clamp(14px, 2vw, 20px)',
-            fontWeight: 600,
-            letterSpacing: 4,
-            color: '#5a9ae0',
-            marginBottom: 6,
-            textShadow: '0 0 10px rgba(80,160,255,0.3)',
-          }}>
-            PLAYER {skinSelectFor.pNum} — {ch.name}
-          </div>
-
-          {/* Decorative line */}
-          <div style={{
-            width: '50%', height: 1, margin: '0 auto 22px',
-            background: 'linear-gradient(90deg, transparent, rgba(100,180,255,0.4), transparent)',
+            width: 120, height: 2, marginBottom: 24,
+            background: 'linear-gradient(90deg, rgba(100,180,255,0.6), transparent)',
+            boxShadow: '0 0 8px rgba(80,160,255,0.3)',
           }} />
 
-          {/* Skin list */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 10, maxHeight: '52vh', overflowY: 'auto', padding: '4px 2px' }}>
-            {skins.map(skin => {
+          {/* Skin cards */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 8, maxHeight: '55vh', overflowY: 'auto', paddingRight: 8 }}>
+            {skins.map((skin, idx) => {
               const previewData = getSkinPreviewData(skin.id);
+              const isSpecial = !!skin.id;
               return (
                 <button key={skin.id || 'original'} onClick={() => handleSkinConfirm(skin.id)}
                   style={{
-                    display: 'flex', alignItems: 'center', gap: 18,
-                    border: '1px solid rgba(80,150,255,0.15)',
-                    background: 'linear-gradient(135deg, rgba(10,20,45,0.9), rgba(6,14,35,0.95))',
-                    padding: '12px 20px', cursor: 'pointer',
+                    display: 'flex', alignItems: 'center', gap: 16,
+                    border: '1px solid rgba(80,150,255,0.1)',
+                    background: 'linear-gradient(135deg, rgba(8,18,40,0.85), rgba(4,12,30,0.92))',
+                    padding: '10px 16px', cursor: 'pointer',
                     fontFamily: "'Orbitron', monospace",
-                    transition: 'all 0.35s ease',
+                    transition: 'all 0.4s cubic-bezier(0.16,1,0.3,1)',
                     textAlign: 'left', width: '100%',
-                    borderRadius: 2,
+                    borderRadius: 3,
+                    animation: `skinCardSlide 0.4s cubic-bezier(0.16,1,0.3,1) ${idx * 0.08}s both`,
                   }}
                   onMouseEnter={e => {
                     e.currentTarget.style.borderColor = 'rgba(100,180,255,0.5)';
-                    e.currentTarget.style.boxShadow = '0 0 30px rgba(60,140,255,0.2), inset 0 0 20px rgba(60,140,255,0.04)';
-                    e.currentTarget.style.transform = 'translateX(6px)';
-                    e.currentTarget.style.background = 'linear-gradient(135deg, rgba(15,30,60,0.95), rgba(10,20,50,0.95))';
+                    e.currentTarget.style.boxShadow = '0 0 35px rgba(60,140,255,0.15), inset 0 0 25px rgba(60,140,255,0.04), 0 4px 20px rgba(0,0,0,0.3)';
+                    e.currentTarget.style.transform = 'translateX(8px) scale(1.01)';
+                    e.currentTarget.style.background = 'linear-gradient(135deg, rgba(15,30,65,0.95), rgba(10,22,50,0.95))';
                   }}
                   onMouseLeave={e => {
-                    e.currentTarget.style.borderColor = 'rgba(80,150,255,0.15)';
+                    e.currentTarget.style.borderColor = 'rgba(80,150,255,0.1)';
                     e.currentTarget.style.boxShadow = 'none';
-                    e.currentTarget.style.transform = 'translateX(0)';
-                    e.currentTarget.style.background = 'linear-gradient(135deg, rgba(10,20,45,0.9), rgba(6,14,35,0.95))';
+                    e.currentTarget.style.transform = 'translateX(0) scale(1)';
+                    e.currentTarget.style.background = 'linear-gradient(135deg, rgba(8,18,40,0.85), rgba(4,12,30,0.92))';
                   }}
                 >
-                  {/* Character preview */}
+                  {/* Character preview with glow ring */}
                   <div style={{
-                    flexShrink: 0,
-                    background: 'radial-gradient(circle, rgba(30,60,120,0.25), transparent)',
-                    border: '1px solid rgba(80,150,255,0.1)',
+                    flexShrink: 0, position: 'relative',
+                    background: 'radial-gradient(circle, rgba(20,50,100,0.3), transparent)',
+                    border: `1px solid ${isSpecial ? 'rgba(120,180,255,0.15)' : 'rgba(60,100,180,0.1)'}`,
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    padding: 4, borderRadius: 4,
+                    padding: 3, borderRadius: 6,
                   }}>
-                    <CanvasPortrait char={previewData} size={85} isSelected facing={1} />
+                    <CanvasPortrait char={previewData} size={80} isSelected facing={1} />
+                    {isSpecial && <div style={{
+                      position: 'absolute', inset: -1, borderRadius: 6,
+                      border: '1px solid rgba(100,180,255,0.08)',
+                      boxShadow: `inset 0 0 12px ${previewData.eyeColor}10`,
+                      pointerEvents: 'none',
+                    }} />}
                   </div>
 
-                  {/* Info */}
-                  <div style={{ flex: 1 }}>
+                  {/* Info block */}
+                  <div style={{ flex: 1, minWidth: 0 }}>
                     <div style={{
-                      fontSize: 17, letterSpacing: 2, marginBottom: 5, fontWeight: 800,
-                      background: 'linear-gradient(180deg, #e8f0ff, #8ab8e8)',
+                      fontSize: 16, letterSpacing: 2, marginBottom: 4, fontWeight: 800,
+                      background: isSpecial
+                        ? 'linear-gradient(135deg, #ffffff, #90c8ff, #60a0e0)'
+                        : 'linear-gradient(180deg, #c0d8f0, #7aa0c8)',
                       WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
+                      filter: isSpecial ? 'drop-shadow(0 0 4px rgba(80,160,255,0.2))' : 'none',
                     }}>{skin.name}</div>
-                    <div style={{
-                      fontSize: 10, letterSpacing: 2, fontWeight: 500,
-                      color: '#4a7aaa',
-                    }}>{skin.id ? '★ SKIN ESPECIAL' : '○ ESTILO BASE'}</div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                      {isSpecial && <span style={{
+                        display: 'inline-block', width: 6, height: 6, borderRadius: '50%',
+                        background: '#5a9ae0', boxShadow: '0 0 6px #5a9ae0',
+                      }} />}
+                      <span style={{
+                        fontSize: 9, letterSpacing: 3, fontWeight: 600,
+                        color: isSpecial ? '#5a9ae0' : '#3a5a7a',
+                        textTransform: 'uppercase',
+                      }}>{isSpecial ? 'SKIN ESPECIAL' : 'ESTILO BASE'}</span>
+                    </div>
                   </div>
 
-                  {/* Arrow */}
+                  {/* Select indicator */}
                   <div style={{
-                    color: '#3a80cc', fontSize: 18, fontWeight: 900,
-                    transition: 'all 0.3s', opacity: 0.5,
+                    width: 32, height: 32, borderRadius: '50%',
+                    border: '1px solid rgba(80,150,255,0.15)',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    color: '#3a80cc', fontSize: 12, fontWeight: 900,
+                    transition: 'all 0.3s', flexShrink: 0,
+                    background: 'rgba(20,50,100,0.2)',
                   }}>▶</div>
                 </button>
               );
@@ -1300,21 +1363,25 @@ const CharacterSelect: React.FC = () => {
 
           {/* Cancel button */}
           <button onClick={() => setSkinSelectFor(null)} style={{
-            marginTop: 22, padding: '10px 38px',
-            background: 'rgba(200,40,40,0.08)',
-            border: '1px solid rgba(255,80,80,0.25)',
-            color: '#e06060', cursor: 'pointer',
+            marginTop: 24, padding: '10px 38px', alignSelf: 'flex-start',
+            background: 'rgba(180,40,40,0.06)',
+            border: '1px solid rgba(255,70,70,0.18)',
+            color: '#cc5555', cursor: 'pointer',
             fontFamily: "'Orbitron', monospace",
-            fontSize: 13, fontWeight: 700, letterSpacing: 4,
-            transition: 'all 0.3s', borderRadius: 2,
+            fontSize: 12, fontWeight: 700, letterSpacing: 5,
+            transition: 'all 0.3s', borderRadius: 3,
           }}
-          onMouseEnter={e => { e.currentTarget.style.background = 'rgba(200,40,40,0.18)'; e.currentTarget.style.borderColor = 'rgba(255,80,80,0.5)'; }}
-          onMouseLeave={e => { e.currentTarget.style.background = 'rgba(200,40,40,0.08)'; e.currentTarget.style.borderColor = 'rgba(255,80,80,0.25)'; }}
+          onMouseEnter={e => { e.currentTarget.style.background = 'rgba(200,40,40,0.15)'; e.currentTarget.style.borderColor = 'rgba(255,80,80,0.45)'; e.currentTarget.style.color = '#ee6666'; }}
+          onMouseLeave={e => { e.currentTarget.style.background = 'rgba(180,40,40,0.06)'; e.currentTarget.style.borderColor = 'rgba(255,70,70,0.18)'; e.currentTarget.style.color = '#cc5555'; }}
           >CANCELAR</button>
         </div>
+
         <style>{`
-          @keyframes skinFadeIn { from { opacity: 0; transform: scale(0.96); } to { opacity: 1; transform: scale(1); } }
-          @keyframes starTwinkle { from { opacity: 0.1; } to { opacity: 0.4; } }
+          @keyframes skinFadeIn { from { opacity: 0; transform: scale(0.97); } to { opacity: 1; transform: scale(1); } }
+          @keyframes starTwinkle { from { opacity: 0.08; } to { opacity: 0.45; } }
+          @keyframes nebulaFloat { from { transform: translate(0, 0) scale(1); } to { transform: translate(3%, 5%) scale(1.05); } }
+          @keyframes scanLine { 0% { top: -2%; } 100% { top: 102%; } }
+          @keyframes skinCardSlide { from { opacity: 0; transform: translateX(30px); } to { opacity: 1; transform: translateX(0); } }
         `}</style>
       </div>
     );

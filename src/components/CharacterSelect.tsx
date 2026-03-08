@@ -695,7 +695,7 @@ const BgCanvas: React.FC = () => {
           const y = Math.sin(angle) * r;
           if (t === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
         }
-        ctx.strokeStyle = 'rgba(255,200,120,0.25)';
+        ctx.strokeStyle = 'rgba(200,200,210,0.25)';
         ctx.lineWidth = gxSize * 0.06;
         ctx.stroke();
       }

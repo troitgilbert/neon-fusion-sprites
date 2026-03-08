@@ -1425,7 +1425,7 @@ const CharacterSelect: React.FC = () => {
             {/* Subtle roster backdrop */}
             <div style={{
               position: 'absolute', inset: '-8px -16px',
-              background: 'radial-gradient(ellipse at center, rgba(0,0,0,0.25) 0%, rgba(0,0,0,0.1) 60%, transparent 100%)',
+              background: 'radial-gradient(ellipse at center, rgba(0,0,0,0.1) 0%, transparent 70%)',
               borderRadius: 8, pointerEvents: 'none',
             }} />
 

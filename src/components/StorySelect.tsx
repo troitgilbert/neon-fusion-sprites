@@ -63,15 +63,21 @@ function drawChar(ctx: CanvasRenderingContext2D, cx: number, cy: number, c: Stor
   ctx.beginPath(); ctx.arc(cx, cy, R * 0.98, 0, Math.PI * 2); ctx.fill();
   ctx.restore();
 
-  // === CLOTHES BAND (across middle of sphere) ===
+  // === CLOTHES + PANTS (clipped inside sphere, centered) ===
   ctx.save();
   ctx.beginPath(); ctx.arc(cx, cy, R * 0.99, 0, Math.PI * 2); ctx.clip();
-  const clothesY = cy + R * 0.05;
-  const clothesH = R * 0.45;
+
+  // Skin band (visible between hair and clothes — the face/neck area)
+  // Already drawn by the head circle above
+
+  // Clothes band (starts at vertical center of sphere)
+  const clothesY = cy;
+  const clothesH = R * 0.4;
   ctx.fillStyle = c.clothesColor;
   ctx.fillRect(cx - R * 1.1, clothesY, R * 2.2, clothesH);
   ctx.strokeStyle = '#111'; ctx.lineWidth = 1 * s;
   ctx.strokeRect(cx - R * 1.1, clothesY, R * 2.2, clothesH);
+  // Clothes shading
   const cGrad = ctx.createLinearGradient(cx - R, 0, cx + R, 0);
   cGrad.addColorStop(0, 'rgba(0,0,0,0.12)');
   cGrad.addColorStop(0.4, 'transparent');
@@ -80,18 +86,19 @@ function drawChar(ctx: CanvasRenderingContext2D, cx: number, cy: number, c: Stor
   ctx.fillStyle = cGrad;
   ctx.fillRect(cx - R * 1.1, clothesY, R * 2.2, clothesH);
 
-  // === PANTS (below clothes, still inside sphere) ===
+  // Pants (below clothes to bottom of sphere)
   const pantsY = clothesY + clothesH;
-  const pantsH = R * 0.6;
+  const pantsH = R * 0.7;
   ctx.fillStyle = c.pantsColor;
   ctx.fillRect(cx - R * 1.1, pantsY, R * 2.2, pantsH);
   ctx.strokeStyle = '#111'; ctx.lineWidth = 0.8 * s;
   ctx.strokeRect(cx - R * 1.1, pantsY, R * 2.2, pantsH);
-  // Pants seam line
+  // Pants seam
   ctx.beginPath();
   ctx.moveTo(cx, pantsY);
   ctx.lineTo(cx, pantsY + pantsH);
   ctx.strokeStyle = 'rgba(0,0,0,0.15)'; ctx.lineWidth = 1 * s; ctx.stroke();
+
   ctx.restore();
 
   // === HAIR (on top of head) ===

@@ -147,7 +147,7 @@ const MainMenu: React.FC = () => {
 
       {/* ══════ TITLE ══════ */}
       <div style={{
-        position: 'absolute', top: 'clamp(30px, 5vh, 60px)', left: 0, right: 0,
+        position: 'absolute', top: 'clamp(10px, 2vh, 30px)', left: 0, right: 0,
         textAlign: 'center',
         opacity: phase >= 1 ? 1 : 0,
         transform: phase >= 1 ? 'translateY(0) scale(1)' : 'translateY(-40px) scale(0.9)',

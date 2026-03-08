@@ -14,11 +14,11 @@ const BossRushMenu: React.FC = () => {
   const { engine, setGameState } = useGame();
 
   return (
-    <div className="fixed inset-0 z-50 flex flex-col items-center justify-center" style={{ background: 'linear-gradient(180deg, #0a0a2e, #1a0000, #000)' }}>
-      <h1 style={{ color: '#ff4444', fontFamily: "'Orbitron', monospace", fontSize: 36, letterSpacing: 6, marginBottom: 15, textShadow: '0 0 30px #ff0000' }}>
+    <div className="fixed inset-0 z-50 flex flex-col items-center justify-center anim-screen-shutter" style={{ background: 'linear-gradient(180deg, #0a0a2e, #1a0000, #000)' }}>
+      <h1 className="anim-title-slam" style={{ color: '#ff4444', fontFamily: "'Orbitron', monospace", fontSize: 36, letterSpacing: 6, marginBottom: 15, textShadow: '0 0 30px #ff0000' }}>
         BOSS RUSH
       </h1>
-      <p style={{ color: '#87ceeb', fontSize: 13, marginBottom: 40 }}>Derrota a todos los jefes en secuencia</p>
+      <p className="anim-text-reveal" style={{ color: '#87ceeb', fontSize: 13, marginBottom: 40 }}>Derrota a todos los jefes en secuencia</p>
 
       <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', justifyContent: 'center', maxWidth: 700 }}>
         {BOSSES.map((b, i) => (

@@ -29,6 +29,7 @@ import DifficultySelect from '../components/DifficultySelect';
 import AdventurePlay from '../components/AdventurePlay';
 import OnlineMenu from '../components/OnlineMenu';
 import { getDifficultyColor } from '../game/achievements';
+import crystalIcon from '../assets/crystal-icon.png';
 
 const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent) || window.innerWidth < 800;
 
@@ -45,13 +46,16 @@ const GameApp: React.FC = () => {
       {/* Crystal counter */}
       {!inFight && gameState !== 'CREATOR' && gameState !== 'ACHIEVEMENTS' && gameState !== 'ADVENTURE_PLAY' && (
         <div style={{
-          position: 'fixed', top: 12, right: 16, fontSize: 'clamp(12px, 1.2vw, 16px)', color: '#00ffff',
+          position: 'fixed', top: 12, right: 16, color: '#00ffff',
           fontWeight: 'bold', textShadow: '0 0 8px #00ffff', zIndex: 100,
-          background: 'rgba(0,0,0,0.7)', padding: '4px 12px', borderRadius: 0,
+          background: 'rgba(0,0,0,0.7)', padding: '4px 14px', borderRadius: 0,
           border: '1px solid rgba(0,212,255,0.2)', fontFamily: "'Orbitron', monospace",
           borderBottom: '2px solid rgba(0,212,255,0.3)',
+          display: 'flex', alignItems: 'center', gap: 6,
+          fontSize: 'clamp(14px, 1.4vw, 20px)', letterSpacing: 1,
         }}>
-          🔷 {coins}
+          <img src={crystalIcon} alt="crystal" style={{ height: 'clamp(18px, 1.8vw, 28px)', filter: 'drop-shadow(0 0 6px #00bfff)' }} />
+          <span>{coins.toLocaleString()}</span>
         </div>
       )}
 
@@ -112,8 +116,8 @@ const GameApp: React.FC = () => {
           }}>
             {cheatNotification}
           </div>
-          <div style={{ color: '#00ff66', fontFamily: "'Orbitron', monospace", fontSize: 14, marginTop: 8, textAlign: 'center' }}>
-            🔷 999,999,999 CRISTALES
+          <div style={{ color: '#00ff66', fontFamily: "'Orbitron', monospace", fontSize: 14, marginTop: 8, textAlign: 'center', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6 }}>
+            <img src={crystalIcon} alt="crystal" style={{ height: 18, filter: 'drop-shadow(0 0 4px #00bfff)' }} /> 999,999,999 CRISTALES
           </div>
         </div>
       )}
@@ -137,8 +141,8 @@ const GameApp: React.FC = () => {
           <div style={{ color: '#87ceeb', fontSize: 11, marginTop: 3 }}>
             {achievementPopup.description}
           </div>
-          <div style={{ color: '#00ff66', fontFamily: "'Orbitron', monospace", fontSize: 12, marginTop: 6, fontWeight: 'bold' }}>
-            🔷 +{achievementPopup.reward} CRISTALES
+          <div style={{ color: '#00ff66', fontFamily: "'Orbitron', monospace", fontSize: 12, marginTop: 6, fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: 5 }}>
+            <img src={crystalIcon} alt="crystal" style={{ height: 16, filter: 'drop-shadow(0 0 4px #00bfff)' }} /> +{achievementPopup.reward} CRISTALES
           </div>
         </div>
       )}

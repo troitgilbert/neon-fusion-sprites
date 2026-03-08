@@ -189,6 +189,17 @@ export class Fighter {
         this.attack('hook_down', game);
       } else if (!this.customData && keys[c.up]) {
         this.attack('uppercut', game);
+      } else if (!this.customData) {
+        // Back + hit = hook to the right, Forward + hit = hook to the left
+        const backKey = this.side === 1 ? c.left : c.right;
+        const fwdKey = this.side === 1 ? c.right : c.left;
+        if (keys[backKey]) {
+          this.attack('hook_back', game);
+        } else if (keys[fwdKey]) {
+          this.attack('hook_forward', game);
+        } else {
+          this.attack('hit', game);
+        }
       } else {
         this.attack('hit', game);
       }

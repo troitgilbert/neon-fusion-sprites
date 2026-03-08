@@ -1614,8 +1614,11 @@ const CharacterSelect: React.FC = () => {
           <div style={{
             display: 'flex', flexDirection: 'column',
             alignItems: 'center', justifyContent: 'center',
-            padding: '8px 16px', pointerEvents: 'auto',
+            padding: '8px 16px', pointerEvents: allReadyToFight ? 'none' : 'auto',
             position: 'relative',
+            opacity: allReadyToFight ? 0.4 : 1,
+            transition: 'opacity 0.4s ease',
+            filter: allReadyToFight ? 'grayscale(0.5)' : 'none',
           }}>
 
           {/* Honeycomb hex grid - proper beehive layout */}

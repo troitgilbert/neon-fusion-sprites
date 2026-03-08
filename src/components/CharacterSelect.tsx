@@ -681,8 +681,8 @@ const BgCanvas: React.FC = () => {
       ctx.rotate(time * 0.0002);
       const gxSize = W * 0.08;
       const gxCore = ctx.createRadialGradient(0, 0, 0, 0, 0, gxSize * 0.3);
-      gxCore.addColorStop(0, 'rgba(255,220,150,0.8)');
-      gxCore.addColorStop(0.5, 'rgba(255,160,60,0.3)');
+      gxCore.addColorStop(0, 'rgba(220,220,230,0.8)');
+      gxCore.addColorStop(0.5, 'rgba(160,160,170,0.3)');
       gxCore.addColorStop(1, 'transparent');
       ctx.fillStyle = gxCore;
       ctx.fillRect(-gxSize, -gxSize, gxSize * 2, gxSize * 2);

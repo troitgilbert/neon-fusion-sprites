@@ -43,73 +43,162 @@ const STORIES = [
   },
 ];
 
-// Draw a fighter character on canvas
-function drawChar(ctx: CanvasRenderingContext2D, cx: number, cy: number, c: StoryChar, scale: number, time: number) {
+// Draw a fighter character on canvas — facing direction: 1=right, -1=left
+function drawChar(ctx: CanvasRenderingContext2D, cx: number, cy: number, c: StoryChar, scale: number, time: number, facing: number = 1) {
   const s = scale;
   const r = 25 * s;
   const handSwing = Math.sin(time * 0.03) * 5 * s;
+  const f = facing; // 1 = face right, -1 = face left
 
-  // Shadow
+  // Ground shadow
   ctx.save();
-  ctx.globalAlpha = 0.3;
+  ctx.globalAlpha = 0.35;
   ctx.fillStyle = '#000';
   ctx.beginPath();
-  ctx.ellipse(cx, cy + r * 1.1, r * 0.7, r * 0.15, 0, 0, Math.PI * 2);
+  ctx.ellipse(cx, cy + r * 1.15, r * 0.8, r * 0.18, 0, 0, Math.PI * 2);
   ctx.fill();
   ctx.restore();
 
-  // Shoes
+  // === SHOES ===
   ctx.fillStyle = c.shoesColor;
-  ctx.strokeStyle = '#000'; ctx.lineWidth = 1.5 * s;
-  ctx.beginPath(); ctx.arc(cx - r * 0.4, cy + r * 0.85, r * 0.22, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
-  ctx.beginPath(); ctx.arc(cx + r * 0.4, cy + r * 0.85, r * 0.22, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+  ctx.strokeStyle = '#111'; ctx.lineWidth = 1.5 * s;
+  ctx.beginPath(); ctx.arc(cx - r * 0.35, cy + r * 1.0, r * 0.2, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+  ctx.beginPath(); ctx.arc(cx + r * 0.35, cy + r * 1.0, r * 0.2, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
 
-  // Pants
-  ctx.save(); ctx.translate(cx, cy + r * 0.44); ctx.scale(1, 0.6);
-  ctx.beginPath(); ctx.arc(0, 0, r * 0.9, 0, Math.PI);
-  ctx.fillStyle = c.pantsColor; ctx.fill();
-  ctx.strokeStyle = '#000'; ctx.lineWidth = 1.5 * s; ctx.stroke(); ctx.restore();
-
-  // Body (skin)
-  ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI * 2);
-  ctx.fillStyle = c.skinColor; ctx.fill();
-  ctx.strokeStyle = '#000'; ctx.lineWidth = 2 * s; ctx.stroke();
-
-  // Clothes (torso)
+  // === PANTS (two legs) ===
+  ctx.fillStyle = c.pantsColor;
+  // Left leg
   ctx.beginPath();
-  ctx.rect(cx - r, cy, r * 2, r * 0.44);
+  ctx.roundRect(cx - r * 0.55, cy + r * 0.42, r * 0.45, r * 0.6, [0, 0, 4 * s, 4 * s]);
+  ctx.fill();
+  ctx.strokeStyle = '#111'; ctx.lineWidth = 1 * s; ctx.stroke();
+  // Right leg
+  ctx.beginPath();
+  ctx.roundRect(cx + r * 0.1, cy + r * 0.42, r * 0.45, r * 0.6, [0, 0, 4 * s, 4 * s]);
+  ctx.fill();
+  ctx.stroke();
+  // Pants shading (inner seam)
+  ctx.save();
+  ctx.globalAlpha = 0.2;
+  ctx.fillStyle = '#000';
+  ctx.fillRect(cx - r * 0.1, cy + r * 0.45, r * 0.2, r * 0.55);
+  ctx.restore();
+  // Belt
+  ctx.fillStyle = '#222';
+  ctx.fillRect(cx - r * 0.6, cy + r * 0.38, r * 1.2, r * 0.1);
+  ctx.strokeStyle = '#555'; ctx.lineWidth = 0.5 * s;
+  ctx.strokeRect(cx - r * 0.6, cy + r * 0.38, r * 1.2, r * 0.1);
+  // Belt buckle
+  ctx.fillStyle = '#aa8833';
+  ctx.fillRect(cx - r * 0.08, cy + r * 0.39, r * 0.16, r * 0.08);
+
+  // === BODY (torso with clothes) ===
+  ctx.beginPath();
+  ctx.roundRect(cx - r * 0.7, cy - r * 0.3, r * 1.4, r * 0.75, [6 * s, 6 * s, 0, 0]);
   ctx.fillStyle = c.clothesColor; ctx.fill();
-  ctx.strokeStyle = '#000'; ctx.lineWidth = 1.5 * s; ctx.stroke();
+  ctx.strokeStyle = '#111'; ctx.lineWidth = 1.5 * s; ctx.stroke();
+  // Torso shading (3D effect)
+  ctx.save();
+  const torsoGrad = ctx.createLinearGradient(cx - r * 0.7, 0, cx + r * 0.7, 0);
+  torsoGrad.addColorStop(0, f > 0 ? 'rgba(0,0,0,0.15)' : 'rgba(255,255,255,0.08)');
+  torsoGrad.addColorStop(0.5, 'transparent');
+  torsoGrad.addColorStop(1, f > 0 ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.15)');
+  ctx.fillStyle = torsoGrad;
+  ctx.fillRect(cx - r * 0.7, cy - r * 0.3, r * 1.4, r * 0.75);
+  ctx.restore();
+  // Collar detail
+  ctx.beginPath();
+  ctx.moveTo(cx - r * 0.25, cy - r * 0.3);
+  ctx.lineTo(cx, cy - r * 0.1);
+  ctx.lineTo(cx + r * 0.25, cy - r * 0.3);
+  ctx.strokeStyle = 'rgba(0,0,0,0.3)'; ctx.lineWidth = 1.5 * s; ctx.stroke();
 
-  // Hands
+  // === ARMS + HANDS ===
+  ctx.strokeStyle = c.clothesColor; ctx.lineWidth = 8 * s;
+  // Left arm
+  ctx.beginPath(); ctx.moveTo(cx - r * 0.7, cy - r * 0.1);
+  ctx.lineTo(cx - r * 1.1, cy + r * 0.2 + handSwing); ctx.stroke();
+  // Right arm
+  ctx.beginPath(); ctx.moveTo(cx + r * 0.7, cy - r * 0.1);
+  ctx.lineTo(cx + r * 1.1, cy + r * 0.2 - handSwing); ctx.stroke();
+  // Arm shading
+  ctx.save(); ctx.globalAlpha = 0.2; ctx.strokeStyle = '#000'; ctx.lineWidth = 3 * s;
+  ctx.beginPath(); ctx.moveTo(cx - r * 0.7, cy - r * 0.1);
+  ctx.lineTo(cx - r * 1.1, cy + r * 0.2 + handSwing); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(cx + r * 0.7, cy - r * 0.1);
+  ctx.lineTo(cx + r * 1.1, cy + r * 0.2 - handSwing); ctx.stroke();
+  ctx.restore();
+
+  // Hands (skin)
   ctx.fillStyle = c.handsColor;
-  ctx.strokeStyle = '#000'; ctx.lineWidth = 1.5 * s;
-  // Left hand
-  ctx.beginPath(); ctx.arc(cx - r * 1.2, cy + handSwing, r * 0.2, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
-  // Right hand
-  ctx.beginPath(); ctx.arc(cx + r * 1.2, cy - handSwing, r * 0.2, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+  ctx.strokeStyle = '#111'; ctx.lineWidth = 1 * s;
+  ctx.beginPath(); ctx.arc(cx - r * 1.1, cy + r * 0.2 + handSwing, r * 0.18, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+  ctx.beginPath(); ctx.arc(cx + r * 1.1, cy + r * 0.2 - handSwing, r * 0.18, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+  // Hand shading
+  ctx.save(); ctx.globalAlpha = 0.15;
+  ctx.beginPath(); ctx.arc(cx - r * 1.1 - 1 * s, cy + r * 0.22 + handSwing, r * 0.12, 0, Math.PI * 2);
+  ctx.fillStyle = '#000'; ctx.fill();
+  ctx.beginPath(); ctx.arc(cx + r * 1.1 - 1 * s, cy + r * 0.22 - handSwing, r * 0.12, 0, Math.PI * 2);
+  ctx.fill(); ctx.restore();
 
-  // Hair
-  ctx.save(); ctx.translate(cx, cy - 10 * s); ctx.scale(1, 0.7);
-  ctx.beginPath(); ctx.arc(0, 0, 22 * s, Math.PI, 0);
+  // === HEAD ===
+  ctx.beginPath(); ctx.arc(cx, cy - r * 0.55, r * 0.55, 0, Math.PI * 2);
+  ctx.fillStyle = c.skinColor; ctx.fill();
+  ctx.strokeStyle = '#111'; ctx.lineWidth = 1.5 * s; ctx.stroke();
+  // Head shading
+  ctx.save();
+  const headGrad = ctx.createRadialGradient(cx + f * r * 0.15, cy - r * 0.65, r * 0.1, cx, cy - r * 0.55, r * 0.55);
+  headGrad.addColorStop(0, 'rgba(255,255,255,0.12)');
+  headGrad.addColorStop(0.5, 'transparent');
+  headGrad.addColorStop(1, 'rgba(0,0,0,0.15)');
+  ctx.fillStyle = headGrad;
+  ctx.beginPath(); ctx.arc(cx, cy - r * 0.55, r * 0.54, 0, Math.PI * 2); ctx.fill();
+  ctx.restore();
+
+  // === HAIR ===
+  ctx.save();
+  ctx.translate(cx, cy - r * 0.85);
+  ctx.scale(1, 0.75);
+  ctx.beginPath(); ctx.arc(0, 0, r * 0.6, Math.PI, 0);
   ctx.fillStyle = c.hairColor; ctx.fill();
-  ctx.strokeStyle = '#000'; ctx.lineWidth = 1.5 * s; ctx.stroke(); ctx.restore();
+  ctx.strokeStyle = '#111'; ctx.lineWidth = 1 * s; ctx.stroke();
+  // Hair highlight
+  ctx.globalAlpha = 0.2;
+  ctx.beginPath(); ctx.arc(f * r * 0.1, -r * 0.05, r * 0.35, Math.PI, 0);
+  ctx.fillStyle = 'rgba(255,255,255,0.3)'; ctx.fill();
+  ctx.restore();
+  // Side hair strands
+  ctx.fillStyle = c.hairColor;
+  ctx.beginPath();
+  ctx.ellipse(cx + f * r * 0.45, cy - r * 0.6, r * 0.12, r * 0.3, f * 0.3, 0, Math.PI * 2);
+  ctx.fill(); ctx.strokeStyle = '#111'; ctx.lineWidth = 0.8 * s; ctx.stroke();
 
-  // Eyes
+  // === EYES (facing direction) ===
+  const eyeOffX = f * r * 0.12; // shift eyes toward facing direction
+  const eyeLX = cx + eyeOffX - 5 * s;
+  const eyeRX = cx + eyeOffX + 5 * s;
+  const eyeY = cy - r * 0.55;
+  // Eye whites
+  ctx.fillStyle = '#fff';
+  ctx.beginPath(); ctx.ellipse(eyeLX, eyeY, 4 * s, 3.5 * s, 0, 0, Math.PI * 2); ctx.fill();
+  ctx.beginPath(); ctx.ellipse(eyeRX, eyeY, 4 * s, 3.5 * s, 0, 0, Math.PI * 2); ctx.fill();
+  // Pupils
   ctx.fillStyle = c.eyeColor;
-  const eyeX = cx + 6 * s;
-  ctx.beginPath(); ctx.arc(eyeX - 4 * s, cy - 6 * s, 3 * s, 0, Math.PI * 2);
-  ctx.strokeStyle = '#000'; ctx.lineWidth = 1.5 * s; ctx.stroke(); ctx.fill();
-  ctx.beginPath(); ctx.arc(eyeX + 4 * s, cy - 6 * s, 3 * s, 0, Math.PI * 2); ctx.stroke(); ctx.fill();
+  ctx.beginPath(); ctx.arc(eyeLX + f * 1.2 * s, eyeY, 2.5 * s, 0, Math.PI * 2); ctx.fill();
+  ctx.beginPath(); ctx.arc(eyeRX + f * 1.2 * s, eyeY, 2.5 * s, 0, Math.PI * 2); ctx.fill();
+  // Eye outline
+  ctx.strokeStyle = '#111'; ctx.lineWidth = 1 * s;
+  ctx.beginPath(); ctx.ellipse(eyeLX, eyeY, 4 * s, 3.5 * s, 0, 0, Math.PI * 2); ctx.stroke();
+  ctx.beginPath(); ctx.ellipse(eyeRX, eyeY, 4 * s, 3.5 * s, 0, 0, Math.PI * 2); ctx.stroke();
 
   // Eye glow
   ctx.save();
-  ctx.globalAlpha = 0.4;
-  const glow = ctx.createRadialGradient(eyeX, cy - 6 * s, 0, eyeX, cy - 6 * s, 12 * s);
+  ctx.globalAlpha = 0.3;
+  const glow = ctx.createRadialGradient(cx + eyeOffX, eyeY, 0, cx + eyeOffX, eyeY, 14 * s);
   glow.addColorStop(0, c.eyeColor);
   glow.addColorStop(1, 'transparent');
   ctx.fillStyle = glow;
-  ctx.fillRect(eyeX - 12 * s, cy - 18 * s, 24 * s, 24 * s);
+  ctx.fillRect(cx + eyeOffX - 14 * s, eyeY - 14 * s, 28 * s, 28 * s);
   ctx.restore();
 }
 

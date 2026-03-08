@@ -1094,7 +1094,7 @@ const CharacterSelect: React.FC = () => {
               }}>{p1Name}</div>
             </div>
           </div>
-          <div style={{ width: 'clamp(140px, 22vw, 280px)', height: '100%', position: 'relative' }}>
+          <div style={{ width: 'clamp(170px, 25vw, 340px)', height: '100%', position: 'relative' }}>
             <BigPortrait char={displayP2 || null} customChar={null} color="#ff8c00" facing={-1} label="P2" />
             <div style={{ position: 'absolute', bottom: 10, left: 0, right: 0, textAlign: 'center' }}>
               <div style={{

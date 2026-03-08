@@ -60,6 +60,60 @@
   50% { text-shadow: 0 0 20px hsl(30,100%,55%), 0 0 40px hsl(0,100%,55%), 0 0 80px hsl(0,100%,50%), 4px 4px 0 #000; }
 }
 
+@keyframes titlePulseAAA {
+  0%, 100% {
+    text-shadow: 0 0 10px rgba(255,102,0,0.8), 0 0 30px rgba(255,0,0,0.4), 0 0 60px rgba(153,0,0,0.3), 0 2px 0 #b8860b, 0 4px 0 #8b6914, 0 6px 20px rgba(0,0,0,0.8);
+    filter: brightness(1);
+  }
+  50% {
+    text-shadow: 0 0 20px rgba(255,150,0,1), 0 0 50px rgba(255,50,0,0.6), 0 0 100px rgba(200,0,0,0.4), 0 2px 0 #daa520, 0 4px 0 #b8860b, 0 6px 30px rgba(0,0,0,0.9);
+    filter: brightness(1.15);
+  }
+}
+
+@keyframes twinkle {
+  0%, 100% { opacity: 0.3; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.5); }
+}
+
+@keyframes nebulaFloat1 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33% { transform: translate(30px, -20px) scale(1.05); }
+  66% { transform: translate(-20px, 15px) scale(0.97); }
+}
+
+@keyframes nebulaFloat2 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(-40px, 25px) scale(1.08); }
+}
+
+@keyframes menuScanline {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+@keyframes subMenuSlide {
+  from { opacity: 0; transform: translateX(-15px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes shootingStar {
+  0% { transform: translateX(0) translateY(0); opacity: 0; width: 0; }
+  5% { opacity: 1; }
+  30% { opacity: 1; width: 80px; }
+  100% { transform: translateX(400px) translateY(200px); opacity: 0; width: 0; }
+}
+
+.shooting-star {
+  position: absolute;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.9), transparent);
+  border-radius: 50%;
+  box-shadow: 0 0 6px rgba(255,255,255,0.6), 0 0 12px rgba(0,200,255,0.3);
+  animation: shootingStar 6s ease-in-out infinite;
+  transform-origin: left center;
+}
+
 @keyframes smokeMove { 0% { transform: translateX(0); } 100% { transform: translateX(-200px); } }
 @keyframes fogMove { 0% { transform: translateX(0); } 100% { transform: translateX(300px); } }
 

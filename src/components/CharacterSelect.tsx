@@ -1060,33 +1060,21 @@ const CharacterSelect: React.FC = () => {
             </div>
           </div>
 
-          {/* Center stage - characters facing each other */}
+          {/* Center stage - characters in game style facing each other */}
           <div style={{
             flex: 1, position: 'relative', overflow: 'hidden',
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
           }}>
-            {/* Stage floor line */}
-            <div style={{
-              position: 'absolute', bottom: '20%', left: '10%', right: '10%', height: 1,
-              background: 'linear-gradient(90deg, transparent, #ffcc3340, transparent)',
-            }} />
-            {/* VS emblem */}
+            <StageCanvas
+              p1Char={displayP1 || null}
+              p2Char={displayP2 || null}
+              p1Custom={p1Custom}
+            />
+            {/* VS watermark */}
             <div style={{
               position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)',
-              fontSize: 'clamp(40px, 8vw, 80px)', fontFamily: "'Orbitron', monospace", fontWeight: 900,
-              color: 'rgba(255,204,51,0.06)', letterSpacing: 10, pointerEvents: 'none',
+              fontSize: 'clamp(50px, 10vw, 100px)', fontFamily: "'Orbitron', monospace", fontWeight: 900,
+              color: 'rgba(255,204,51,0.04)', letterSpacing: 10, pointerEvents: 'none',
             }}>VS</div>
-            {/* Light beams from top */}
-            <div style={{
-              position: 'absolute', top: 0, left: '30%', width: '10%', height: '100%',
-              background: 'linear-gradient(180deg, #00ffff08, transparent 60%)',
-              transform: 'skewX(-15deg)',
-            }} />
-            <div style={{
-              position: 'absolute', top: 0, right: '30%', width: '10%', height: '100%',
-              background: 'linear-gradient(180deg, #ff8c0008, transparent 60%)',
-              transform: 'skewX(15deg)',
-            }} />
           </div>
 
           {/* P2 Portrait area */}

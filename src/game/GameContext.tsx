@@ -12,9 +12,13 @@ interface GameContextType {
   setGameState: (s: GameState, mode?: GameMode) => void;
 }
 
-// Use a module-level variable to survive HMR
-const GameCtx = createContext<GameContextType | null>(null);
-(GameCtx as any).displayName = 'GameContext';
+type GlobalWithGameCtx = typeof globalThis & {
+  __EDOWADO_GAME_CTX__?: React.Context<GameContextType | null>;
+};
+
+const globalWithGameCtx = globalThis as GlobalWithGameCtx;
+const GameCtx = globalWithGameCtx.__EDOWADO_GAME_CTX__ ?? createContext<GameContextType | null>(null);
+globalWithGameCtx.__EDOWADO_GAME_CTX__ = GameCtx;
 
 export const useGame = () => {
   const ctx = useContext(GameCtx);

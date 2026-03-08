@@ -606,12 +606,12 @@ const BgCanvas: React.FC = () => {
     type Star = { x: number; y: number; size: number; brightness: number; twinkleSpeed: number; twinkleOffset: number; color: string; layer: number };
     const stars: Star[] = [];
     const starColors = ['#ffffff', '#ffe8cc', '#cce0ff', '#ffffcc', '#ffd4e8', '#d4e8ff', '#fff5cc'];
-    for (let i = 0; i < 400; i++) {
-      const layer = Math.random() < 0.6 ? 0 : Math.random() < 0.7 ? 1 : 2; // 0=far, 1=mid, 2=near
+    for (let i = 0; i < 600; i++) {
+      const layer = Math.random() < 0.5 ? 0 : Math.random() < 0.6 ? 1 : 2;
       stars.push({
         x: Math.random(), y: Math.random(),
-        size: layer === 0 ? Math.random() * 0.8 + 0.2 : layer === 1 ? Math.random() * 1.2 + 0.5 : Math.random() * 2 + 1,
-        brightness: Math.random() * 0.6 + 0.4,
+        size: layer === 0 ? Math.random() * 1.2 + 0.5 : layer === 1 ? Math.random() * 2 + 1 : Math.random() * 3 + 1.5,
+        brightness: Math.random() * 0.4 + 0.6,
         twinkleSpeed: Math.random() * 0.03 + 0.005,
         twinkleOffset: Math.random() * Math.PI * 2,
         color: starColors[Math.floor(Math.random() * starColors.length)],

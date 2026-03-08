@@ -1109,3 +1109,5 @@ const StatBar: React.FC<{ label: string; value: number; color: string }> = ({ la
     </div>
   </div>
 );
+
+export default CharacterSelect;

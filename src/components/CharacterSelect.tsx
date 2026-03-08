@@ -781,11 +781,75 @@ const CharacterSelect: React.FC = () => {
   const { engine, setGameState } = useGame();
   const [skinSelectFor, setSkinSelectFor] = useState<{ charIdx: number; pNum: number } | null>(null);
   const [hoveredIdx, setHoveredIdx] = useState<number | null>(null);
+  const [cursorIdx, setCursorIdx] = useState(0);
   const [showCustomMenu, setShowCustomMenu] = useState(false);
   const [customChars, setCustomChars] = useState<(CustomCharData | null)[]>([null, null, null, null, null, null]);
   const [konamiProgress, setKonamiProgress] = useState(0);
   const [cheatActive, setCheatActive] = useState(false);
   const [selectFlash, setSelectFlash] = useState<number | null>(null);
+
+  const charRenderData = getCharRenderData();
+
+  // Build flat list of all grid items for navigation
+  const allGridItems = React.useMemo(() => {
+    const items: { type: 'char' | 'custom' | 'random'; idx: number }[] = [
+      ...charRenderData.map((_, i) => ({ type: 'char' as const, idx: i })),
+      { type: 'custom' as const, idx: -1 },
+      { type: 'random' as const, idx: -2 },
+    ];
+    return items;
+  }, [charRenderData]);
+
+  const GRID_COLS = Math.min(allGridItems.length, 4);
+
+  // WASD navigation
+  React.useEffect(() => {
+    if (skinSelectFor || showCustomMenu) return;
+    const handler = (e: KeyboardEvent) => {
+      const totalItems = allGridItems.length;
+      const rows = Math.ceil(totalItems / GRID_COLS);
+      const curRow = Math.floor(cursorIdx / GRID_COLS);
+      const curCol = cursorIdx % GRID_COLS;
+
+      let newIdx = cursorIdx;
+      switch (e.code) {
+        case 'KeyW': {
+          const nr = (curRow - 1 + rows) % rows;
+          newIdx = Math.min(nr * GRID_COLS + curCol, totalItems - 1);
+          break;
+        }
+        case 'KeyS': {
+          const nr = (curRow + 1) % rows;
+          newIdx = Math.min(nr * GRID_COLS + curCol, totalItems - 1);
+          break;
+        }
+        case 'KeyA':
+          newIdx = cursorIdx > 0 ? cursorIdx - 1 : totalItems - 1;
+          break;
+        case 'KeyD':
+          newIdx = cursorIdx < totalItems - 1 ? cursorIdx + 1 : 0;
+          break;
+        case 'KeyF': {
+          // Confirm selection
+          const item = allGridItems[cursorIdx];
+          if (item.type === 'char') handleSelect(item.idx);
+          else if (item.type === 'custom') { setShowCustomMenu(true); playConfirmSound(); }
+          else if (item.type === 'random') handleRandomSelect();
+          return;
+        }
+        default: return;
+      }
+      if (newIdx !== cursorIdx) {
+        setCursorIdx(newIdx);
+        const item = allGridItems[newIdx];
+        if (item.type === 'char') setHoveredIdx(item.idx);
+        else setHoveredIdx(null);
+        playSelectSound();
+      }
+    };
+    window.addEventListener('keydown', handler);
+    return () => window.removeEventListener('keydown', handler);
+  }, [cursorIdx, allGridItems, GRID_COLS, skinSelectFor, showCustomMenu]);
 
   const charRenderData = getCharRenderData();
 

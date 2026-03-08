@@ -436,6 +436,7 @@ export class Fighter {
     if (this.hitFlash > 0 && this.stun > 0) return 'hurt';
     if (this.isBlocking) return 'block';
     if (this.handMode === 'strike' || this.handMode === 'together' || this.handMode === 'slam') return 'attack';
+    if (this.isFlying) return 'fly';
     if (!this.isGrounded) return 'jump';
     if (Math.abs(this.vx) > 1.5) return 'walk';
     return 'idle';

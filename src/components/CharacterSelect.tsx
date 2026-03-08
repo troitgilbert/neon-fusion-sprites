@@ -232,8 +232,7 @@ const CanvasPortrait: React.FC<{
 
     const scale = size / 75;
     if (char.idx === 0) {
-      const previewState = Math.abs(Math.sin(frameRef.current * 0.08)) > 0.65 ? 'walk' : 'idle';
-      drawEdowadoSprite(ctx, size / 2, size * 0.72, previewState, frameRef.current, facing, Math.max(0.85, scale * 1.35));
+      drawEdowadoSprite(ctx, size / 2, size * 0.72, 'idle', frameRef.current, facing, Math.max(0.85, scale * 1.35));
     } else {
       drawCharOnCanvas(
         ctx, size / 2, size / 2,
@@ -275,8 +274,7 @@ function drawGameSprite(
   side: number, time: number, scale: number
 ) {
   if (charIdx === 0 && !customChar) {
-    const previewState = Math.abs(Math.sin(time * 0.06)) > 0.7 ? 'walk' : 'idle';
-    drawEdowadoSprite(ctx, x, y + 10 * scale, previewState, time, side, Math.max(0.9, scale * 1.5));
+    drawEdowadoSprite(ctx, x, y + 10 * scale, 'idle', time, side, Math.max(0.9, scale * 1.5));
     return;
   }
 
@@ -547,8 +545,7 @@ const BigPortrait: React.FC<{
       ctx.scale(breathe, breathe);
 
       if (!customChar && char?.idx === 0) {
-        const previewState = Math.abs(Math.sin(t * 0.05)) > 0.7 ? 'walk' : 'idle';
-        drawEdowadoSprite(ctx, 0, sc * 22, previewState, t, facing, Math.max(1, sc * 1.45));
+        drawEdowadoSprite(ctx, 0, sc * 22, 'idle', t, facing, Math.max(1, sc * 1.45));
       } else {
         drawCharOnCanvas(ctx, 0, 0, skinC, hairC, clothC, pantsC, eyeC, handC, sc, t, facing);
       }

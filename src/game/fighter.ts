@@ -455,6 +455,10 @@ export class Fighter {
     if (this.hitFlash > 0) { ctx.shadowBlur = 20; ctx.shadowColor = '#ffffff'; }
     if (game.timeStopped && game.timeStopper !== this) ctx.filter = 'grayscale(100%)';
 
+    // Scale characters 30% smaller around their center
+    ctx.translate(-this.x, -this.y);
+    ctx.translate(this.x, this.y);
+    ctx.scale(0.7, 0.7);
     ctx.translate(-this.x, -this.y);
 
     // Draw character

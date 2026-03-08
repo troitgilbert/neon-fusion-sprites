@@ -1081,7 +1081,7 @@ const CharacterSelect: React.FC = () => {
 
         {/* LAYER 1 (behind): Big portraits P1 left side, P2 right side */}
         <div style={{
-          position: 'absolute', inset: 0, display: 'flex', justifyContent: 'space-between', zIndex: 1,
+          position: 'absolute', inset: 0, display: 'flex', justifyContent: 'space-between', alignItems: 'center', zIndex: 1,
           pointerEvents: 'none', padding: '0 clamp(10px, 3vw, 40px)',
         }}>
           <div style={{ width: 'clamp(170px, 25vw, 340px)', height: '100%', position: 'relative' }}>

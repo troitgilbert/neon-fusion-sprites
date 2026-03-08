@@ -775,7 +775,7 @@ const BgCanvas: React.FC = () => {
 
         // Star core
         ctx.beginPath();
-        ctx.arc(sx, sy, s.size * dpr * 0.5, 0, Math.PI * 2);
+        ctx.arc(sx, sy, s.size * 0.95, 0, Math.PI * 2);
         ctx.fillStyle = s.color;
         ctx.fill();
         ctx.restore();

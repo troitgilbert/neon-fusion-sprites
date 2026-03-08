@@ -63,6 +63,7 @@ export class Fighter {
     this.hitFlash = 0; this.comboHits = 0; this.blockTime = 0;
     this.handPhase = Math.random() * Math.PI * 2; this.handOrder = 1;
     this.handMode = 'normal'; this.handTimer = 0; this.specialTrail = 0;
+    this.isCrouching = false; this.emoteTimer = 0;
   }
 
   isKaitoAsesino() { return this.charIdx === 1 && this.skinId === 'demonioBlanco2'; }

@@ -12,7 +12,9 @@ interface GameContextType {
   setGameState: (s: GameState, mode?: GameMode) => void;
 }
 
+// Use a module-level variable to survive HMR
 const GameCtx = createContext<GameContextType | null>(null);
+(GameCtx as any).displayName = 'GameContext';
 
 export const useGame = () => {
   const ctx = useContext(GameCtx);

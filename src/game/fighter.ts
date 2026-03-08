@@ -432,6 +432,15 @@ export class Fighter {
     this.hitFlash = 6;
   }
 
+  _getSpriteState(): SpriteState {
+    if (this.hitFlash > 0 && this.stun > 0) return 'hurt';
+    if (this.isBlocking) return 'block';
+    if (this.handMode === 'strike' || this.handMode === 'together' || this.handMode === 'slam') return 'attack';
+    if (!this.isGrounded) return 'jump';
+    if (Math.abs(this.vx) > 1.5) return 'walk';
+    return 'idle';
+  }
+
   draw(ctx: CanvasRenderingContext2D, game: any) {
     ctx.save();
 
@@ -443,31 +452,107 @@ export class Fighter {
     if (this.isDodging) ctx.globalAlpha = 0.5;
     if (this.isKaitoDemonio() && this.isIntangible) ctx.globalAlpha = 0.55;
 
+    // Edowado uses sprite rendering
+    if (this.charIdx === 0 && !this.customData && !this.isBigBang) {
+      const sprites = getEdowadoSprites();
+      const state = this._getSpriteState();
+      const frames = sprites[state];
+      const frameIdx = Math.floor(this.animTimer * 0.15) % frames.length;
+      const img = frames[frameIdx];
+
+      if (img.complete && img.naturalWidth > 0) {
+        ctx.save();
+        if (this.hitFlash > 0) { ctx.shadowBlur = 20; ctx.shadowColor = '#ffffff'; }
+        if (game.timeStopped && game.timeStopper !== this) ctx.filter = 'grayscale(100%)';
+
+        const spriteH = 55; // target height in game units
+        const scale = spriteH / img.naturalHeight;
+        const spriteW = img.naturalWidth * scale;
+
+        // Flip based on side
+        ctx.translate(this.x, this.y);
+        ctx.scale(this.side, 1);
+
+        // Squash/stretch
+        ctx.scale(this.squashX, this.squashY);
+        ctx.rotate(this.lean * this.side);
+
+        // Breathing for idle
+        if (state === 'idle' && Math.abs(this.vx) < 1 && Math.abs(this.vy) < 1) {
+          const breath = Math.sin(this.animTimer * 0.1) * 0.02;
+          ctx.scale(1, 1 + breath);
+        }
+
+        // Draw sprite centered on character position
+        ctx.drawImage(img, -spriteW / 2, -spriteH * 0.6, spriteW, spriteH);
+        ctx.restore();
+
+        // Hand hitbox still needed for combat
+        this._drawSpriteHitbox(ctx, game);
+      } else {
+        // Fallback to old drawing if sprite not loaded
+        this._drawFallback(ctx, game);
+      }
+    } else {
+      // Non-sprite characters use original drawing
+      ctx.translate(this.x, this.y);
+      ctx.scale(this.side * this.squashX, this.squashY);
+      ctx.rotate(this.lean * this.side);
+
+      // Breathing
+      if (Math.abs(this.vx) < 1 && Math.abs(this.vy) < 1) {
+        const breath = Math.sin(this.animTimer * 0.1) * 0.03;
+        ctx.scale(1, 1 + breath);
+      }
+
+      if (this.hitFlash > 0) { ctx.shadowBlur = 20; ctx.shadowColor = '#ffffff'; }
+      if (game.timeStopped && game.timeStopper !== this) ctx.filter = 'grayscale(100%)';
+
+      // Scale characters 30% smaller around their center
+      ctx.translate(-this.x, -this.y);
+      ctx.translate(this.x, this.y);
+      ctx.scale(0.7, 0.7);
+      ctx.translate(-this.x, -this.y);
+
+      // Draw character
+      this._drawBody(ctx);
+      this._drawHands(ctx, game);
+    }
+
+    ctx.restore();
+  }
+
+  _drawSpriteHitbox(ctx: CanvasRenderingContext2D, game: any) {
+    // Invisible hitbox for hand strikes
+    const hx = this.x + this.side * 36 * 0.7, hy = this.y + 8, hr = 14;
+    if (game.state === 'FIGHT') {
+      const opp = (this.id === 1) ? game.p2 : game.p1;
+      if (Math.hypot(hx - opp.x, hy - opp.y) < hr + 22 && this.handMode === 'strike') {
+        opp.takeDamage(1, true);
+        opp.vx = this.side * 6;
+        game.spawnParticles(opp.x, opp.y, '#fff', 6, 2);
+      }
+    }
+  }
+
+  _drawFallback(ctx: CanvasRenderingContext2D, game: any) {
     ctx.translate(this.x, this.y);
     ctx.scale(this.side * this.squashX, this.squashY);
     ctx.rotate(this.lean * this.side);
-
-    // Breathing
     if (Math.abs(this.vx) < 1 && Math.abs(this.vy) < 1) {
       const breath = Math.sin(this.animTimer * 0.1) * 0.03;
       ctx.scale(1, 1 + breath);
     }
-
     if (this.hitFlash > 0) { ctx.shadowBlur = 20; ctx.shadowColor = '#ffffff'; }
     if (game.timeStopped && game.timeStopper !== this) ctx.filter = 'grayscale(100%)';
-
-    // Scale characters 30% smaller around their center
     ctx.translate(-this.x, -this.y);
     ctx.translate(this.x, this.y);
     ctx.scale(0.7, 0.7);
     ctx.translate(-this.x, -this.y);
-
-    // Draw character
     this._drawBody(ctx);
     this._drawHands(ctx, game);
-
-    ctx.restore();
   }
+
 
   _drawBody(ctx: CanvasRenderingContext2D) {
     const demonio = this.skinId === 'demonioBlanco';

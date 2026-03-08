@@ -441,7 +441,7 @@ const BgCanvas: React.FC = () => {
       // Hexagonal grid pattern (faint)
       ctx.save();
       ctx.globalAlpha = 0.025;
-      ctx.strokeStyle = '#4488aa';
+      ctx.strokeStyle = '#886622';
       ctx.lineWidth = 0.5;
       const hexSize = 40;
       const hexH = hexSize * Math.sqrt(3);

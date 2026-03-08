@@ -957,6 +957,7 @@ const KONAMI_CODE = ['ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown', 'ArrowLeft'
 const CharacterSelect: React.FC = () => {
   const { engine, setGameState } = useGame();
   const [skinSelectFor, setSkinSelectFor] = useState<{ charIdx: number; pNum: number } | null>(null);
+  const [previewSkinId, setPreviewSkinId] = useState<string | null>(null);
   const [hoveredIdx, setHoveredIdx] = useState<number | null>(null);
   const [cursorIdx, setCursorIdx] = useState(0);
   const [showCustomMenu, setShowCustomMenu] = useState(false);
@@ -978,6 +979,26 @@ const CharacterSelect: React.FC = () => {
   }, [charRenderData]);
 
   const GRID_COLS = Math.min(allGridItems.length, 4);
+
+  // Skin color overrides for preview
+  const SKIN_COLOR_MAP: Record<string, Record<string, Partial<CharRenderData>>> = {
+    'KAITO': {
+      'demonioBlanco': { skinColor: '#000000', clothesColor: '#1a1a1a', handsColor: '#000000' },
+      'demonioBlanco2': { clothesColor: '#1a1a1a', handsColor: '#444444' },
+    },
+    'EDOWADO': {},
+  };
+
+  // Skin preview for portrait display (inline, not overlay)
+  const skinPreviewChar = React.useMemo(() => {
+    if (!skinSelectFor) return null;
+    const renderCh = charRenderData[skinSelectFor.charIdx];
+    if (!previewSkinId) return renderCh;
+    const ch = CHAR_DATA[skinSelectFor.charIdx];
+    const overrides = SKIN_COLOR_MAP[ch.name]?.[previewSkinId];
+    if (!overrides) return renderCh;
+    return { ...renderCh, ...overrides };
+  }, [skinSelectFor, previewSkinId, charRenderData]);
 
   // WASD navigation
   React.useEffect(() => {
@@ -1094,9 +1115,38 @@ const CharacterSelect: React.FC = () => {
   const handleSkinConfirm = (skinId: string | null) => {
     if (!skinSelectFor) return;
     playConfirmSound();
-    engine.confirmSkinChoice(skinSelectFor.charIdx, skinId, skinSelectFor.pNum);
-    setSkinSelectFor(null);
+    setPreviewSkinId(skinId);
   };
+
+  const handleSkinCancel = () => {
+    if (!skinSelectFor) return;
+    // Deselect the character
+    if (skinSelectFor.pNum === 1) {
+      engine.p1Choice = null;
+    } else {
+      engine.p2Choice = null;
+    }
+    setSkinSelectFor(null);
+    setPreviewSkinId(null);
+  };
+
+  // Enter to confirm and start battle
+  React.useEffect(() => {
+    if (!skinSelectFor) return;
+    const handler = (e: KeyboardEvent) => {
+      if (e.code === 'Enter' || e.code === 'KeyF') {
+        e.preventDefault();
+        playConfirmSound();
+        engine.confirmSkinChoice(skinSelectFor.charIdx, previewSkinId, skinSelectFor.pNum);
+        setSkinSelectFor(null);
+        setPreviewSkinId(null);
+      } else if (e.code === 'Escape' || e.code === 'Backspace') {
+        handleSkinCancel();
+      }
+    };
+    window.addEventListener('keydown', handler);
+    return () => window.removeEventListener('keydown', handler);
+  }, [skinSelectFor, previewSkinId]);
 
   const availableSkins = (charIdx: number) => {
     const charName = CHAR_DATA[charIdx].name;
@@ -1161,242 +1211,29 @@ const CharacterSelect: React.FC = () => {
     );
   }
 
-  // Skin color overrides for preview
-  const SKIN_COLOR_MAP: Record<string, Record<string, Partial<CharRenderData>>> = {
-    'KAITO': {
-      'demonioBlanco': { skinColor: '#000000', clothesColor: '#1a1a1a', handsColor: '#000000' },
-      'demonioBlanco2': { clothesColor: '#1a1a1a', handsColor: '#444444' },
-    },
-    'EDOWADO': {},
-  };
 
-  // Skin selector overlay
-  if (skinSelectFor) {
-    const skins = availableSkins(skinSelectFor.charIdx);
-    const ch = CHAR_DATA[skinSelectFor.charIdx];
-    const renderCh = charRenderData[skinSelectFor.charIdx];
 
-    const getSkinPreviewData = (skinId: string | null): CharRenderData => {
-      if (!skinId) return renderCh;
-      const overrides = SKIN_COLOR_MAP[ch.name]?.[skinId];
-      if (!overrides) return renderCh;
-      return { ...renderCh, ...overrides };
-    };
 
-    return (
-      <div className="fixed inset-0 z-50 flex" style={{
-        background: 'radial-gradient(ellipse at 30% 20%, rgba(8,20,55,0.97), rgba(2,4,12,0.99) 75%)',
-        backdropFilter: 'blur(20px)',
-        animation: 'skinFadeIn 0.5s cubic-bezier(0.16,1,0.3,1)',
-      }}>
-        {/* Animated nebula blobs */}
-        <div style={{ position: 'absolute', inset: 0, overflow: 'hidden', pointerEvents: 'none' }}>
-          <div style={{
-            position: 'absolute', width: '60vw', height: '60vw', borderRadius: '50%',
-            left: '-15%', top: '-20%',
-            background: 'radial-gradient(circle, rgba(20,60,140,0.12), transparent 70%)',
-            animation: 'nebulaFloat 12s ease-in-out infinite alternate',
-          }} />
-          <div style={{
-            position: 'absolute', width: '50vw', height: '50vw', borderRadius: '50%',
-            right: '-10%', bottom: '-15%',
-            background: 'radial-gradient(circle, rgba(15,40,100,0.1), transparent 70%)',
-            animation: 'nebulaFloat 15s ease-in-out 3s infinite alternate-reverse',
-          }} />
-          {/* Stars */}
-          {Array.from({ length: 60 }).map((_, i) => (
-            <div key={i} style={{
-              position: 'absolute',
-              left: `${(i * 31 + 17) % 100}%`, top: `${(i * 47 + 11) % 100}%`,
-              width: i % 4 === 0 ? 2.5 : i % 3 === 0 ? 1.5 : 1,
-              height: i % 4 === 0 ? 2.5 : i % 3 === 0 ? 1.5 : 1,
-              background: i % 5 === 0 ? '#aaccff' : '#5588bb',
-              borderRadius: '50%',
-              boxShadow: i % 4 === 0 ? '0 0 4px #6aa0dd' : 'none',
-              opacity: 0.15 + (i % 6) * 0.06,
-              animation: `starTwinkle ${1.5 + (i % 4) * 0.8}s ease-in-out ${(i % 9) * 0.2}s infinite alternate`,
-            }} />
-          ))}
-          {/* Scan line */}
-          <div style={{
-            position: 'absolute', left: 0, right: 0, height: 1,
-            background: 'linear-gradient(90deg, transparent, rgba(80,160,255,0.08), transparent)',
-            animation: 'scanLine 6s linear infinite',
-          }} />
-        </div>
-
-        {/* LEFT: Large character showcase */}
-        <div style={{
-          flex: '0 0 38%', display: 'flex', flexDirection: 'column',
-          alignItems: 'center', justifyContent: 'center',
-          position: 'relative', zIndex: 2,
-        }}>
-          {/* Spotlight glow behind character */}
-          <div style={{
-            position: 'absolute', width: '80%', height: '80%',
-            background: `radial-gradient(circle, ${renderCh.eyeColor}10, transparent 60%)`,
-            pointerEvents: 'none',
-          }} />
-          <CanvasPortrait char={renderCh} size={180} isSelected facing={1} />
-          <div style={{
-            marginTop: 16,
-            fontFamily: "'Orbitron', monospace",
-            fontSize: 28, fontWeight: 900, letterSpacing: 6,
-            background: 'linear-gradient(180deg, #ffffff, #7ab8ff 60%, #3a6aaa)',
-            WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
-            filter: 'drop-shadow(0 0 10px rgba(80,160,255,0.4))',
-          }}>{ch.name}</div>
-          <div style={{
-            fontFamily: "'Orbitron', monospace",
-            fontSize: 11, letterSpacing: 4, color: '#3a6a9a', marginTop: 6,
-            textTransform: 'uppercase',
-          }}>PLAYER {skinSelectFor.pNum}</div>
-        </div>
-
-        {/* RIGHT: Skin selection panel */}
-        <div style={{
-          flex: 1, display: 'flex', flexDirection: 'column',
-          justifyContent: 'center', padding: '40px 5% 40px 20px',
-          position: 'relative', zIndex: 2,
-        }}>
-          {/* Section title */}
-          <h2 style={{
-            fontFamily: "'Orbitron', monospace",
-            fontSize: 'clamp(18px, 3vw, 28px)',
-            fontWeight: 900, letterSpacing: 8, marginBottom: 4,
-            background: 'linear-gradient(180deg, #e8f4ff, #5a9ae0 70%)',
-            WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
-            filter: 'drop-shadow(0 0 8px rgba(80,160,255,0.3))',
-          }}>
-            SELECCIONAR ESTILO
-          </h2>
-          <div style={{
-            width: 120, height: 2, marginBottom: 24,
-            background: 'linear-gradient(90deg, rgba(100,180,255,0.6), transparent)',
-            boxShadow: '0 0 8px rgba(80,160,255,0.3)',
-          }} />
-
-          {/* Skin cards */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 8, maxHeight: '55vh', overflowY: 'auto', paddingRight: 8 }}>
-            {skins.map((skin, idx) => {
-              const previewData = getSkinPreviewData(skin.id);
-              const isSpecial = !!skin.id;
-              return (
-                <button key={skin.id || 'original'} onClick={() => handleSkinConfirm(skin.id)}
-                  style={{
-                    display: 'flex', alignItems: 'center', gap: 16,
-                    border: '1px solid rgba(80,150,255,0.1)',
-                    background: 'linear-gradient(135deg, rgba(8,18,40,0.85), rgba(4,12,30,0.92))',
-                    padding: '10px 16px', cursor: 'pointer',
-                    fontFamily: "'Orbitron', monospace",
-                    transition: 'all 0.4s cubic-bezier(0.16,1,0.3,1)',
-                    textAlign: 'left', width: '100%',
-                    borderRadius: 3,
-                    animation: `skinCardSlide 0.4s cubic-bezier(0.16,1,0.3,1) ${idx * 0.08}s both`,
-                  }}
-                  onMouseEnter={e => {
-                    e.currentTarget.style.borderColor = 'rgba(100,180,255,0.5)';
-                    e.currentTarget.style.boxShadow = '0 0 35px rgba(60,140,255,0.15), inset 0 0 25px rgba(60,140,255,0.04), 0 4px 20px rgba(0,0,0,0.3)';
-                    e.currentTarget.style.transform = 'translateX(8px) scale(1.01)';
-                    e.currentTarget.style.background = 'linear-gradient(135deg, rgba(15,30,65,0.95), rgba(10,22,50,0.95))';
-                  }}
-                  onMouseLeave={e => {
-                    e.currentTarget.style.borderColor = 'rgba(80,150,255,0.1)';
-                    e.currentTarget.style.boxShadow = 'none';
-                    e.currentTarget.style.transform = 'translateX(0) scale(1)';
-                    e.currentTarget.style.background = 'linear-gradient(135deg, rgba(8,18,40,0.85), rgba(4,12,30,0.92))';
-                  }}
-                >
-                  {/* Character preview with glow ring */}
-                  <div style={{
-                    flexShrink: 0, position: 'relative',
-                    background: 'radial-gradient(circle, rgba(20,50,100,0.3), transparent)',
-                    border: `1px solid ${isSpecial ? 'rgba(120,180,255,0.15)' : 'rgba(60,100,180,0.1)'}`,
-                    display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    padding: 3, borderRadius: 6,
-                  }}>
-                    <CanvasPortrait char={previewData} size={80} isSelected facing={1} />
-                    {isSpecial && <div style={{
-                      position: 'absolute', inset: -1, borderRadius: 6,
-                      border: '1px solid rgba(100,180,255,0.08)',
-                      boxShadow: `inset 0 0 12px ${previewData.eyeColor}10`,
-                      pointerEvents: 'none',
-                    }} />}
-                  </div>
-
-                  {/* Info block */}
-                  <div style={{ flex: 1, minWidth: 0 }}>
-                    <div style={{
-                      fontSize: 16, letterSpacing: 2, marginBottom: 4, fontWeight: 800,
-                      background: isSpecial
-                        ? 'linear-gradient(135deg, #ffffff, #90c8ff, #60a0e0)'
-                        : 'linear-gradient(180deg, #c0d8f0, #7aa0c8)',
-                      WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
-                      filter: isSpecial ? 'drop-shadow(0 0 4px rgba(80,160,255,0.2))' : 'none',
-                    }}>{skin.name}</div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                      {isSpecial && <span style={{
-                        display: 'inline-block', width: 6, height: 6, borderRadius: '50%',
-                        background: '#5a9ae0', boxShadow: '0 0 6px #5a9ae0',
-                      }} />}
-                      <span style={{
-                        fontSize: 9, letterSpacing: 3, fontWeight: 600,
-                        color: isSpecial ? '#5a9ae0' : '#3a5a7a',
-                        textTransform: 'uppercase',
-                      }}>{isSpecial ? 'SKIN ESPECIAL' : 'ESTILO BASE'}</span>
-                    </div>
-                  </div>
-
-                  {/* Select indicator */}
-                  <div style={{
-                    width: 32, height: 32, borderRadius: '50%',
-                    border: '1px solid rgba(80,150,255,0.15)',
-                    display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    color: '#3a80cc', fontSize: 12, fontWeight: 900,
-                    transition: 'all 0.3s', flexShrink: 0,
-                    background: 'rgba(20,50,100,0.2)',
-                  }}>▶</div>
-                </button>
-              );
-            })}
-          </div>
-
-          {/* Cancel button */}
-          <button onClick={() => setSkinSelectFor(null)} style={{
-            marginTop: 24, padding: '10px 38px', alignSelf: 'flex-start',
-            background: 'rgba(180,40,40,0.06)',
-            border: '1px solid rgba(255,70,70,0.18)',
-            color: '#cc5555', cursor: 'pointer',
-            fontFamily: "'Orbitron', monospace",
-            fontSize: 12, fontWeight: 700, letterSpacing: 5,
-            transition: 'all 0.3s', borderRadius: 3,
-          }}
-          onMouseEnter={e => { e.currentTarget.style.background = 'rgba(200,40,40,0.15)'; e.currentTarget.style.borderColor = 'rgba(255,80,80,0.45)'; e.currentTarget.style.color = '#ee6666'; }}
-          onMouseLeave={e => { e.currentTarget.style.background = 'rgba(180,40,40,0.06)'; e.currentTarget.style.borderColor = 'rgba(255,70,70,0.18)'; e.currentTarget.style.color = '#cc5555'; }}
-          >CANCELAR</button>
-        </div>
-
-        <style>{`
-          @keyframes skinFadeIn { from { opacity: 0; transform: scale(0.97); } to { opacity: 1; transform: scale(1); } }
-          @keyframes starTwinkle { from { opacity: 0.08; } to { opacity: 0.45; } }
-          @keyframes nebulaFloat { from { transform: translate(0, 0) scale(1); } to { transform: translate(3%, 5%) scale(1.05); } }
-          @keyframes scanLine { 0% { top: -2%; } 100% { top: 102%; } }
-          @keyframes skinCardSlide { from { opacity: 0; transform: translateX(30px); } to { opacity: 1; transform: translateX(0); } }
-        `}</style>
-      </div>
-    );
-  }
-
-  // Get current selections
+  // Get current selections — skin preview overrides the portrait
   const p1Char = engine.p1Choice !== null && engine.p1Choice < 100 ? charRenderData[engine.p1Choice] : null;
   const p1Custom = engine.p1Choice !== null && engine.p1Choice >= 100 ? customChars[engine.p1Choice - 100] : null;
   const hoveredChar = hoveredIdx !== null && hoveredIdx < 100 ? charRenderData[hoveredIdx] : null;
 
-  const displayP1 = p1Char || (!isP2Turn ? hoveredChar : null);
-  const displayP2 = isP2Turn ? hoveredChar : null;
+  // If skin selector is open, show the skin-altered character in the portrait
+  const displayP1 = (skinSelectFor && skinSelectFor.pNum === 1 && skinPreviewChar)
+    ? skinPreviewChar
+    : (p1Char || (!isP2Turn ? hoveredChar : null));
+  const displayP2 = (skinSelectFor && skinSelectFor.pNum === 2 && skinPreviewChar)
+    ? skinPreviewChar
+    : (isP2Turn ? hoveredChar : null);
 
-  const p1Name = p1Custom ? p1Custom.name : (displayP1 ? displayP1.name : '???');
-  const p2Name = displayP2 ? displayP2.name : (isP2Turn ? '???' : '---');
+  const skinSelectCharName = skinSelectFor ? CHAR_DATA[skinSelectFor.charIdx].name : null;
+  const p1Name = skinSelectFor && skinSelectFor.pNum === 1
+    ? (skinSelectCharName || '???')
+    : (p1Custom ? p1Custom.name : (displayP1 ? displayP1.name : '???'));
+  const p2Name = skinSelectFor && skinSelectFor.pNum === 2
+    ? (skinSelectCharName || '???')
+    : (displayP2 ? displayP2.name : (isP2Turn ? '???' : '---'));
 
   return (
     <div className="fixed inset-0 z-50 flex flex-col" style={{ overflow: 'hidden', animation: 'fadeIn 0.4s ease-out' }}>
@@ -1717,6 +1554,101 @@ const CharacterSelect: React.FC = () => {
               ));
             })()}
           </div>
+
+          {/* Inline skin selector panel - overlays roster */}
+          {skinSelectFor && (() => {
+            const skins = availableSkins(skinSelectFor.charIdx);
+            const ch = CHAR_DATA[skinSelectFor.charIdx];
+            const renderCh = charRenderData[skinSelectFor.charIdx];
+            const getSkinPreviewData = (skinId: string | null): CharRenderData => {
+              if (!skinId) return renderCh;
+              const overrides = SKIN_COLOR_MAP[ch.name]?.[skinId];
+              if (!overrides) return renderCh;
+              return { ...renderCh, ...overrides };
+            };
+            return (
+              <div style={{
+                position: 'absolute', inset: 0, zIndex: 20,
+                display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+                background: 'radial-gradient(ellipse, rgba(5,10,25,0.92), rgba(2,4,12,0.96))',
+                backdropFilter: 'blur(8px)',
+                animation: 'fadeIn 0.3s ease-out',
+                pointerEvents: 'auto',
+              }}>
+                <div style={{
+                  fontFamily: "'Orbitron', monospace", fontSize: 'clamp(12px, 2vw, 18px)',
+                  fontWeight: 800, letterSpacing: 5, marginBottom: 14,
+                  background: 'linear-gradient(180deg, #e8f4ff, #5a9ae0)',
+                  WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
+                }}>ELIGE ESTILO — {ch.name}</div>
+
+                <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', justifyContent: 'center', maxWidth: 500 }}>
+                  {skins.map((skin) => {
+                    const previewData = getSkinPreviewData(skin.id);
+                    const isActive = previewSkinId === skin.id;
+                    const isSpecial = !!skin.id;
+                    return (
+                      <button key={skin.id || 'original'} onClick={() => handleSkinConfirm(skin.id)}
+                        style={{
+                          display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6,
+                          border: `2px solid ${isActive ? '#7ab8ff' : 'rgba(80,150,255,0.15)'}`,
+                          background: isActive
+                            ? 'linear-gradient(135deg, rgba(20,40,80,0.9), rgba(15,30,60,0.95))'
+                            : 'linear-gradient(135deg, rgba(8,16,35,0.85), rgba(4,10,25,0.9))',
+                          padding: '8px 12px', cursor: 'pointer',
+                          fontFamily: "'Orbitron', monospace",
+                          transition: 'all 0.3s',
+                          borderRadius: 4,
+                          boxShadow: isActive ? '0 0 20px rgba(60,140,255,0.25), inset 0 0 15px rgba(60,140,255,0.05)' : 'none',
+                          minWidth: 100,
+                        }}
+                        onMouseEnter={e => {
+                          if (!isActive) {
+                            e.currentTarget.style.borderColor = 'rgba(100,180,255,0.4)';
+                            e.currentTarget.style.boxShadow = '0 0 15px rgba(60,140,255,0.15)';
+                          }
+                        }}
+                        onMouseLeave={e => {
+                          if (!isActive) {
+                            e.currentTarget.style.borderColor = 'rgba(80,150,255,0.15)';
+                            e.currentTarget.style.boxShadow = 'none';
+                          }
+                        }}
+                      >
+                        <CanvasPortrait char={previewData} size={50} isSelected={isActive} facing={1} />
+                        <div style={{
+                          fontSize: 9, letterSpacing: 1, fontWeight: 700,
+                          color: isActive ? '#a0d0ff' : '#5a8aaa',
+                        }}>{skin.name}</div>
+                        {isSpecial && <div style={{
+                          width: 5, height: 5, borderRadius: '50%',
+                          background: '#5a9ae0', boxShadow: '0 0 4px #5a9ae0',
+                        }} />}
+                      </button>
+                    );
+                  })}
+                </div>
+
+                <div style={{
+                  marginTop: 14, display: 'flex', gap: 12, alignItems: 'center',
+                }}>
+                  <button onClick={handleSkinCancel} style={{
+                    padding: '6px 22px', background: 'rgba(180,40,40,0.08)',
+                    border: '1px solid rgba(255,70,70,0.2)', color: '#cc5555',
+                    cursor: 'pointer', fontFamily: "'Orbitron', monospace",
+                    fontSize: 10, fontWeight: 700, letterSpacing: 3, borderRadius: 2,
+                    transition: 'all 0.3s',
+                  }}
+                  onMouseEnter={e => { e.currentTarget.style.borderColor = 'rgba(255,80,80,0.45)'; }}
+                  onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(255,70,70,0.2)'; }}
+                  >CANCELAR</button>
+                  <div style={{
+                    fontFamily: "'Orbitron', monospace", fontSize: 9, color: '#4a7a9a', letterSpacing: 2,
+                  }}>ENTER PARA CONFIRMAR</div>
+                </div>
+              </div>
+            );
+          })()}
 
         </div>
         </div>

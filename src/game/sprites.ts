@@ -121,12 +121,16 @@ export function drawEdowadoSprite(
   ctx.translate(x, y);
   ctx.scale(side, 1);
 
+  // Breathing effect for idle
+  const breathScale = state === 'idle' ? 1 + Math.sin(frame * 0.06) * 0.012 : 1;
+  const breathY = state === 'idle' ? Math.sin(frame * 0.06) * 1.5 : 0;
+
   ctx.drawImage(
     img,
     -targetWidth / 2,
-    -targetHeight + 15,
-    targetWidth,
-    targetHeight
+    -targetHeight + 15 - breathY,
+    targetWidth * breathScale,
+    targetHeight * breathScale
   );
 
   ctx.restore();

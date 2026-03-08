@@ -1,10 +1,9 @@
 import { CharData, Controls, SkinCatalogItem } from './types';
 
-export const CANVAS_W = 960;
+export const CANVAS_W = 640;
 export const CANVAS_H = 480;
 export const GROUND_Y = 400;
 export const FLOOR_Y = 425;
-export const CHAR_SCALE = 0.55;
 export const RENDER_SCALE = 2;
 
 export const CHAR_DATA: CharData[] = [
@@ -37,7 +36,7 @@ export const SHOP_CATALOG: Record<string, SkinCatalogItem[]> = {
 
 export const MODE_INFO: Record<string, string> = {
   "HISTORIA": "Vive la trama principal del juego, enfrentando enemigos y jefes mientras descubres los secretos del mundo.",
-  "ARCADE": "10 combates consecutivos con estructura de constelación. Enfrenta rivales, ejércitos, minijuegos y al temible Big Bang.",
+  "ARCADE": "10 combates consecutivos con la estructura de torre. Enfrenta rivales, ejércitos, minijuegos y al temible Big Bang.",
   "AVENTURA": "Mundo abierto 2D con tres destinos: Galaxia, Infierno y Cielo. Explora, combate y derrota a los jefes.",
   "VERSUS": "Enfréntate a otro jugador o a la IA en combates directos.",
   "BATALLA LIBRE": "Elige personajes y reglas personalizadas para pelear sin restricciones.",

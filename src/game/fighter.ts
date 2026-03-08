@@ -1,4 +1,4 @@
-import { CHAR_DATA, GROUND_Y, CANVAS_W, CHAR_SCALE } from './constants';
+import { CHAR_DATA, GROUND_Y, CANVAS_W } from './constants';
 import { FloatingText, PunchCircle } from './effects';
 import { playHitSound, playSpecialSound, playBlockSound, playSuperSound } from './audio';
 import type { Controls, CustomCharData } from './types';
@@ -437,13 +437,13 @@ export class Fighter {
     // Block shield
     if (this.isBlocking) {
       ctx.strokeStyle = '#ffffff'; ctx.lineWidth = 3;
-      ctx.beginPath(); ctx.arc(this.x, this.y, 32 * CHAR_SCALE, 0, Math.PI * 2); ctx.stroke();
+      ctx.beginPath(); ctx.arc(this.x, this.y, 32, 0, Math.PI * 2); ctx.stroke();
     }
     if (this.isDodging) ctx.globalAlpha = 0.5;
     if (this.isKaitoDemonio() && this.isIntangible) ctx.globalAlpha = 0.55;
 
     ctx.translate(this.x, this.y);
-    ctx.scale(this.side * this.squashX * CHAR_SCALE, this.squashY * CHAR_SCALE);
+    ctx.scale(this.side * this.squashX, this.squashY);
     ctx.rotate(this.lean * this.side);
 
     // Breathing

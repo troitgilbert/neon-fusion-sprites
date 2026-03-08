@@ -12,12 +12,7 @@ interface GameContextType {
   setGameState: (s: GameState, mode?: GameMode) => void;
 }
 
-const GAME_CTX_KEY = '__sprite_game_ctx__';
-const globalGameCtx = globalThis as typeof globalThis & {
-  [GAME_CTX_KEY]?: React.Context<GameContextType | null>;
-};
-const GameCtx = globalGameCtx[GAME_CTX_KEY] ?? createContext<GameContextType | null>(null);
-if (!globalGameCtx[GAME_CTX_KEY]) globalGameCtx[GAME_CTX_KEY] = GameCtx;
+const GameCtx = createContext<GameContextType | null>(null);
 
 export const useGame = () => {
   const ctx = useContext(GameCtx);

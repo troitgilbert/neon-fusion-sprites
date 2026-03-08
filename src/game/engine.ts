@@ -221,7 +221,7 @@ export class GameEngine {
     this.selectedStage = bossId === 'lucifer' ? 'infierno' : bossId === 'dios_antiguo' ? 'cielo' : 'nada';
     
     this.round = 1;
-    this.p1 = new Fighter(1, playerCharIdx, 150, 1, CONTROLS.p1, false, this.selectedSkins.p1, playerCharIdx >= 100 ? this.getCustomChar(playerCharIdx) : null);
+    this.p1 = new Fighter(1, playerCharIdx, 200, 1, CONTROLS.p1, false, this.selectedSkins.p1, playerCharIdx >= 100 ? this.getCustomChar(playerCharIdx) : null);
     
     // Create boss fighter
     this.p2 = new Fighter(2, 1, 490, -1, CONTROLS.p2, true, null, null);

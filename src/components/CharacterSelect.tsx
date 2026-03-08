@@ -967,6 +967,13 @@ const CharacterSelect: React.FC = () => {
   const [selectFlash, setSelectFlash] = useState<number | null>(null);
   const skinJustClosedRef = useRef(false);
 
+  // Reset selections when entering character select
+  React.useEffect(() => {
+    engine.p1Choice = null;
+    engine.p2Choice = null;
+    engine.selectedSkins = { p1: null, p2: null };
+  }, []);
+
   const charRenderData = getCharRenderData();
 
   // Build flat list of all grid items for navigation

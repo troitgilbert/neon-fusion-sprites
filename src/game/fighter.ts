@@ -62,6 +62,10 @@ export class Fighter {
     this._lastHitFrame = 0;
     this._hookCombo = 0;
     this._pendingTemblor = false;
+    this._invocationActive = false;
+    this._invocationX = 0;
+    this._invocationTimer = 0;
+    this._pendingImpactoCristalico = false;
   }
 
   reset(x: number, side: number) {

@@ -1079,41 +1079,29 @@ const CharacterSelect: React.FC = () => {
       {/* === MAIN AREA: Everything layered in one space === */}
       <div style={{ flex: 1, position: 'relative', zIndex: 2, minHeight: 0, overflow: 'hidden' }}>
 
-        {/* LAYER 1 (behind): Big portraits P1 left, P2 right - centered vertically */}
+        {/* LAYER 1 (behind): Big portraits P1 left, P2 right - centered at bottom */}
         <div style={{
-          position: 'absolute', inset: 0, display: 'flex', zIndex: 1,
-          pointerEvents: 'none',
+          position: 'absolute', bottom: 0, left: 0, right: 0, height: '55%', display: 'flex', zIndex: 1,
+          pointerEvents: 'none', justifyContent: 'center', alignItems: 'flex-end',
         }}>
-          <div style={{ flex: 1, position: 'relative' }}>
+          <div style={{ width: 'clamp(120px, 18vw, 200px)', height: '100%', position: 'relative', marginRight: 'clamp(30px, 8vw, 120px)' }}>
             <BigPortrait char={displayP1 || null} customChar={p1Custom} color="#00ffff" facing={1} label="P1" />
-            <div style={{ position: 'absolute', bottom: 10, left: 15, right: 15 }}>
+            <div style={{ position: 'absolute', bottom: 6, left: 0, right: 0, textAlign: 'center' }}>
               <div style={{
                 color: '#ffcc33', fontFamily: "'Orbitron', monospace",
-                fontSize: 'clamp(14px, 2.5vw, 24px)', fontWeight: 900,
-                letterSpacing: 3, textShadow: '0 0 15px #ffcc3360, 0 2px 8px rgba(0,0,0,0.8)',
+                fontSize: 'clamp(9px, 1.4vw, 14px)', fontWeight: 900,
+                letterSpacing: 2, textShadow: '0 0 15px #ffcc3360, 0 2px 8px rgba(0,0,0,0.8)',
               }}>{p1Name}</div>
-              {displayP1 && (
-                <div style={{ marginTop: 4, display: 'flex', gap: 10, maxWidth: 180 }}>
-                  <StatBar label="VEL" value={displayP1.speed / 10} color="#ffcc33" />
-                  <StatBar label="POD" value={displayP1.weight} color="#ff6600" />
-                </div>
-              )}
             </div>
           </div>
-          <div style={{ flex: 1, position: 'relative' }}>
+          <div style={{ width: 'clamp(120px, 18vw, 200px)', height: '100%', position: 'relative', marginLeft: 'clamp(30px, 8vw, 120px)' }}>
             <BigPortrait char={displayP2 || null} customChar={null} color="#ff8c00" facing={-1} label="P2" />
-            <div style={{ position: 'absolute', bottom: 10, left: 15, right: 15, textAlign: 'right' }}>
+            <div style={{ position: 'absolute', bottom: 6, left: 0, right: 0, textAlign: 'center' }}>
               <div style={{
                 color: '#ffcc33', fontFamily: "'Orbitron', monospace",
-                fontSize: 'clamp(14px, 2.5vw, 24px)', fontWeight: 900,
-                letterSpacing: 3, textShadow: '0 0 15px #ffcc3360, 0 2px 8px rgba(0,0,0,0.8)',
+                fontSize: 'clamp(9px, 1.4vw, 14px)', fontWeight: 900,
+                letterSpacing: 2, textShadow: '0 0 15px #ffcc3360, 0 2px 8px rgba(0,0,0,0.8)',
               }}>{p2Name}</div>
-              {displayP2 && (
-                <div style={{ marginTop: 4, display: 'flex', gap: 10, justifyContent: 'flex-end', maxWidth: 180, marginLeft: 'auto' }}>
-                  <StatBar label="VEL" value={displayP2.speed / 10} color="#ffcc33" />
-                  <StatBar label="POD" value={displayP2.weight} color="#ff6600" />
-                </div>
-              )}
             </div>
           </div>
         </div>

@@ -968,12 +968,22 @@ export class Fighter {
     } else if (this.handMode === 'together') {
       lx = this.x + 22; rx = this.x + 28; ly = this.y + 2; ry = this.y + 10;
     } else if (this.handMode === 'strike') {
-      // Uppercut animation - fist goes UP
-      rx = this.x + 26; ry = this.y - 22;
+      // Uppercut animation - fist sweeps UP with arc
+      const t = this.handTimer / 18;
+      const arcAngle = (1 - t) * Math.PI * 0.7; // sweeps from front to up
+      rx = this.x + 20 + Math.cos(arcAngle) * 18;
+      ry = this.y + 2 - Math.sin(arcAngle) * 24;
       lx = this.x + 16; ly = this.y - 4;
     } else if (this.handMode === 'slam') {
       // Hook down animation - fist slams DOWN
       rx = this.x + 28; ry = this.y + 18;
+      lx = this.x + 16; ly = this.y - 4;
+    } else if (this.handMode === 'slam_arc') {
+      // Crescent arc: up → forward → down (media luna)
+      const t = this.handTimer / 20; // 1 at start, 0 at end
+      const arcAngle = t * Math.PI; // PI (up) → 0 (down)
+      rx = this.x + 22 + Math.cos(arcAngle) * 6;
+      ry = this.y - Math.sin(arcAngle) * 28;
       lx = this.x + 16; ly = this.y - 4;
     } else if (this.handMode === 'block') {
       lx = this.x + 34; rx = this.x + 40; ly = this.y - 4; ry = this.y + 8;

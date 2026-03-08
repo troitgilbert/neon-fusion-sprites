@@ -1095,9 +1095,38 @@ const CharacterSelect: React.FC = () => {
   const handleSkinConfirm = (skinId: string | null) => {
     if (!skinSelectFor) return;
     playConfirmSound();
-    engine.confirmSkinChoice(skinSelectFor.charIdx, skinId, skinSelectFor.pNum);
-    setSkinSelectFor(null);
+    setPreviewSkinId(skinId);
   };
+
+  const handleSkinCancel = () => {
+    if (!skinSelectFor) return;
+    // Deselect the character
+    if (skinSelectFor.pNum === 1) {
+      engine.p1Choice = null;
+    } else {
+      engine.p2Choice = null;
+    }
+    setSkinSelectFor(null);
+    setPreviewSkinId(null);
+  };
+
+  // Enter to confirm and start battle
+  React.useEffect(() => {
+    if (!skinSelectFor) return;
+    const handler = (e: KeyboardEvent) => {
+      if (e.code === 'Enter' || e.code === 'KeyF') {
+        e.preventDefault();
+        playConfirmSound();
+        engine.confirmSkinChoice(skinSelectFor.charIdx, previewSkinId, skinSelectFor.pNum);
+        setSkinSelectFor(null);
+        setPreviewSkinId(null);
+      } else if (e.code === 'Escape' || e.code === 'Backspace') {
+        handleSkinCancel();
+      }
+    };
+    window.addEventListener('keydown', handler);
+    return () => window.removeEventListener('keydown', handler);
+  }, [skinSelectFor, previewSkinId]);
 
   const availableSkins = (charIdx: number) => {
     const charName = CHAR_DATA[charIdx].name;

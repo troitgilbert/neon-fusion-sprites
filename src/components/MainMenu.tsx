@@ -163,7 +163,7 @@ const MainMenu: React.FC = () => {
         </div>
 
         <h1 style={{
-          fontSize: 'clamp(32px, 6vw, 80px)',
+          fontSize: 'clamp(24px, 4.5vw, 60px)',
           fontWeight: 900,
           fontFamily: "'Orbitron', serif",
           letterSpacing: 'clamp(4px, 1vw, 14px)',

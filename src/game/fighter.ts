@@ -411,9 +411,49 @@ export class Fighter {
     }
 
     // === DIRECTIONAL ATTACKS (all non-custom characters) ===
-    // Down + Hit = Daño Vital (paralyzes enemy 1 second, costs energy)
+
+    // Air + Down + Hit = Temblor (ground slam, blue shockwave, screen shake, AoE)
+    if (type === 'temblor') {
+      this.vy = 28; // slam down fast
+      this.handMode = 'slam'; this.handTimer = 20;
+      // We set a flag so on landing we trigger the effect
+      this._pendingTemblor = true;
+      return;
+    }
+
+    // Air + Forward + Hit = Gancho hacia abajo (fist down, opponent sent down, blue energy)
+    if (type === 'air_hook_down') {
+      this.handMode = 'slam'; this.handTimer = 16;
+      this.vx = this.side * 14;
+      const giantFist = new GiantFist(this.x, this.y, this.side, 1, '#4488ff', 10, this);
+      game.particles.push(giantFist);
+      game.particles.push(new EnergyTrail(this.x + this.side * 10, this.y, '#4488ff', true));
+      if (dist < 100 && Math.abs(this.y - opp.y) < 70) {
+        const dmg = 1.8 * this.damageBoost;
+        opp.takeDamage(dmg, true);
+        game.trackStat('totalDamage', dmg);
+        opp.vx = this.side * 4; opp.vy = 14; // sent downward
+        opp.stun = 12;
+        opp.isGrounded = false;
+        if (this.charIdx === 1) {
+          game.texts.push(new FloatingText(opp.x, opp.y - 30, 'CAÍDA MORTAL', '#4488ff'));
+        } else {
+          game.texts.push(new FloatingText(opp.x, opp.y - 30, 'GANCHO HACIA ABAJO', '#4488ff'));
+        }
+        game.spawnParticles(opp.x, opp.y, '#4488ff', 20, 3);
+        game.particles.push(new PunchCircle(opp.x, opp.y, '#4488ff'));
+        game.hitStop = 8; game.shake = 10;
+        playHitSound();
+        this.comboHits++;
+        game.trackStat('comboMax', this.comboHits);
+      }
+      this.damageBoost = 1;
+      return;
+    }
+
+    // Down + Hit = Daño Vital (paralyzes enemy 1 second, costs energy, NO crouch)
     if (type === 'hook_down') {
-      if (this.energy < 40) return; // needs energy
+      if (this.energy < 40) return;
       this.energy -= 40;
       this.handMode = 'punch_left'; this.handTimer = 16;
       this.vx = this.side * 6;
@@ -422,15 +462,15 @@ export class Fighter {
         opp.takeDamage(dmg, true);
         game.trackStat('totalDamage', dmg);
         opp.vx = 0; opp.vy = 0;
-        opp.stun = 60; // 1 second paralysis
+        opp.stun = 60;
         if (this.charIdx === 1) {
           game.texts.push(new FloatingText(opp.x, opp.y - 30, 'PUNTO VITAL', '#ff00ff'));
           game.spawnParticles(opp.x, opp.y, '#ff00ff', 22, 3);
           game.particles.push(new PunchCircle(opp.x, opp.y, '#ff00ff'));
         } else {
-          game.texts.push(new FloatingText(opp.x, opp.y - 30, 'DAÑO VITAL', '#ff00aa'));
-          game.spawnParticles(opp.x, opp.y, '#ff00aa', 18, 3);
-          game.particles.push(new PunchCircle(opp.x, opp.y, '#ff00aa'));
+          game.texts.push(new FloatingText(opp.x, opp.y - 30, 'DAÑO VITAL', '#00ff44'));
+          game.spawnParticles(opp.x, opp.y, '#00ff44', 18, 3);
+          game.particles.push(new PunchCircle(opp.x, opp.y, '#00ff44'));
         }
         game.hitStop = 10; game.shake = 8;
         playHitSound();

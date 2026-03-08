@@ -1424,10 +1424,10 @@ const CharacterSelect: React.FC = () => {
                             transform: isHovered ? 'scale(1.18)' : 'scale(1)',
                             zIndex: isHovered ? 10 : 1,
                             filter: isP1Selected
-                              ? 'drop-shadow(0 0 12px #ffcc3360)'
+                              ? 'drop-shadow(0 0 12px rgba(200,200,200,0.35))'
                               : isHovered
                                 ? `drop-shadow(0 0 14px ${ch.eyeColor}60)`
-                                : 'drop-shadow(0 0 2px rgba(255,204,51,0.1))',
+                                : 'drop-shadow(0 0 2px rgba(180,180,180,0.1))',
                           }}
                         >
                           <CanvasPortrait

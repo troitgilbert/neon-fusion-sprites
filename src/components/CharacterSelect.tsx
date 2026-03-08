@@ -1458,8 +1458,8 @@ const CharacterSelect: React.FC = () => {
                             clipPath: 'polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%)',
                             cursor: 'pointer',
                             background: isCursor
-                              ? 'linear-gradient(135deg, rgba(40,35,20,0.95), rgba(30,25,15,0.9))'
-                              : 'linear-gradient(135deg, rgba(15,14,30,0.55), rgba(10,8,22,0.6))',
+                              ? 'linear-gradient(135deg, rgba(50,42,15,0.95), rgba(35,30,10,0.92))'
+                              : 'linear-gradient(135deg, rgba(10,10,25,0.92), rgba(8,6,18,0.95))',
                             display: 'flex', alignItems: 'center', justifyContent: 'center',
                             transition: 'all 0.2s',
                             transform: isCursor ? 'scale(1.18)' : 'scale(1)',

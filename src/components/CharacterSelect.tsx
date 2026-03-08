@@ -1035,6 +1035,14 @@ const CharacterSelect: React.FC = () => {
           else if (item.type === 'random') handleRandomSelect();
           return;
         }
+        case 'Enter': {
+          // If both players selected, start battle
+          if (engine.p1Choice !== null && engine.p2Choice !== null) {
+            playConfirmSound();
+            setGameState('STAGE_SELECT');
+          }
+          return;
+        }
         default: return;
       }
       if (newIdx !== cursorIdx) {

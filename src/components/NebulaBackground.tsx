@@ -52,13 +52,13 @@ const NebulaBackground: React.FC = () => {
 
     // Nebula cloud points for smooth animation
     const nebulae = [
-      { bx: 0.12, by: 0.18, r: 0.5, color: [90,0,200], alpha: 0.14, sx: 0.0003, sy: 0.0004 },
-      { bx: 0.82, by: 0.72, r: 0.55, color: [0,70,220], alpha: 0.12, sx: 0.0002, sy: 0.0003 },
-      { bx: 0.48, by: 0.08, r: 0.38, color: [200,30,0], alpha: 0.08, sx: 0.00025, sy: 0.0002 },
-      { bx: 0.72, by: 0.32, r: 0.32, color: [180,0,100], alpha: 0.07, sx: 0.00035, sy: 0.0005 },
-      { bx: 0.28, by: 0.78, r: 0.42, color: [0,140,100], alpha: 0.06, sx: 0.0004, sy: 0.00025 },
-      { bx: 0.55, by: 0.52, r: 0.6, color: [60,0,160], alpha: 0.05, sx: 0.0002, sy: 0.00015 },
-      { bx: 0.35, by: 0.45, r: 0.35, color: [120,60,200], alpha: 0.04, sx: 0.00018, sy: 0.00028 },
+      { bx: 0.12, by: 0.18, r: 0.5, color: [80,0,0], alpha: 0.08, sx: 0.0003, sy: 0.0004 },
+      { bx: 0.82, by: 0.72, r: 0.55, color: [40,10,0], alpha: 0.06, sx: 0.0002, sy: 0.0003 },
+      { bx: 0.48, by: 0.08, r: 0.38, color: [150,20,0], alpha: 0.05, sx: 0.00025, sy: 0.0002 },
+      { bx: 0.72, by: 0.32, r: 0.32, color: [100,0,40], alpha: 0.04, sx: 0.00035, sy: 0.0005 },
+      { bx: 0.28, by: 0.78, r: 0.42, color: [20,40,30], alpha: 0.03, sx: 0.0004, sy: 0.00025 },
+      { bx: 0.55, by: 0.52, r: 0.6, color: [40,0,60], alpha: 0.03, sx: 0.0002, sy: 0.00015 },
+      { bx: 0.35, by: 0.45, r: 0.35, color: [60,20,0], alpha: 0.03, sx: 0.00018, sy: 0.00028 },
     ] as const;
 
     const loop = () => {
@@ -68,10 +68,10 @@ const NebulaBackground: React.FC = () => {
 
       // Deep background
       const bgGrad = ctx.createLinearGradient(0, 0, w * 0.3, h);
-      bgGrad.addColorStop(0, '#010008');
-      bgGrad.addColorStop(0.3, '#050018');
-      bgGrad.addColorStop(0.7, '#08001e');
-      bgGrad.addColorStop(1, '#020010');
+      bgGrad.addColorStop(0, '#010101');
+      bgGrad.addColorStop(0.3, '#050302');
+      bgGrad.addColorStop(0.7, '#080301');
+      bgGrad.addColorStop(1, '#020101');
       ctx.fillStyle = bgGrad;
       ctx.fillRect(0, 0, w, h);
 
@@ -91,14 +91,14 @@ const NebulaBackground: React.FC = () => {
 
       // Cosmic dust band
       ctx.save();
-      ctx.globalAlpha = 0.025 + Math.sin(time * 0.0005) * 0.01;
+      ctx.globalAlpha = 0.015 + Math.sin(time * 0.0005) * 0.005;
       ctx.translate(w * 0.5, h * 0.5);
       ctx.rotate(0.35 + Math.sin(time * 0.0001) * 0.04);
       const dustGrad = ctx.createLinearGradient(-w, 0, w, 0);
       dustGrad.addColorStop(0, 'transparent');
-      dustGrad.addColorStop(0.25, 'rgba(180,140,255,1)');
-      dustGrad.addColorStop(0.5, 'rgba(255,180,100,1)');
-      dustGrad.addColorStop(0.75, 'rgba(100,180,255,1)');
+      dustGrad.addColorStop(0.25, 'rgba(120,60,40,1)');
+      dustGrad.addColorStop(0.5, 'rgba(180,100,40,1)');
+      dustGrad.addColorStop(0.75, 'rgba(80,40,30,1)');
       dustGrad.addColorStop(1, 'transparent');
       ctx.fillStyle = dustGrad;
       ctx.fillRect(-w, -h * 0.12, w * 2, h * 0.24);

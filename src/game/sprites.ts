@@ -27,6 +27,8 @@ let imagesLoaded = false;
 
 const SPRITE_SOURCES: Record<string, string> = {
   idle1: idleImg,
+  idleT1: idleT1Img,
+  idleT2: idleT2Img,
   idle2: idle2Img,
   walk1: walk1Img,
   walk2: walk2Img,

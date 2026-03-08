@@ -68,10 +68,10 @@ const NebulaBackground: React.FC = () => {
 
       // Deep background
       const bgGrad = ctx.createLinearGradient(0, 0, w * 0.3, h);
-      bgGrad.addColorStop(0, '#010104');
-      bgGrad.addColorStop(0.3, '#030308');
-      bgGrad.addColorStop(0.7, '#04030a');
-      bgGrad.addColorStop(1, '#010105');
+      bgGrad.addColorStop(0, '#040201');
+      bgGrad.addColorStop(0.3, '#080403');
+      bgGrad.addColorStop(0.7, '#0a0504');
+      bgGrad.addColorStop(1, '#050201');
       ctx.fillStyle = bgGrad;
       ctx.fillRect(0, 0, w, h);
 

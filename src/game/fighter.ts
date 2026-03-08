@@ -183,7 +183,16 @@ export class Fighter {
       }
     }
 
-    if (justPressed[c.hit]) this.attack('hit', game);
+    // Directional hits for Edowado
+    if (justPressed[c.hit]) {
+      if (this.charIdx === 0 && !this.customData && keys[c.down]) {
+        this.attack('hook_down', game);
+      } else if (this.charIdx === 0 && !this.customData && keys[c.up]) {
+        this.attack('uppercut', game);
+      } else {
+        this.attack('hit', game);
+      }
+    }
     if (justPressed[c.spec]) this.attack('special', game);
     if (justPressed[c.super]) this.attack('super', game);
     if (justPressed[c.ultra]) this.attack('ultra', game);

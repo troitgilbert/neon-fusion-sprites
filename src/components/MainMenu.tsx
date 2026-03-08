@@ -98,29 +98,15 @@ const MainMenu: React.FC = () => {
     <div className="fixed inset-0 z-10" style={{
       background: mysteryHover ? 'rgba(0,0,0,0.97)' : 'transparent',
       transition: 'background 0.5s',
+      display: 'flex', flexDirection: 'column',
     }}>
 
       {/* ══════ MK9 Dark overlays ══════ */}
-      {/* Top dark gradient */}
-      <div style={{
-        position: 'absolute', top: 0, left: 0, right: 0, height: '25%',
-        background: 'linear-gradient(180deg, rgba(0,0,0,0.85) 0%, transparent 100%)',
-        pointerEvents: 'none',
-      }} />
-      {/* Bottom dark gradient */}
-      <div style={{
-        position: 'absolute', bottom: 0, left: 0, right: 0, height: '30%',
-        background: 'linear-gradient(0deg, rgba(0,0,0,0.9) 0%, transparent 100%)',
-        pointerEvents: 'none',
-      }} />
-      {/* Side vignettes */}
-      <div style={{
-        position: 'absolute', inset: 0,
-        background: 'radial-gradient(ellipse at center, transparent 40%, rgba(0,0,0,0.7) 100%)',
-        pointerEvents: 'none',
-      }} />
+      <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '20%', background: 'linear-gradient(180deg, rgba(0,0,0,0.85) 0%, transparent 100%)', pointerEvents: 'none' }} />
+      <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: '25%', background: 'linear-gradient(0deg, rgba(0,0,0,0.9) 0%, transparent 100%)', pointerEvents: 'none' }} />
+      <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(ellipse at center, transparent 40%, rgba(0,0,0,0.7) 100%)', pointerEvents: 'none' }} />
 
-      {/* ══════ Ember particles (CSS) ══════ */}
+      {/* Ember particles */}
       {phase >= 2 && Array.from({ length: 20 }).map((_, i) => (
         <div key={`ember-${i}`} style={{
           position: 'absolute',
@@ -137,328 +123,293 @@ const MainMenu: React.FC = () => {
         }} />
       ))}
 
-      {/* ══════ Red ambient glow at bottom ══════ */}
+      {/* Red ambient glow */}
       <div style={{
-        position: 'absolute', bottom: 0, left: '20%', right: '20%', height: '15%',
+        position: 'absolute', bottom: 0, left: '20%', right: '20%', height: '12%',
         background: 'radial-gradient(ellipse at center bottom, rgba(180,30,0,0.15) 0%, transparent 70%)',
-        pointerEvents: 'none',
-        animation: 'mk9FireGlow 3s ease-in-out infinite',
+        pointerEvents: 'none', animation: 'mk9FireGlow 3s ease-in-out infinite',
       }} />
 
-      {/* ══════ TITLE ══════ */}
+      {/* ══════ ROW 1: TITLE (fixed height) ══════ */}
       <div style={{
-        position: 'absolute', top: 'clamp(10px, 2vh, 30px)', left: 0, right: 0,
-        textAlign: 'center',
+        flexShrink: 0,
+        height: 'clamp(80px, 15vh, 140px)',
+        display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
         opacity: phase >= 1 ? 1 : 0,
-        transform: phase >= 1 ? 'translateY(0) scale(1)' : 'translateY(-40px) scale(0.9)',
+        transform: phase >= 1 ? 'translateY(0) scale(1)' : 'translateY(-30px) scale(0.9)',
         transition: 'all 1s cubic-bezier(0.16, 1, 0.3, 1)',
+        position: 'relative', zIndex: 2,
       }}>
-        {/* Dragon emblem line */}
-        <div style={{
-          display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 16, marginBottom: 8,
-        }}>
-          <div style={{ width: 'clamp(40px, 12vw, 120px)', height: 1, background: 'linear-gradient(90deg, transparent, rgba(200,50,0,0.6), rgba(255,180,50,0.4))' }} />
-          <span style={{ fontSize: 'clamp(16px, 2.5vw, 28px)', filter: 'drop-shadow(0 0 8px rgba(255,80,0,0.5))' }}>🐉</span>
-          <div style={{ width: 'clamp(40px, 12vw, 120px)', height: 1, background: 'linear-gradient(270deg, transparent, rgba(200,50,0,0.6), rgba(255,180,50,0.4))' }} />
+        {/* Dragon line */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 4 }}>
+          <div style={{ width: 'clamp(30px, 8vw, 80px)', height: 1, background: 'linear-gradient(90deg, transparent, rgba(200,50,0,0.6), rgba(255,180,50,0.4))' }} />
+          <span style={{ fontSize: 'clamp(12px, 1.8vw, 20px)', filter: 'drop-shadow(0 0 6px rgba(255,80,0,0.5))' }}>🐉</span>
+          <div style={{ width: 'clamp(30px, 8vw, 80px)', height: 1, background: 'linear-gradient(270deg, transparent, rgba(200,50,0,0.6), rgba(255,180,50,0.4))' }} />
         </div>
 
         <h1 style={{
-          fontSize: 'clamp(24px, 4.5vw, 60px)',
-          fontWeight: 900,
-          fontFamily: "'Orbitron', serif",
-          letterSpacing: 'clamp(4px, 1vw, 14px)',
-          lineHeight: 1,
+          fontSize: 'clamp(20px, 3.5vw, 48px)', fontWeight: 900,
+          fontFamily: "'Orbitron', serif", letterSpacing: 'clamp(3px, 0.8vw, 10px)', lineHeight: 1,
           color: '#e8d5a3',
-          textShadow: `
-            0 0 20px rgba(255,80,0,0.6),
-            0 0 60px rgba(200,30,0,0.3),
-            0 0 120px rgba(150,0,0,0.15),
-            0 2px 0 #8b6914,
-            0 4px 0 #6b4f10,
-            0 6px 8px rgba(0,0,0,0.8)
-          `,
+          textShadow: '0 0 15px rgba(255,80,0,0.6), 0 0 40px rgba(200,30,0,0.3), 0 2px 0 #8b6914, 0 4px 6px rgba(0,0,0,0.8)',
           animation: 'mk9TitlePulse 4s ease-in-out infinite',
+          margin: 0,
         }}>
-          RELIQUIA
-        </h1>
-        <h1 style={{
-          fontSize: 'clamp(18px, 3vw, 42px)',
-          fontWeight: 700,
-          fontFamily: "'Orbitron', serif",
-          letterSpacing: 'clamp(6px, 1.5vw, 20px)',
-          lineHeight: 1,
-          marginTop: 4,
-          color: '#c4a56a',
-          textShadow: `
-            0 0 15px rgba(255,60,0,0.4),
-            0 0 40px rgba(180,20,0,0.2),
-            0 2px 0 #6b4f10,
-            0 4px 6px rgba(0,0,0,0.7)
-          `,
-          animation: 'mk9TitlePulse 4s ease-in-out infinite 0.5s',
-        }}>
-          DEL VACÍO
+          RELIQUIA DEL VACÍO
         </h1>
 
-        {/* Subtitle line */}
-        <div style={{
-          display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10, marginTop: 10,
-        }}>
-          <div style={{ width: 'clamp(30px, 8vw, 80px)', height: 2, background: 'linear-gradient(90deg, transparent, #8b3a0e, #d4a037)' }} />
-          <span style={{
-            fontSize: 'clamp(7px, 0.9vw, 10px)', letterSpacing: 6,
-            color: 'rgba(200,160,80,0.5)', fontFamily: "'Orbitron', monospace",
-          }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 6 }}>
+          <div style={{ width: 'clamp(20px, 5vw, 50px)', height: 1, background: 'linear-gradient(90deg, transparent, #8b3a0e, #d4a037)' }} />
+          <span style={{ fontSize: 'clamp(6px, 0.7vw, 8px)', letterSpacing: 5, color: 'rgba(200,160,80,0.4)', fontFamily: "'Orbitron', monospace" }}>
             KOMBATE KÓSMICO
           </span>
-          <div style={{ width: 'clamp(30px, 8vw, 80px)', height: 2, background: 'linear-gradient(270deg, transparent, #8b3a0e, #d4a037)' }} />
+          <div style={{ width: 'clamp(20px, 5vw, 50px)', height: 1, background: 'linear-gradient(270deg, transparent, #8b3a0e, #d4a037)' }} />
         </div>
       </div>
 
-      {/* ══════ CENTERED MENU ══════ */}
+      {/* ══════ ROW 2: MENU (fills remaining space, left-aligned) ══════ */}
       <div style={{
-        position: 'absolute', left: '50%', top: 'clamp(140px, 22vh, 220px)', bottom: 'clamp(50px, 8vh, 80px)',
-        transform: 'translateX(-50%)',
-        display: 'flex', flexDirection: 'column', alignItems: 'center',
-        justifyContent: 'flex-start',
-        overflowY: 'auto', scrollbarWidth: 'none',
+        flex: 1, minHeight: 0,
+        display: 'flex', flexDirection: 'row',
+        position: 'relative', zIndex: 2,
         opacity: phase >= 2 ? 1 : 0,
         transition: 'opacity 0.8s ease 0.2s',
+        padding: '0 clamp(16px, 4vw, 60px)',
       }}>
-        {menuItems.map((item, i) => {
-          const active = isActive(i);
-          const delay = i * 0.04;
-          return (
-            <React.Fragment key={item.label}>
-              <button
-                onClick={() => {
-                  setActiveIndex(i);
-                  if (item.hasSub) { setOpenSubMenu(i); setInSub(true); setSubIndex(0); }
-                  else item.action?.();
-                }}
-                onMouseEnter={() => { setActiveIndex(i); setHoveredMode(item.label); }}
-                onMouseLeave={() => setHoveredMode('')}
-                style={{
-                  position: 'relative',
-                  width: 'clamp(260px, 30vw, 400px)',
-                  padding: 'clamp(8px, 1.2vh, 14px) 20px',
-                  margin: '1px 0',
-                  fontSize: 'clamp(13px, 1.5vw, 18px)',
-                  textAlign: 'center',
-                  fontFamily: "'Orbitron', serif",
-                  fontWeight: active ? 800 : 500,
-                  letterSpacing: active ? 6 : 3,
-                  cursor: 'pointer',
-                  border: 'none',
-                  borderRadius: 0,
-                  overflow: 'hidden',
-                  color: active ? '#fff' : 'rgba(180,160,130,0.55)',
-                  background: active
-                    ? 'linear-gradient(90deg, transparent, rgba(200,40,0,0.25) 20%, rgba(255,120,0,0.15) 50%, rgba(200,40,0,0.25) 80%, transparent)'
-                    : 'transparent',
-                  textShadow: active
-                    ? '0 0 20px rgba(255,100,0,0.7), 0 0 40px rgba(200,30,0,0.3), 0 1px 2px rgba(0,0,0,0.8)'
-                    : '0 1px 2px rgba(0,0,0,0.5)',
-                  transform: active ? 'scale(1.08)' : 'scale(1)',
-                  transition: `all 0.2s cubic-bezier(0.16, 1, 0.3, 1) ${delay}s`,
-                  animationDelay: `${delay}s`,
-                }}
-              >
-                {/* Active top/bottom lines */}
-                {active && <>
-                  <div style={{
-                    position: 'absolute', top: 0, left: '10%', right: '10%', height: 1,
-                    background: 'linear-gradient(90deg, transparent, rgba(255,140,30,0.6), rgba(255,80,0,0.8), rgba(255,140,30,0.6), transparent)',
-                    boxShadow: '0 0 8px rgba(255,80,0,0.4)',
-                  }} />
-                  <div style={{
-                    position: 'absolute', bottom: 0, left: '10%', right: '10%', height: 1,
-                    background: 'linear-gradient(90deg, transparent, rgba(255,140,30,0.6), rgba(255,80,0,0.8), rgba(255,140,30,0.6), transparent)',
-                    boxShadow: '0 0 8px rgba(255,80,0,0.4)',
-                  }} />
-                  {/* Sweep effect */}
-                  <div style={{
-                    position: 'absolute', inset: 0,
-                    background: 'linear-gradient(90deg, transparent 30%, rgba(255,200,100,0.06) 50%, transparent 70%)',
-                    animation: 'sweepRight 2.5s ease-in-out infinite',
-                    pointerEvents: 'none',
-                  }} />
-                </>}
-
-                <span style={{ position: 'relative', zIndex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
-                  {item.label}
-                  {item.hasSub && (
-                    <span style={{
-                      fontSize: 9, opacity: 0.5,
-                      color: active ? '#ff8c00' : '#8b7355',
-                      transform: openSubMenu === i ? 'rotate(90deg)' : 'none',
-                      transition: 'transform 0.3s',
-                    }}>▶</span>
-                  )}
-                </span>
-              </button>
-
-              {/* Sub menu */}
-              {item.hasSub && openSubMenu === i && (
-                <div style={{
-                  display: 'flex', flexDirection: 'column', alignItems: 'center',
-                  padding: '4px 0', margin: '2px 0',
-                  borderLeft: '2px solid rgba(200,50,0,0.2)',
-                  borderRight: '2px solid rgba(200,50,0,0.2)',
-                  background: 'rgba(0,0,0,0.4)',
-                  animation: 'mk9SubSlide 0.3s ease-out',
-                  width: 'clamp(240px, 28vw, 360px)',
-                }}>
-                  {item.subItems!.map((sub, si) => {
-                    const sa = inSub && subIndex === si;
-                    const isBoss = sub.className === 'boss-rush';
-                    const isMystery = sub.className === 'mystery';
-
-                    return (
-                      <button key={sub.label}
-                        onClick={() => sub.action()}
-                        onMouseEnter={() => {
-                          setSubIndex(si); setHoveredMode(sub.label);
-                          if (isMystery) setMysteryHover(true);
-                        }}
-                        onMouseLeave={() => {
-                          setHoveredMode('');
-                          if (isMystery) setMysteryHover(false);
-                        }}
-                        style={{
-                          width: '100%',
-                          padding: '6px 16px',
-                          fontSize: 'clamp(10px, 1.1vw, 13px)',
-                          textAlign: 'center',
-                          fontFamily: "'Orbitron', serif",
-                          fontWeight: sa ? 700 : 400,
-                          letterSpacing: sa ? 4 : 2,
-                          cursor: 'pointer',
-                          border: 'none',
-                          background: sa
-                            ? 'linear-gradient(90deg, transparent, rgba(180,30,0,0.2) 30%, rgba(180,30,0,0.2) 70%, transparent)'
-                            : 'transparent',
-                          color: isBoss
-                            ? (sa ? '#ff4444' : '#8b3030')
-                            : isMystery
-                              ? (sa ? '#444' : '#222')
-                              : (sa ? '#e8d0a0' : 'rgba(160,140,110,0.45)'),
-                          textShadow: sa
-                            ? (isBoss
-                              ? '0 0 15px rgba(255,0,0,0.5)'
-                              : '0 0 10px rgba(255,100,0,0.3)')
-                            : 'none',
-                          transform: sa ? 'scale(1.05)' : 'scale(1)',
-                          transition: 'all 0.15s ease',
-                        }}
-                      >
-                        {isMystery
-                          ? <span style={{ animation: 'mysteryFlicker 2s infinite' }}>{sub.label}</span>
-                          : sub.label}
-                      </button>
-                    );
-                  })}
-                </div>
-              )}
-            </React.Fragment>
-          );
-        })}
-      </div>
-
-      {/* ══════ DESCRIPTION PANEL (bottom right, MK9 style) ══════ */}
-      <div style={{
-        position: 'absolute', right: 'clamp(16px, 3vw, 40px)', bottom: 'clamp(50px, 8vh, 80px)',
-        width: 'clamp(220px, 24vw, 340px)',
-        opacity: phase >= 3 ? 0.95 : 0,
-        transform: phase >= 3 ? 'translateY(0)' : 'translateY(20px)',
-        transition: 'all 0.8s ease',
-        pointerEvents: 'none',
-      }}>
+        {/* LEFT: Menu buttons */}
         <div style={{
-          padding: 'clamp(14px, 1.5vw, 22px)',
-          background: 'linear-gradient(180deg, rgba(15,5,0,0.85), rgba(5,0,0,0.9))',
-          border: '1px solid rgba(180,60,0,0.15)',
-          borderTop: '2px solid rgba(200,80,0,0.3)',
-          boxShadow: '0 0 30px rgba(0,0,0,0.5), inset 0 0 20px rgba(100,20,0,0.05)',
+          width: 'clamp(240px, 32vw, 380px)',
+          overflowY: 'auto', scrollbarWidth: 'none',
+          display: 'flex', flexDirection: 'column',
+          justifyContent: 'center',
+          paddingRight: 20,
         }}>
-          <span style={{
-            fontSize: 'clamp(7px, 0.7vw, 9px)', letterSpacing: 4,
-            color: 'rgba(200,100,30,0.5)', fontFamily: "'Orbitron', monospace",
-            display: 'block', marginBottom: 8,
-          }}>
-            ▸ MODO
-          </span>
-          <h3 style={{
-            fontSize: 'clamp(14px, 1.6vw, 20px)',
-            fontFamily: "'Orbitron', serif",
-            fontWeight: 800,
-            letterSpacing: 3,
-            color: '#d4a037',
-            textShadow: '0 0 10px rgba(255,100,0,0.3), 0 1px 0 #6b4f10',
-            marginBottom: 10,
-            transition: 'all 0.3s',
-          }}>
-            {currentHover || 'MODO'}
-          </h3>
+          {menuItems.map((item, i) => {
+            const active = isActive(i);
+            return (
+              <React.Fragment key={item.label}>
+                <button
+                  onClick={() => {
+                    setActiveIndex(i);
+                    if (item.hasSub) { setOpenSubMenu(i); setInSub(true); setSubIndex(0); }
+                    else item.action?.();
+                  }}
+                  onMouseEnter={() => { setActiveIndex(i); setHoveredMode(item.label); }}
+                  onMouseLeave={() => setHoveredMode('')}
+                  style={{
+                    position: 'relative',
+                    width: '100%',
+                    padding: 'clamp(6px, 0.9vh, 11px) 16px',
+                    margin: '1px 0',
+                    fontSize: 'clamp(11px, 1.3vw, 16px)',
+                    textAlign: 'left',
+                    fontFamily: "'Orbitron', serif",
+                    fontWeight: active ? 800 : 500,
+                    letterSpacing: active ? 5 : 2,
+                    cursor: 'pointer',
+                    border: 'none',
+                    borderRadius: 0,
+                    overflow: 'hidden',
+                    color: active ? '#fff' : 'rgba(180,160,130,0.5)',
+                    background: active
+                      ? 'linear-gradient(90deg, rgba(200,40,0,0.3) 0%, rgba(255,120,0,0.12) 60%, transparent 100%)'
+                      : 'transparent',
+                    textShadow: active
+                      ? '0 0 15px rgba(255,100,0,0.6), 0 0 30px rgba(200,30,0,0.25), 0 1px 2px rgba(0,0,0,0.8)'
+                      : '0 1px 2px rgba(0,0,0,0.4)',
+                    transform: active ? 'translateX(8px)' : 'translateX(0)',
+                    transition: 'all 0.2s cubic-bezier(0.16, 1, 0.3, 1)',
+                  }}
+                >
+                  {/* Left accent bar */}
+                  <div style={{
+                    position: 'absolute', left: 0, top: '15%', bottom: '15%',
+                    width: active ? 3 : 1,
+                    background: active ? 'linear-gradient(180deg, #ffcc33, #ff6600)' : 'rgba(180,120,60,0.15)',
+                    boxShadow: active ? '0 0 8px rgba(255,100,0,0.4), 3px 0 15px rgba(255,80,0,0.1)' : 'none',
+                    transition: 'all 0.2s',
+                  }} />
+
+                  {active && <>
+                    <div style={{
+                      position: 'absolute', top: 0, left: 0, right: '30%', height: 1,
+                      background: 'linear-gradient(90deg, rgba(255,120,0,0.7), rgba(255,80,0,0.3), transparent)',
+                    }} />
+                    <div style={{
+                      position: 'absolute', bottom: 0, left: 0, right: '50%', height: 1,
+                      background: 'linear-gradient(90deg, rgba(255,120,0,0.5), transparent)',
+                    }} />
+                    <div style={{
+                      position: 'absolute', inset: 0,
+                      background: 'linear-gradient(90deg, transparent 30%, rgba(255,200,100,0.04) 50%, transparent 70%)',
+                      animation: 'sweepRight 2.5s ease-in-out infinite',
+                      pointerEvents: 'none',
+                    }} />
+                  </>}
+
+                  <span style={{ position: 'relative', zIndex: 1, display: 'flex', alignItems: 'center', gap: 8 }}>
+                    {item.label}
+                    {item.hasSub && (
+                      <span style={{
+                        fontSize: 8, opacity: 0.45,
+                        color: active ? '#ff8c00' : '#8b7355',
+                        transform: openSubMenu === i ? 'rotate(90deg)' : 'none',
+                        transition: 'transform 0.3s', marginLeft: 4,
+                      }}>▶</span>
+                    )}
+                  </span>
+                </button>
+
+                {/* Sub menu */}
+                {item.hasSub && openSubMenu === i && (
+                  <div style={{
+                    marginLeft: 20,
+                    padding: '3px 0', margin: '2px 0 2px 20px',
+                    borderLeft: '2px solid rgba(200,50,0,0.2)',
+                    background: 'rgba(0,0,0,0.3)',
+                    animation: 'mk9SubSlide 0.3s ease-out',
+                  }}>
+                    {item.subItems!.map((sub, si) => {
+                      const sa = inSub && subIndex === si;
+                      const isBoss = sub.className === 'boss-rush';
+                      const isMystery = sub.className === 'mystery';
+                      return (
+                        <button key={sub.label}
+                          onClick={() => sub.action()}
+                          onMouseEnter={() => {
+                            setSubIndex(si); setHoveredMode(sub.label);
+                            if (isMystery) setMysteryHover(true);
+                          }}
+                          onMouseLeave={() => {
+                            setHoveredMode('');
+                            if (isMystery) setMysteryHover(false);
+                          }}
+                          style={{
+                            width: '100%',
+                            padding: '5px 14px',
+                            fontSize: 'clamp(9px, 1vw, 12px)',
+                            textAlign: 'left',
+                            fontFamily: "'Orbitron', serif",
+                            fontWeight: sa ? 700 : 400,
+                            letterSpacing: sa ? 3 : 1,
+                            cursor: 'pointer', border: 'none',
+                            background: sa
+                              ? 'linear-gradient(90deg, rgba(180,30,0,0.15), transparent 80%)'
+                              : 'transparent',
+                            color: isBoss
+                              ? (sa ? '#ff4444' : '#8b3030')
+                              : isMystery
+                                ? (sa ? '#444' : '#222')
+                                : (sa ? '#e8d0a0' : 'rgba(160,140,110,0.4)'),
+                            textShadow: sa
+                              ? (isBoss ? '0 0 12px rgba(255,0,0,0.4)' : '0 0 8px rgba(255,100,0,0.25)')
+                              : 'none',
+                            transform: sa ? 'translateX(6px)' : 'none',
+                            transition: 'all 0.15s ease',
+                          }}
+                        >
+                          {isMystery
+                            ? <span style={{ animation: 'mysteryFlicker 2s infinite' }}>{sub.label}</span>
+                            : sub.label}
+                        </button>
+                      );
+                    })}
+                  </div>
+                )}
+              </React.Fragment>
+            );
+          })}
+        </div>
+
+        {/* RIGHT: Description panel */}
+        <div style={{
+          flex: 1, minWidth: 0,
+          display: 'flex', alignItems: 'flex-end', justifyContent: 'flex-end',
+          paddingBottom: 'clamp(10px, 2vh, 30px)',
+        }}>
           <div style={{
-            width: '100%', height: 1, marginBottom: 10,
-            background: 'linear-gradient(90deg, rgba(200,80,0,0.4), transparent)',
-          }} />
-          <p style={{
-            fontSize: 'clamp(9px, 1vw, 12px)',
-            lineHeight: 1.7,
-            color: 'rgba(200,180,150,0.6)',
-            fontFamily: "'Orbitron', sans-serif",
-            fontWeight: 400,
+            width: 'clamp(200px, 22vw, 320px)',
+            opacity: phase >= 3 ? 0.95 : 0,
+            transform: phase >= 3 ? 'translateY(0)' : 'translateY(15px)',
+            transition: 'all 0.8s ease',
           }}>
-            {infoText}
-          </p>
+            <div style={{
+              padding: 'clamp(12px, 1.2vw, 18px)',
+              background: 'linear-gradient(180deg, rgba(15,5,0,0.85), rgba(5,0,0,0.9))',
+              border: '1px solid rgba(180,60,0,0.12)',
+              borderTop: '2px solid rgba(200,80,0,0.25)',
+              boxShadow: '0 0 25px rgba(0,0,0,0.4), inset 0 0 15px rgba(100,20,0,0.04)',
+            }}>
+              <span style={{
+                fontSize: 'clamp(6px, 0.6vw, 8px)', letterSpacing: 4,
+                color: 'rgba(200,100,30,0.45)', fontFamily: "'Orbitron', monospace",
+                display: 'block', marginBottom: 6,
+              }}>▸ MODO</span>
+
+              <h3 style={{
+                fontSize: 'clamp(12px, 1.4vw, 18px)',
+                fontFamily: "'Orbitron', serif", fontWeight: 800,
+                letterSpacing: 3, color: '#d4a037',
+                textShadow: '0 0 8px rgba(255,100,0,0.25), 0 1px 0 #6b4f10',
+                marginBottom: 8, transition: 'all 0.3s',
+              }}>
+                {currentHover || 'MODO'}
+              </h3>
+
+              <div style={{ width: '100%', height: 1, marginBottom: 8, background: 'linear-gradient(90deg, rgba(200,80,0,0.35), transparent)' }} />
+
+              <p style={{
+                fontSize: 'clamp(8px, 0.9vw, 11px)', lineHeight: 1.7,
+                color: 'rgba(200,180,150,0.55)', fontFamily: "'Orbitron', sans-serif", fontWeight: 400,
+              }}>
+                {infoText}
+              </p>
+            </div>
+          </div>
         </div>
       </div>
 
-      {/* ══════ BOTTOM BAR ══════ */}
+      {/* ══════ ROW 3: BOTTOM BAR (fixed height) ══════ */}
       <div style={{
-        position: 'fixed', bottom: 0, left: 0, right: 0, height: 2,
-        background: 'linear-gradient(90deg, transparent 5%, rgba(180,50,0,0.3) 30%, rgba(255,120,0,0.15) 50%, rgba(180,50,0,0.3) 70%, transparent 95%)',
-        boxShadow: '0 0 20px rgba(200,50,0,0.15)',
-        opacity: phase >= 3 ? 1 : 0,
-        transition: 'opacity 1.5s',
-      }} />
-
-      {/* Controls hint */}
-      <div style={{
-        position: 'fixed', bottom: 14, left: '50%', transform: 'translateX(-50%)',
-        display: 'flex', gap: 20, opacity: phase >= 3 ? 1 : 0,
-        transition: 'opacity 1s ease 0.5s',
+        flexShrink: 0, height: 'clamp(30px, 4vh, 44px)',
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+        position: 'relative', zIndex: 2,
+        opacity: phase >= 3 ? 1 : 0, transition: 'opacity 1s ease 0.5s',
       }}>
-        {[{ key: '↑↓', label: 'NAVEGAR' }, { key: '↵', label: 'SELECCIONAR' }, { key: 'ESC', label: 'VOLVER' }].map(c => (
-          <div key={c.key} style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-            <span style={{
-              padding: '3px 8px',
-              background: 'rgba(180,60,0,0.1)',
-              border: '1px solid rgba(180,60,0,0.2)',
-              fontSize: 'clamp(8px, 0.8vw, 10px)',
-              color: 'rgba(200,150,80,0.5)',
-              fontFamily: "'Orbitron', monospace",
-            }}>{c.key}</span>
-            <span style={{
-              fontSize: 'clamp(6px, 0.7vw, 8px)', letterSpacing: 2,
-              color: 'rgba(180,140,100,0.25)',
-              fontFamily: "'Orbitron', monospace",
-            }}>{c.label}</span>
-          </div>
-        ))}
-      </div>
+        {/* Top line */}
+        <div style={{
+          position: 'absolute', top: 0, left: 0, right: 0, height: 2,
+          background: 'linear-gradient(90deg, transparent 5%, rgba(180,50,0,0.25) 30%, rgba(255,120,0,0.12) 50%, rgba(180,50,0,0.25) 70%, transparent 95%)',
+          boxShadow: '0 0 15px rgba(200,50,0,0.1)',
+        }} />
 
-      {/* Version */}
-      <div style={{
-        position: 'fixed', bottom: 14, left: 20,
-        opacity: phase >= 3 ? 1 : 0, transition: 'opacity 1.5s ease 0.5s',
-      }}>
-        <span style={{
-          fontSize: 'clamp(6px, 0.6vw, 8px)', letterSpacing: 3,
-          color: 'rgba(160,120,80,0.15)', fontFamily: "'Orbitron', monospace",
-        }}>v1.0 · RELIQUIA DEL VACÍO</span>
+        {/* Controls */}
+        <div style={{ display: 'flex', gap: 16, alignItems: 'center' }}>
+          {[{ key: '↑↓', label: 'NAVEGAR' }, { key: '↵', label: 'SELECCIONAR' }, { key: 'ESC', label: 'VOLVER' }].map(c => (
+            <div key={c.key} style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
+              <span style={{
+                padding: '2px 6px',
+                background: 'rgba(180,60,0,0.08)',
+                border: '1px solid rgba(180,60,0,0.15)',
+                fontSize: 'clamp(7px, 0.7vw, 9px)',
+                color: 'rgba(200,150,80,0.4)',
+                fontFamily: "'Orbitron', monospace",
+              }}>{c.key}</span>
+              <span style={{
+                fontSize: 'clamp(5px, 0.6vw, 7px)', letterSpacing: 2,
+                color: 'rgba(180,140,100,0.2)',
+                fontFamily: "'Orbitron', monospace",
+              }}>{c.label}</span>
+            </div>
+          ))}
+        </div>
+
+        {/* Version */}
+        <div style={{ position: 'absolute', left: 16, top: '50%', transform: 'translateY(-50%)' }}>
+          <span style={{ fontSize: 'clamp(5px, 0.5vw, 7px)', letterSpacing: 3, color: 'rgba(160,120,80,0.12)', fontFamily: "'Orbitron', monospace" }}>
+            v1.0 · RELIQUIA DEL VACÍO
+          </span>
+        </div>
       </div>
     </div>
   );

@@ -2,6 +2,7 @@
 // Uses high-quality anime-style sprites
 
 import idleImg from '@/assets/edowado-idle.png';
+import idle2Img from '@/assets/edowado-idle2.png';
 import walk1Img from '@/assets/edowado-walk1.png';
 import walk2Img from '@/assets/edowado-walk2.png';
 import walk3Img from '@/assets/edowado-walk3.png';
@@ -23,7 +24,8 @@ const imageCache: Map<string, HTMLImageElement> = new Map();
 let imagesLoaded = false;
 
 const SPRITE_SOURCES: Record<string, string> = {
-  idle: idleImg,
+  idle1: idleImg,
+  idle2: idle2Img,
   walk1: walk1Img,
   walk2: walk2Img,
   walk3: walk3Img,
@@ -61,7 +63,7 @@ export function preloadSprites(): Promise<void> {
 
 // Animation config
 const SPRITE_FRAMES: Record<SpriteState, { keys: string[]; speed: number }> = {
-  idle:   { keys: ['idle'], speed: 0.03 },
+  idle:   { keys: ['idle1', 'idle2'], speed: 0.025 },
   walk:   { keys: ['walk1', 'walk2', 'walk3', 'walk4', 'walk5', 'walk6', 'walk7', 'walk8'], speed: 0.15 },
   attack: { keys: ['attack'],  speed: 0.2 },
   jump:   { keys: ['jump'],    speed: 0.1 },
@@ -107,13 +109,17 @@ export function drawEdowadoSprite(
   ctx.translate(x, y);
   ctx.scale(side, 1);
 
+  // Breathing effect for idle
+  const breathScale = state === 'idle' ? 1 + Math.sin(frame * 0.06) * 0.012 : 1;
+  const breathY = state === 'idle' ? Math.sin(frame * 0.06) * 1.5 : 0;
+
   // Draw centered at feet position, shifted down
   ctx.drawImage(
     img,
     -targetWidth / 2,
-    -targetHeight + 15,
-    targetWidth,
-    targetHeight
+    -targetHeight + 15 - breathY,
+    targetWidth * breathScale,
+    targetHeight * breathScale
   );
 
   ctx.restore();

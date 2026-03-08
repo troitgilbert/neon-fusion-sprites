@@ -3,6 +3,7 @@ import { useGame } from '../game/GameContext';
 import { playSelectSound, playConfirmSound } from '../game/audio';
 
 const STORIES = [
+  { id: 'complete', name: 'HISTORIA COMPLETA', color: '#ffcc33', description: 'Vive la historia completa del universo. Todos los capítulos, todos los personajes, todos los secretos revelados en un épico viaje sin interrupciones.' },
   { id: 'edowado', name: 'EDOWADO', color: '#00ffff', description: 'La historia de un guerrero que busca proteger lo que queda del universo. Su poder interior despierta ante las amenazas del vacío.' },
   { id: 'kaito', name: 'KAITO', color: '#ffff00', description: 'Un luchador veloz con un pasado oscuro. Su camino lo lleva a confrontar la verdad sobre su propia existencia.' },
   { id: 'custom', name: 'PERSONALIZADO', color: '#ff00ff', description: 'Crea tu propia historia. Elige tu personaje personalizado y forja un camino único a través del universo.' },

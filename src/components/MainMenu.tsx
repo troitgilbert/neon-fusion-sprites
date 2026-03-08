@@ -22,7 +22,7 @@ const MainMenu: React.FC = () => {
   const menuItems: MenuItem[] = useMemo(() => [
     { label: 'HISTORIA', action: () => setGameState('STORY_SELECT') },
     { label: 'ARCADE', action: () => setGameState('SELECT', 'arcade') },
-    { label: 'AVENTURA', action: () => setGameState('ADVENTURE_SELECT', 'adventure') },
+    { label: 'AVENTURA', action: () => setGameState('ADVENTURE_CHAR_SELECT' as any, 'adventure') },
     {
       label: 'VERSUS', hasSub: true,
       subItems: [
@@ -55,6 +55,7 @@ const MainMenu: React.FC = () => {
         { label: 'LOGROS', action: () => setGameState('ACHIEVEMENTS'), className: 'logros' },
       ]
     },
+    { label: 'ONLINE', action: () => setGameState('ONLINE') },
     { label: 'CONFIGURACIÓN', action: () => setGameState('CONFIG') },
     { label: 'SALIR', action: () => {} },
   ], [setGameState]);

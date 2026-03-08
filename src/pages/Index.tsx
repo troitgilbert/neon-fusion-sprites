@@ -16,6 +16,7 @@ import AchievementsMenu from '../components/AchievementsMenu';
 import StorySelect from '../components/StorySelect';
 import ArcadeTower from '../components/ArcadeTower';
 import AdventureSelect from '../components/AdventureSelect';
+import AdventureCharSelect from '../components/AdventureCharSelect';
 import MissionsMenu from '../components/MissionsMenu';
 import EventsMenu from '../components/EventsMenu';
 import BossRushMenu from '../components/BossRushMenu';
@@ -26,15 +27,16 @@ import DocumentsMenu from '../components/DocumentsMenu';
 import MinigamesMenu from '../components/MinigamesMenu';
 import DifficultySelect from '../components/DifficultySelect';
 import AdventurePlay from '../components/AdventurePlay';
+import OnlineMenu from '../components/OnlineMenu';
 import { getDifficultyColor } from '../game/achievements';
 
 const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent) || window.innerWidth < 800;
 
 const GameApp: React.FC = () => {
-  const { gameState, coins, achievementPopup, engine, setGameState } = useGame();
+  const { gameState, coins, achievementPopup, cheatNotification, engine, setGameState } = useGame();
   const inFight = gameState === 'FIGHT' || gameState === 'PAUSED' || gameState === 'ROUND_OVER';
   const showMenu = gameState === 'MENU';
-  const showNebula = showMenu || gameState === 'SELECT' || gameState === 'SKIN_SELECT' || gameState === 'STAGE_SELECT' || gameState === 'VERSUS_TYPE' || gameState === 'SHOP' || gameState === 'CONFIG' || gameState === 'CREATOR' || gameState === 'ACHIEVEMENTS' || gameState === 'STORY_SELECT' || gameState === 'ARCADE_TOWER' || gameState === 'ADVENTURE_SELECT' || gameState === 'MISSIONS' || gameState === 'EVENTS' || gameState === 'BOSS_RUSH' || gameState === 'BOSS_SELECT' || gameState === 'MIND_GAMES' || gameState === 'DATING' || gameState === 'DOCUMENTS' || gameState === 'MINIGAMES' || gameState === 'DIFFICULTY_SELECT';
+  const showNebula = showMenu || gameState === 'SELECT' || gameState === 'SKIN_SELECT' || gameState === 'STAGE_SELECT' || gameState === 'VERSUS_TYPE' || gameState === 'SHOP' || gameState === 'CONFIG' || gameState === 'CREATOR' || gameState === 'ACHIEVEMENTS' || gameState === 'STORY_SELECT' || gameState === 'ARCADE_TOWER' || gameState === 'ADVENTURE_SELECT' || gameState === 'ADVENTURE_CHAR_SELECT' || gameState === 'MISSIONS' || gameState === 'EVENTS' || gameState === 'BOSS_RUSH' || gameState === 'BOSS_SELECT' || gameState === 'MIND_GAMES' || gameState === 'DATING' || gameState === 'DOCUMENTS' || gameState === 'MINIGAMES' || gameState === 'DIFFICULTY_SELECT' || gameState === 'ONLINE';
 
   return (
     <div className="w-screen h-screen overflow-hidden" style={{ background: '#000' }}>
@@ -76,6 +78,7 @@ const GameApp: React.FC = () => {
       {gameState === 'STORY_SELECT' && <StorySelect />}
       {gameState === 'ARCADE_TOWER' && <ArcadeTower />}
       {gameState === 'ADVENTURE_SELECT' && <AdventureSelect />}
+      {gameState === 'ADVENTURE_CHAR_SELECT' && <AdventureCharSelect />}
       {gameState === 'MISSIONS' && <MissionsMenu />}
       {gameState === 'EVENTS' && <EventsMenu />}
       {gameState === 'BOSS_RUSH' && <BossRushMenu />}
@@ -91,6 +94,28 @@ const GameApp: React.FC = () => {
         />
       )}
       {gameState === 'ADVENTURE_PLAY' && <AdventurePlay />}
+      {gameState === 'ONLINE' && <OnlineMenu />}
+
+      {/* Cheat code notification */}
+      {cheatNotification && (
+        <div style={{
+          position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%, -50%)',
+          zIndex: 300, padding: '20px 50px',
+          background: 'rgba(0,0,0,0.95)', border: '3px solid #ffcc33',
+          boxShadow: '0 0 60px rgba(255,204,51,0.5), inset 0 0 30px rgba(255,204,51,0.1)',
+          animation: 'slideInRight 0.3s ease-out',
+        }}>
+          <div style={{
+            color: '#ffcc33', fontFamily: "'Orbitron', monospace", fontSize: 24,
+            letterSpacing: 5, fontWeight: 900, textShadow: '0 0 20px #ff6600',
+          }}>
+            {cheatNotification}
+          </div>
+          <div style={{ color: '#00ff66', fontFamily: "'Orbitron', monospace", fontSize: 14, marginTop: 8, textAlign: 'center' }}>
+            🔷 999,999,999 CRISTALES
+          </div>
+        </div>
+      )}
 
       {/* Achievement popup */}
       {achievementPopup && (

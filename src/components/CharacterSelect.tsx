@@ -1633,6 +1633,156 @@ const CharacterSelect: React.FC = () => {
         </div>
       </div>
 
+      {/* === SKIN SELECTOR OVERLAY PANEL === */}
+      {skinSelectFor && (() => {
+        const skins = availableSkins(skinSelectFor.charIdx);
+        const ch = CHAR_DATA[skinSelectFor.charIdx];
+        return (
+          <div style={{
+            position: 'fixed', top: 0, right: 0, bottom: 0, width: 'clamp(280px, 30vw, 400px)',
+            zIndex: 60, display: 'flex', flexDirection: 'column',
+            background: 'linear-gradient(180deg, rgba(4,10,30,0.97), rgba(2,6,20,0.99))',
+            borderLeft: '2px solid rgba(80,160,255,0.3)',
+            boxShadow: '-10px 0 40px rgba(0,0,0,0.5), -2px 0 20px rgba(60,140,255,0.1)',
+            animation: 'skinPanelSlide 0.4s cubic-bezier(0.16,1,0.3,1)',
+            backdropFilter: 'blur(20px)',
+          }}>
+            {/* Panel header */}
+            <div style={{
+              padding: '20px 20px 12px', borderBottom: '1px solid rgba(80,160,255,0.15)',
+            }}>
+              <div style={{
+                fontFamily: "'Orbitron', monospace", fontSize: 10, letterSpacing: 4,
+                color: 'rgba(100,180,255,0.5)', marginBottom: 6,
+              }}>▸ PLAYER {skinSelectFor.pNum}</div>
+              <h2 style={{
+                fontFamily: "'Orbitron', monospace",
+                fontSize: 'clamp(16px, 2.5vw, 22px)', fontWeight: 900, letterSpacing: 6,
+                background: 'linear-gradient(180deg, #e8f4ff, #5a9ae0 70%)',
+                WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
+                filter: 'drop-shadow(0 0 8px rgba(80,160,255,0.3))',
+                marginBottom: 2,
+              }}>SELECCIONAR ESTILO</h2>
+              <div style={{
+                fontFamily: "'Orbitron', monospace", fontSize: 12, letterSpacing: 2,
+                color: '#7ab8ff', marginBottom: 8,
+              }}>{ch.name}</div>
+              <div style={{
+                width: 80, height: 2,
+                background: 'linear-gradient(90deg, rgba(100,180,255,0.6), transparent)',
+              }} />
+            </div>
+
+            {/* Skin list */}
+            <div style={{ flex: 1, overflowY: 'auto', padding: '12px 16px' }}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+                {skins.map((skin, idx) => {
+                  const renderCh = charRenderData[skinSelectFor.charIdx];
+                  const overrides = skin.id ? SKIN_COLOR_MAP[ch.name]?.[skin.id] : null;
+                  const previewData = overrides ? { ...renderCh, ...overrides } : renderCh;
+                  const isActive = previewSkinId === skin.id;
+                  const isSpecial = !!skin.id;
+                  return (
+                    <button key={skin.id || 'original'} onClick={() => handleSkinConfirm(skin.id)}
+                      style={{
+                        display: 'flex', alignItems: 'center', gap: 12,
+                        border: `2px solid ${isActive ? '#7ab8ff' : 'rgba(80,150,255,0.12)'}`,
+                        background: isActive
+                          ? 'linear-gradient(135deg, rgba(20,40,80,0.95), rgba(15,30,60,0.95))'
+                          : 'linear-gradient(135deg, rgba(8,18,40,0.85), rgba(4,12,30,0.92))',
+                        padding: '8px 12px', cursor: 'pointer',
+                        fontFamily: "'Orbitron', monospace",
+                        transition: 'all 0.3s cubic-bezier(0.16,1,0.3,1)',
+                        textAlign: 'left', width: '100%', borderRadius: 3,
+                        boxShadow: isActive ? '0 0 20px rgba(60,140,255,0.15)' : 'none',
+                        animation: `skinCardSlide 0.3s cubic-bezier(0.16,1,0.3,1) ${idx * 0.06}s both`,
+                      }}
+                      onMouseEnter={e => {
+                        if (!isActive) {
+                          e.currentTarget.style.borderColor = 'rgba(100,180,255,0.5)';
+                          e.currentTarget.style.transform = 'translateX(-4px)';
+                        }
+                      }}
+                      onMouseLeave={e => {
+                        if (!isActive) {
+                          e.currentTarget.style.borderColor = 'rgba(80,150,255,0.12)';
+                          e.currentTarget.style.transform = 'translateX(0)';
+                        }
+                      }}
+                    >
+                      <div style={{
+                        flexShrink: 0, border: `1px solid ${isActive ? 'rgba(120,180,255,0.2)' : 'rgba(60,100,180,0.1)'}`,
+                        display: 'flex', alignItems: 'center', justifyContent: 'center',
+                        padding: 2, borderRadius: 4,
+                        background: 'radial-gradient(circle, rgba(30,60,120,0.2), transparent)',
+                      }}>
+                        <CanvasPortrait char={previewData} size={50} isSelected={isActive} facing={1} />
+                      </div>
+                      <div style={{ flex: 1, minWidth: 0 }}>
+                        <div style={{
+                          fontSize: 13, letterSpacing: 2, fontWeight: 800,
+                          background: isActive
+                            ? 'linear-gradient(135deg, #ffffff, #a0d0ff)'
+                            : isSpecial
+                              ? 'linear-gradient(135deg, #ffffff, #90c8ff)'
+                              : 'linear-gradient(180deg, #c0d8f0, #7aa0c8)',
+                          WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
+                        }}>{skin.name}</div>
+                        <span style={{
+                          fontSize: 8, letterSpacing: 2, fontWeight: 600,
+                          color: isSpecial ? '#5a9ae0' : '#3a5a7a',
+                        }}>{isSpecial ? 'ESPECIAL' : 'BASE'}</span>
+                      </div>
+                      {isActive && <span style={{ color: '#7ab8ff', fontSize: 14, fontWeight: 900 }}>✓</span>}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Panel actions */}
+            <div style={{
+              padding: '12px 16px', borderTop: '1px solid rgba(80,160,255,0.15)',
+              display: 'flex', gap: 10, justifyContent: 'flex-end',
+            }}>
+              <button onClick={handleSkinCancel} style={{
+                padding: '7px 20px', background: 'rgba(180,40,40,0.08)',
+                border: '1px solid rgba(255,70,70,0.2)', color: '#cc5555',
+                cursor: 'pointer', fontFamily: "'Orbitron', monospace",
+                fontSize: 10, fontWeight: 700, letterSpacing: 3, borderRadius: 2,
+                transition: 'all 0.3s',
+              }}
+              onMouseEnter={e => { e.currentTarget.style.background = 'rgba(200,40,40,0.15)'; e.currentTarget.style.borderColor = 'rgba(255,80,80,0.45)'; }}
+              onMouseLeave={e => { e.currentTarget.style.background = 'rgba(180,40,40,0.08)'; e.currentTarget.style.borderColor = 'rgba(255,70,70,0.2)'; }}
+              >CANCELAR</button>
+              <button onClick={() => {
+                playConfirmSound();
+                engine.confirmSkinChoice(skinSelectFor.charIdx, previewSkinId, skinSelectFor.pNum);
+                skinJustClosedRef.current = true;
+                setTimeout(() => { skinJustClosedRef.current = false; }, 200);
+                setSkinSelectFor(null);
+                setPreviewSkinId(null);
+              }} style={{
+                padding: '7px 20px',
+                background: 'linear-gradient(135deg, rgba(40,100,200,0.15), rgba(30,80,160,0.1))',
+                border: '1px solid rgba(80,160,255,0.4)', color: '#7ab8ff',
+                cursor: 'pointer', fontFamily: "'Orbitron', monospace",
+                fontSize: 10, fontWeight: 700, letterSpacing: 3, borderRadius: 2,
+                transition: 'all 0.3s',
+              }}
+              onMouseEnter={e => { e.currentTarget.style.background = 'linear-gradient(135deg, rgba(40,100,200,0.3), rgba(30,80,160,0.2))'; e.currentTarget.style.borderColor = 'rgba(100,180,255,0.7)'; }}
+              onMouseLeave={e => { e.currentTarget.style.background = 'linear-gradient(135deg, rgba(40,100,200,0.15), rgba(30,80,160,0.1))'; e.currentTarget.style.borderColor = 'rgba(80,160,255,0.4)'; }}
+              >CONFIRMAR</button>
+            </div>
+          </div>
+        );
+      })()}
+
+      <style>{`
+        @keyframes skinPanelSlide { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+        @keyframes skinCardSlide { from { opacity: 0; transform: translateX(30px); } to { opacity: 1; transform: translateX(0); } }
+      `}</style>
+
       {/* === BOTTOM BAR === */}
       <div style={{
         position: 'relative', zIndex: 2,

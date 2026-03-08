@@ -12,7 +12,7 @@ const CHAR_EDOWADO: StoryChar = {
   pantsColor: '#1a1a2e', shoesColor: '#333', handsColor: '#f5deb3', eyeColor: '#00ffff',
 };
 const CHAR_KAITO: StoryChar = {
-  skinColor: '#f5deb3', hairColor: '#ffffff', clothesColor: '#bbbbcc',
+  skinColor: '#f5deb3', hairColor: '#ffffff', clothesColor: '#f0f0f5',
   pantsColor: '#111111', shoesColor: '#444444', handsColor: '#f5deb3', eyeColor: '#ffff00',
 };
 

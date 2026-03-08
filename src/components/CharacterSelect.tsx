@@ -842,7 +842,7 @@ const CharacterSelect: React.FC = () => {
                 display: 'flex', flexDirection: 'column', alignItems: 'center',
                 justifyContent: 'center', gap: 6, transition: 'all 0.25s',
               }}
-              onMouseEnter2={() => {}}
+              
             >
               <div style={{
                 width: 'clamp(35px, 5vw, 55px)', height: 'clamp(35px, 5vw, 55px)', borderRadius: '50%',

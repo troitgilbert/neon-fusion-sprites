@@ -1084,7 +1084,7 @@ const CharacterSelect: React.FC = () => {
           position: 'absolute', inset: 0, display: 'flex', justifyContent: 'space-between', zIndex: 1,
           pointerEvents: 'none', padding: '0 clamp(10px, 3vw, 40px)',
         }}>
-          <div style={{ width: 'clamp(140px, 22vw, 280px)', height: '100%', position: 'relative' }}>
+          <div style={{ width: 'clamp(170px, 25vw, 340px)', height: '100%', position: 'relative' }}>
             <BigPortrait char={displayP1 || null} customChar={p1Custom} color="#00ffff" facing={1} label="P1" />
             <div style={{ position: 'absolute', bottom: 10, left: 0, right: 0, textAlign: 'center' }}>
               <div style={{

@@ -412,13 +412,14 @@ const MainMenu: React.FC = () => {
                     style={{
                       position: 'relative',
                       width: '100%',
-                      padding: 'clamp(9px, 1.2vh, 14px) 24px',
+                      padding: 'clamp(9px, 1.2vh, 14px) clamp(36px, 5vw, 56px)',
                       margin: '2px 0',
                       fontSize: 'clamp(12px, 1.3vw, 16px)',
                       textAlign: 'center',
+                      display: 'flex', alignItems: 'center', justifyContent: 'center',
                       fontFamily: "'Orbitron', serif",
                       fontWeight: sa ? 800 : 500,
-                      letterSpacing: sa ? 5 : 2,
+                      letterSpacing: sa ? 4 : 2,
                       cursor: 'pointer', border: 'none', borderRadius: 0,
                       overflow: 'hidden',
                       color: isBoss

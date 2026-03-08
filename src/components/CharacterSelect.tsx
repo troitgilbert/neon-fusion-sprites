@@ -737,7 +737,7 @@ const BgCanvas: React.FC = () => {
       ctx.save();
       ctx.translate(p4x, p4y); ctx.scale(1, 0.3);
       ctx.beginPath(); ctx.arc(0, 0, p4r * 1.8, 0, Math.PI * 2);
-      ctx.strokeStyle = 'rgba(220,180,120,0.18)'; ctx.lineWidth = p4r * 0.15; ctx.stroke();
+      ctx.strokeStyle = 'rgba(200,200,210,0.18)'; ctx.lineWidth = p4r * 0.15; ctx.stroke();
       ctx.restore();
 
       // Small orange planet (top area)

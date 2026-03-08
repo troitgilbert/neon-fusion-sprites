@@ -1248,24 +1248,17 @@ const CharacterSelect: React.FC = () => {
 
 
 
-  // Skin selector is now rendered as overlay inside the roster (see below)
 
-  const p1Char = engine.p1Choice !== null && engine.p1Choice < 100 ? charRenderData[engine.p1Choice] : null;
   const p1Custom = engine.p1Choice !== null && engine.p1Choice >= 100 ? customChars[engine.p1Choice - 100] : null;
   const hoveredChar = hoveredIdx !== null && hoveredIdx < 100 ? charRenderData[hoveredIdx] : null;
-
-  // Apply confirmed skin colors to p1Char for display
-  const p1CharWithSkin = React.useMemo(() => {
-    if (!p1Char || !engine.selectedSkins.p1) return p1Char;
-    const overrides = SKIN_COLOR_MAP[p1Char.name]?.[engine.selectedSkins.p1];
-    if (!overrides) return p1Char;
-    return { ...p1Char, ...overrides };
-  }, [p1Char, engine.selectedSkins.p1]);
 
   // If skin selector is open, show the skin-altered character in the portrait
   const displayP1 = (skinSelectFor && skinSelectFor.pNum === 1 && skinPreviewChar)
     ? skinPreviewChar
     : (p1CharWithSkin || (!isP2Turn ? hoveredChar : null));
+  const displayP2 = (skinSelectFor && skinSelectFor.pNum === 2 && skinPreviewChar)
+    ? skinPreviewChar
+    : (isP2Turn ? hoveredChar : null);
   const displayP2 = (skinSelectFor && skinSelectFor.pNum === 2 && skinPreviewChar)
     ? skinPreviewChar
     : (isP2Turn ? hoveredChar : null);

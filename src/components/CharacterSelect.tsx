@@ -1255,7 +1255,7 @@ const CharacterSelect: React.FC = () => {
             boxShadow: '0 0 8px rgba(255,204,51,0.3)',
           }} />
           <div style={{
-            color: 'rgba(255,204,51,0.25)', fontFamily: "'Orbitron', monospace",
+            color: 'rgba(255,204,51,0.6)', fontFamily: "'Orbitron', monospace",
             fontSize: 'clamp(6px, 0.7vw, 8px)', letterSpacing: 6, marginTop: 3,
           }}>CHOOSE YOUR FIGHTER</div>
         </div>
@@ -1358,14 +1358,6 @@ const CharacterSelect: React.FC = () => {
             padding: '8px 16px', pointerEvents: 'auto',
             position: 'relative',
           }}>
-            {/* Solid roster backdrop */}
-            <div style={{
-              position: 'absolute', inset: '-10px -20px',
-              background: 'rgba(0,0,0,0.6)',
-              border: '2px solid rgba(255,204,51,0.3)',
-              boxShadow: '0 0 30px rgba(0,0,0,0.5), inset 0 0 20px rgba(0,0,0,0.4)',
-              pointerEvents: 'none',
-            }} />
 
           {/* Honeycomb hex grid - proper beehive layout */}
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 0, position: 'relative', zIndex: 2 }}>
@@ -1541,11 +1533,11 @@ const CharacterSelect: React.FC = () => {
                 boxShadow: '0 0 15px rgba(255,204,51,0.1)',
               }}>
                 <span style={{
-                  color: '#ffcc33', fontFamily: "'Orbitron', monospace",
-                  fontSize: 'clamp(13px, 1.8vw, 18px)',
+                  color: '#ffdd44', fontFamily: "'Orbitron', monospace",
+                  fontSize: 'clamp(14px, 2vw, 20px)',
                   letterSpacing: 6, fontWeight: 900,
-                  textShadow: '0 0 15px #ffcc3360, 0 0 30px #ff880030',
-                  background: 'linear-gradient(180deg, #ffee88, #ffcc33, #ff8800)',
+                  textShadow: '0 0 20px #ffcc33, 0 0 40px #ff8800aa',
+                  background: 'linear-gradient(180deg, #ffffff, #ffee88, #ffcc33)',
                   WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text',
                 }}>
                   {charRenderData[hoveredIdx].name}
@@ -1570,25 +1562,25 @@ const CharacterSelect: React.FC = () => {
         borderTop: '1px solid rgba(255,204,51,0.12)',
       }}>
         <div style={{
-          color: 'rgba(255,204,51,0.35)', fontFamily: "'Orbitron', monospace",
+          color: 'rgba(255,204,51,0.6)', fontFamily: "'Orbitron', monospace",
           fontSize: 'clamp(7px, 0.85vw, 10px)', letterSpacing: 3,
           display: 'flex', alignItems: 'center', gap: 8,
         }}>
           <span style={{ color: 'rgba(0,255,255,0.4)' }}>◆</span> 1P: WASD + F/G/H
         </div>
         <button onClick={() => setGameState('MENU')} style={{
-          padding: '7px 30px', background: 'linear-gradient(180deg, rgba(255,204,51,0.08), rgba(255,204,51,0.03))',
-          border: '1px solid rgba(255,204,51,0.25)', color: '#ffcc33',
+          padding: '7px 30px', background: 'linear-gradient(180deg, rgba(255,204,51,0.15), rgba(255,204,51,0.06))',
+          border: '2px solid rgba(255,204,51,0.5)', color: '#ffdd44',
           cursor: 'pointer', fontFamily: "'Orbitron', monospace",
-          fontSize: 'clamp(8px, 1.1vw, 11px)', letterSpacing: 5,
-          transition: 'all 0.3s', textShadow: '0 0 8px #ffcc3330',
+          fontSize: 'clamp(9px, 1.2vw, 13px)', letterSpacing: 5, fontWeight: 700,
+          transition: 'all 0.3s', textShadow: '0 0 12px #ffcc3380',
           position: 'relative', overflow: 'hidden',
         }}
         onMouseEnter={e => { e.currentTarget.style.borderColor = '#ffcc33'; e.currentTarget.style.boxShadow = '0 0 20px #ffcc3330, inset 0 0 20px #ffcc3310'; e.currentTarget.style.background = 'linear-gradient(180deg, rgba(255,204,51,0.15), rgba(255,204,51,0.05))'; }}
         onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(255,204,51,0.25)'; e.currentTarget.style.boxShadow = 'none'; e.currentTarget.style.background = 'linear-gradient(180deg, rgba(255,204,51,0.08), rgba(255,204,51,0.03))'; }}
         >VOLVER</button>
         <div style={{
-          color: 'rgba(255,204,51,0.35)', fontFamily: "'Orbitron', monospace",
+          color: 'rgba(255,204,51,0.6)', fontFamily: "'Orbitron', monospace",
           fontSize: 'clamp(7px, 0.85vw, 10px)', letterSpacing: 3, textAlign: 'right',
           display: 'flex', alignItems: 'center', gap: 8,
         }}>

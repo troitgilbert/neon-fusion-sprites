@@ -117,48 +117,72 @@ export class EnergyTrail {
 export class GiantFist {
   x: number; y: number; targetX: number; targetY: number;
   life: number; maxLife: number; color: string;
-  side: number; diagonal: number; // 1 = down-diagonal, -1 = up-diagonal
+  side: number; diagonal: number;
   size: number; hit: boolean; owner: any;
   constructor(x: number, y: number, side: number, diagonal: number, color: string, size: number, owner: any) {
-    this.x = x + side * 20; this.y = y;
-    this.targetX = x + side * 80; this.targetY = y + diagonal * 40;
+    this.x = x + side * 15; this.y = y;
+    this.targetX = x + side * 60; this.targetY = y + diagonal * 30;
     this.side = side; this.diagonal = diagonal;
     this.color = color; this.size = size;
-    this.life = 20; this.maxLife = 20;
+    this.life = 16; this.maxLife = 16;
     this.hit = false; this.owner = owner;
   }
   update() {
-    const t = 1 - (this.life / this.maxLife);
-    this.x += (this.targetX - this.x) * 0.3;
-    this.y += (this.targetY - this.y) * 0.3;
+    this.x += (this.targetX - this.x) * 0.35;
+    this.y += (this.targetY - this.y) * 0.35;
     this.life--;
   }
   draw(ctx: CanvasRenderingContext2D) {
     const t = this.life / this.maxLife;
     ctx.save();
-    ctx.globalAlpha = t;
+    ctx.globalAlpha = t * 0.9;
     ctx.translate(this.x, this.y);
-    // Rotate based on diagonal direction
     const angle = this.diagonal > 0
-      ? (this.side > 0 ? Math.PI * 0.2 : Math.PI * 0.8)
-      : (this.side > 0 ? -Math.PI * 0.2 : -Math.PI * 0.8);
+      ? (this.side > 0 ? Math.PI * 0.25 : Math.PI * 0.75)
+      : (this.side > 0 ? -Math.PI * 0.25 : -Math.PI * 0.75);
     ctx.rotate(angle);
-    // Fist body
-    ctx.fillStyle = this.color;
-    ctx.beginPath(); ctx.arc(0, 0, this.size, 0, Math.PI * 2); ctx.fill();
-    ctx.strokeStyle = '#000'; ctx.lineWidth = 3; ctx.stroke();
-    // Knuckle lines
-    ctx.strokeStyle = 'rgba(0,0,0,0.4)'; ctx.lineWidth = 2;
-    for (let i = -1; i <= 1; i++) {
+    // Golden fist shape - main palm
+    const s = this.size;
+    const grad = ctx.createRadialGradient(0, 0, 0, 0, 0, s);
+    grad.addColorStop(0, '#ffe066');
+    grad.addColorStop(0.5, '#d4af37');
+    grad.addColorStop(1, '#b8860b');
+    ctx.fillStyle = grad;
+    // Palm (rounded rect shape)
+    ctx.beginPath();
+    ctx.moveTo(-s * 0.6, -s * 0.7);
+    ctx.lineTo(s * 0.6, -s * 0.7);
+    ctx.quadraticCurveTo(s * 0.8, -s * 0.7, s * 0.8, -s * 0.4);
+    ctx.lineTo(s * 0.8, s * 0.5);
+    ctx.quadraticCurveTo(s * 0.8, s * 0.8, s * 0.5, s * 0.8);
+    ctx.lineTo(-s * 0.5, s * 0.8);
+    ctx.quadraticCurveTo(-s * 0.8, s * 0.8, -s * 0.8, s * 0.5);
+    ctx.lineTo(-s * 0.8, -s * 0.4);
+    ctx.quadraticCurveTo(-s * 0.8, -s * 0.7, -s * 0.6, -s * 0.7);
+    ctx.closePath();
+    ctx.fill();
+    ctx.strokeStyle = '#8B6914'; ctx.lineWidth = 2; ctx.stroke();
+    // Fingers (4 bumps on top)
+    for (let i = 0; i < 4; i++) {
+      const fx = -s * 0.45 + i * s * 0.3;
+      ctx.fillStyle = grad;
       ctx.beginPath();
-      ctx.moveTo(i * this.size * 0.35, -this.size * 0.5);
-      ctx.lineTo(i * this.size * 0.35, -this.size * 0.2);
+      ctx.arc(fx, -s * 0.7, s * 0.18, 0, Math.PI * 2);
+      ctx.fill(); ctx.stroke();
+    }
+    // Knuckle creases
+    ctx.strokeStyle = 'rgba(139,105,20,0.5)'; ctx.lineWidth = 1;
+    for (let i = 0; i < 3; i++) {
+      const kx = -s * 0.3 + i * s * 0.3;
+      ctx.beginPath();
+      ctx.moveTo(kx, -s * 0.55);
+      ctx.lineTo(kx, -s * 0.35);
       ctx.stroke();
     }
-    // Energy glow
-    ctx.globalAlpha = t * 0.4;
-    ctx.fillStyle = '#ffffff';
-    ctx.beginPath(); ctx.arc(0, 0, this.size * 1.3, 0, Math.PI * 2); ctx.fill();
+    // Golden glow
+    ctx.globalAlpha = t * 0.3;
+    ctx.fillStyle = '#ffe066';
+    ctx.beginPath(); ctx.arc(0, 0, s * 1.2, 0, Math.PI * 2); ctx.fill();
     ctx.restore();
     ctx.globalAlpha = 1;
   }

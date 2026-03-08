@@ -190,7 +190,6 @@ export class Fighter {
       } else if (!this.customData && keys[c.up]) {
         this.attack('uppercut', game);
       } else if (!this.customData) {
-        // Back + hit = hook to the right, Forward + hit = hook to the left
         const backKey = this.side === 1 ? c.left : c.right;
         const fwdKey = this.side === 1 ? c.right : c.left;
         if (keys[backKey]) {
@@ -198,7 +197,16 @@ export class Fighter {
         } else if (keys[fwdKey]) {
           this.attack('hook_forward', game);
         } else {
-          this.attack('hit', game);
+          // Double tap hit detection - if hit again within 18 frames, throw other fist
+          const now = this.animTimer;
+          if (this._lastHitFrame && (now - this._lastHitFrame) < 18) {
+            // Second hit = alternate punch (like a 1-2 combo)
+            this.attack('hit', game);
+            this._lastHitFrame = 0; // reset so third tap starts fresh
+          } else {
+            this.attack('hit', game);
+            this._lastHitFrame = now;
+          }
         }
       } else {
         this.attack('hit', game);

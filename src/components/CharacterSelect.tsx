@@ -1235,21 +1235,28 @@ const CharacterSelect: React.FC = () => {
           }}>PLAYER 1</span>
         </div>
 
-        {/* Center title */}
-        <div style={{ textAlign: 'center' }}>
+        {/* Center title - HD golden */}
+        <div style={{ textAlign: 'center', position: 'relative' }}>
           <div style={{
-            color: '#ffcc33', fontFamily: "'Orbitron', monospace",
-            fontSize: 'clamp(14px, 2.5vw, 28px)', fontWeight: 900,
-            textShadow: '0 0 20px #ffcc3350, 0 0 40px #ff880020, 0 2px 4px rgba(0,0,0,0.8)',
-            letterSpacing: 8,
-            background: 'linear-gradient(180deg, #ffee88 0%, #ffcc33 40%, #ff8800 100%)',
+            fontFamily: "'Orbitron', monospace",
+            fontSize: 'clamp(16px, 3vw, 34px)', fontWeight: 900,
+            letterSpacing: 10,
+            background: 'linear-gradient(180deg, #fff8e0 0%, #ffee88 15%, #ffcc33 35%, #ff9900 55%, #cc7700 75%, #ffcc33 90%, #ffee88 100%)',
             WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text',
+            textShadow: 'none',
+            filter: 'drop-shadow(0 0 8px rgba(255,204,51,0.4)) drop-shadow(0 2px 0 rgba(0,0,0,0.9)) drop-shadow(0 4px 8px rgba(0,0,0,0.6))',
           }}>
-            {isP2Turn ? '⬥ PLAYER SELECT ⬥' : '⬥ CHARACTER SELECT ⬥'}
+            {isP2Turn ? 'PLAYER SELECT' : 'CHARACTER SELECT'}
           </div>
+          {/* Metallic underline accent */}
           <div style={{
-            color: 'rgba(255,204,51,0.3)', fontFamily: "'Orbitron', monospace",
-            fontSize: 'clamp(6px, 0.7vw, 8px)', letterSpacing: 6, marginTop: 2,
+            margin: '4px auto 0', width: 'clamp(120px, 20vw, 250px)', height: 2,
+            background: 'linear-gradient(90deg, transparent, #ffcc33 20%, #ffee88 50%, #ffcc33 80%, transparent)',
+            boxShadow: '0 0 8px rgba(255,204,51,0.3)',
+          }} />
+          <div style={{
+            color: 'rgba(255,204,51,0.25)', fontFamily: "'Orbitron', monospace",
+            fontSize: 'clamp(6px, 0.7vw, 8px)', letterSpacing: 6, marginTop: 3,
           }}>CHOOSE YOUR FIGHTER</div>
         </div>
 
@@ -1360,78 +1367,64 @@ const CharacterSelect: React.FC = () => {
               pointerEvents: 'none',
             }} />
 
-          {/* Diamond hex grid */}
-          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2, position: 'relative', zIndex: 2 }}>
+          {/* Honeycomb hex grid - proper beehive layout */}
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 0, position: 'relative', zIndex: 2 }}>
             {(() => {
               const allItems = [
                 ...charRenderData.map((ch, i) => ({ type: 'char' as const, ch, i })),
                 { type: 'custom' as const, ch: null as any, i: -1 },
                 { type: 'random' as const, ch: null as any, i: -2 },
               ];
-              const hexW = Math.min(window.innerWidth * 0.07, 68);
+              const hexW = Math.min(window.innerWidth * 0.068, 66);
               const hexH = hexW * 1.155;
-              
-              // Diamond distribution: build rows with increasing then decreasing count
-              // e.g. for 8 items: [2, 3, 2, 1] or [1, 2, 3, 2]
+              const cols = 4;
               const totalItems = allItems.length;
-              // Create a diamond pattern: center rows have most items
-              const maxCols = Math.min(totalItems, 5);
-              const diamondRows: number[] = [];
-              
-              // Build diamond: 2, 3, 4, 3, 2 pattern (or similar based on count)
-              if (totalItems <= 3) {
-                diamondRows.push(totalItems);
-              } else if (totalItems <= 5) {
-                diamondRows.push(2, totalItems - 2 > 0 ? Math.min(3, totalItems - 2) : 1);
-                const rem = totalItems - diamondRows.reduce((a, b) => a + b, 0);
-                if (rem > 0) diamondRows.push(rem);
-              } else {
-                // Classic diamond: build up then down
-                let remaining = totalItems;
-                const half: number[] = [];
-                let cols = 2;
-                while (remaining > 0 && cols <= maxCols) {
-                  const take = Math.min(cols, remaining);
-                  half.push(take);
-                  remaining -= take;
-                  cols++;
+              const rows: (typeof allItems[number] | null)[][] = [];
+              let idx = 0;
+              let rowNum = 0;
+              while (idx < totalItems) {
+                // Odd rows (0-indexed) get offset and same col count
+                const rowCols = cols;
+                const row: (typeof allItems[number] | null)[] = [];
+                for (let c = 0; c < rowCols && idx < totalItems; c++) {
+                  row.push(allItems[idx++]);
                 }
-                // Add middle and mirror
-                if (remaining > 0) {
-                  half.push(Math.min(maxCols, remaining));
-                  remaining -= Math.min(maxCols, remaining);
-                }
-                while (remaining > 0) {
-                  const take = Math.min(maxCols - 1, remaining);
-                  half.push(take > 0 ? take : 1);
-                  remaining -= (take > 0 ? take : 1);
-                }
-                half.forEach(r => diamondRows.push(r));
+                rows.push(row);
+                rowNum++;
               }
-              
-              let itemIdx = 0;
-              let flatIdx = 0;
-              return diamondRows.map((rowCount, rIdx) => {
-                const rowItems = allItems.slice(itemIdx, itemIdx + rowCount);
-                itemIdx += rowCount;
-                return (
-                <div key={rIdx} style={{
-                  display: 'flex', gap: 2, justifyContent: 'center',
-                  marginTop: rIdx > 0 ? -hexH * 0.08 : 0,
+
+              // Each hex cell is wrapped with a white-bordered hex container
+              const HexCell: React.FC<{ children: React.ReactNode; style: React.CSSProperties }> = ({ children, style }) => (
+                <div style={{
+                  width: hexW + 4, height: hexH + 4,
+                  clipPath: 'polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%)',
+                  background: 'rgba(255,255,255,0.35)',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  flexShrink: 0,
                 }}>
-                  {rowItems.map((item) => {
+                  <div style={{
+                    width: hexW, height: hexH,
+                    clipPath: 'polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%)',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    ...style,
+                  }}>
+                    {children}
+                  </div>
+                </div>
+              );
+
+              let flatIdx = 0;
+              return rows.map((row, rIdx) => (
+                <div key={rIdx} style={{
+                  display: 'flex', gap: 3, justifyContent: 'center',
+                  marginTop: rIdx > 0 ? -hexH * 0.19 : 0,
+                  marginLeft: rIdx % 2 !== 0 ? (hexW + 4 + 3) * 0.5 : 0,
+                }}>
+                  {row.map((item) => {
+                    if (!item) return null;
                     const myFlatIdx = flatIdx++;
                     const isCursor = cursorIdx === myFlatIdx;
-                    
-                    // Common hex cell style
-                    const baseStyle = {
-                      width: hexW, height: hexH,
-                      clipPath: 'polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%)',
-                      display: 'flex', alignItems: 'center', justifyContent: 'center',
-                      transition: 'all 0.15s ease-out',
-                      cursor: 'pointer',
-                    };
-                    
+
                     if (item.type === 'char') {
                       const ch = item.ch!;
                       const i = item.i;
@@ -1445,38 +1438,42 @@ const CharacterSelect: React.FC = () => {
                           onMouseEnter={() => { setHoveredIdx(i); playSelectSound(); }}
                           onMouseLeave={() => setHoveredIdx(null)}
                           style={{
-                            ...baseStyle,
-                            position: 'relative',
+                            transition: 'all 0.15s ease-out',
+                            transform: isHovered ? 'scale(1.15)' : 'scale(1)',
+                            zIndex: isHovered ? 10 : 1,
+                            cursor: 'pointer',
+                            filter: isP1Selected
+                              ? 'drop-shadow(0 0 10px rgba(255,204,51,0.5))'
+                              : isHovered
+                                ? `drop-shadow(0 0 12px ${ch.eyeColor}60)`
+                                : 'none',
+                          }}
+                        >
+                          <HexCell style={{
                             background: isFlashing
                               ? 'linear-gradient(135deg, rgba(255,204,51,0.5), rgba(255,136,0,0.3))'
                               : isP1Selected
                                 ? 'linear-gradient(135deg, rgba(255,204,51,0.25), rgba(255,136,0,0.15))'
                                 : isHovered
                                   ? 'linear-gradient(135deg, rgba(40,35,20,0.98), rgba(30,25,12,0.98))'
-                                  : 'linear-gradient(135deg, rgba(15,15,25,0.98), rgba(10,10,20,0.98))',
-                            transform: isHovered ? 'scale(1.15)' : 'scale(1)',
-                            zIndex: isHovered ? 10 : 1,
-                            filter: isP1Selected
-                              ? 'drop-shadow(0 0 10px rgba(255,204,51,0.4))'
-                              : isHovered
-                                ? `drop-shadow(0 0 12px ${ch.eyeColor}50)`
-                                : 'drop-shadow(0 0 3px rgba(255,204,51,0.08))',
-                          }}
-                        >
-                          <CanvasPortrait
-                            char={ch}
-                            size={Math.min(hexW * 0.5, 42)}
-                            isSelected={isP1Selected}
-                            isHovered={isHovered}
-                            facing={1}
-                          />
-                          {isP1Selected && (
-                             <div style={{
-                              position: 'absolute', bottom: '10%',
-                              color: '#ffcc33', fontSize: 7, fontFamily: "'Orbitron', monospace",
-                              fontWeight: 900, textShadow: '0 0 8px #ffcc33', letterSpacing: 2,
-                            }}>P1</div>
-                          )}
+                                  : 'linear-gradient(135deg, rgba(12,12,22,0.98), rgba(8,8,18,0.98))',
+                            position: 'relative',
+                          }}>
+                            <CanvasPortrait
+                              char={ch}
+                              size={Math.min(hexW * 0.48, 40)}
+                              isSelected={isP1Selected}
+                              isHovered={isHovered}
+                              facing={1}
+                            />
+                            {isP1Selected && (
+                              <div style={{
+                                position: 'absolute', bottom: '12%',
+                                color: '#ffcc33', fontSize: 7, fontFamily: "'Orbitron', monospace",
+                                fontWeight: 900, textShadow: '0 0 8px #ffcc33', letterSpacing: 2,
+                              }}>P1</div>
+                            )}
+                          </HexCell>
                         </div>
                       );
                     }
@@ -1487,16 +1484,19 @@ const CharacterSelect: React.FC = () => {
                           onClick={() => { setShowCustomMenu(true); playConfirmSound(); }}
                           onMouseEnter={() => setHoveredIdx(null)}
                           style={{
-                            ...baseStyle,
-                            background: isCursor
-                              ? 'linear-gradient(135deg, rgba(40,35,20,0.98), rgba(30,25,12,0.98))'
-                              : 'linear-gradient(135deg, rgba(15,15,25,0.98), rgba(10,10,20,0.98))',
+                            transition: 'all 0.15s', cursor: 'pointer',
                             transform: isCursor ? 'scale(1.15)' : 'scale(1)',
                             zIndex: isCursor ? 10 : 1,
-                            filter: isCursor ? 'drop-shadow(0 0 10px rgba(255,204,51,0.3))' : 'drop-shadow(0 0 3px rgba(255,204,51,0.08))',
+                            filter: isCursor ? 'drop-shadow(0 0 10px rgba(255,204,51,0.3))' : 'none',
                           }}
                         >
-                          <span style={{ color: '#ffcc33', fontSize: hexW * 0.3, fontWeight: 900, fontFamily: "'Orbitron', monospace", textShadow: '0 0 12px #ffcc3350' }}>?</span>
+                          <HexCell style={{
+                            background: isCursor
+                              ? 'linear-gradient(135deg, rgba(40,35,20,0.98), rgba(30,25,12,0.98))'
+                              : 'linear-gradient(135deg, rgba(12,12,22,0.98), rgba(8,8,18,0.98))',
+                          }}>
+                            <span style={{ color: '#ffcc33', fontSize: hexW * 0.3, fontWeight: 900, fontFamily: "'Orbitron', monospace", textShadow: '0 0 12px #ffcc3350' }}>?</span>
+                          </HexCell>
                         </div>
                       );
                     }
@@ -1506,22 +1506,24 @@ const CharacterSelect: React.FC = () => {
                         onClick={handleRandomSelect}
                         onMouseEnter={() => setHoveredIdx(null)}
                         style={{
-                          ...baseStyle,
-                          background: isCursor
-                            ? 'linear-gradient(135deg, rgba(40,35,20,0.98), rgba(30,25,12,0.98))'
-                            : 'linear-gradient(135deg, rgba(15,15,25,0.98), rgba(10,10,20,0.98))',
+                          transition: 'all 0.15s', cursor: 'pointer',
                           transform: isCursor ? 'scale(1.15)' : 'scale(1)',
                           zIndex: isCursor ? 10 : 1,
-                          filter: isCursor ? 'drop-shadow(0 0 10px rgba(255,204,51,0.3))' : 'drop-shadow(0 0 3px rgba(255,204,51,0.08))',
+                          filter: isCursor ? 'drop-shadow(0 0 10px rgba(255,204,51,0.3))' : 'none',
                         }}
                       >
-                        <span style={{ fontSize: hexW * 0.25 }}>🎲</span>
+                        <HexCell style={{
+                          background: isCursor
+                            ? 'linear-gradient(135deg, rgba(40,35,20,0.98), rgba(30,25,12,0.98))'
+                            : 'linear-gradient(135deg, rgba(12,12,22,0.98), rgba(8,8,18,0.98))',
+                        }}>
+                          <span style={{ fontSize: hexW * 0.25 }}>🎲</span>
+                        </HexCell>
                       </div>
                     );
                   })}
                 </div>
-              );
-              });
+              ));
             })()}
           </div>
 

@@ -1,7 +1,12 @@
 // Image-based sprite system for Edowado
-// Uses high-quality anime-style sprites (Guilty Gear style)
+// Uses high-quality Melty Blood style anime sprites
 
-import idleImg from '@/assets/edowado-idle-sheet.png';
+import idle1Img from '@/assets/edowado-idle1.png';
+import idle2Img from '@/assets/edowado-idle2.png';
+import idle3Img from '@/assets/edowado-idle3.png';
+import idle4Img from '@/assets/edowado-idle4.png';
+import idle5Img from '@/assets/edowado-idle5.png';
+import idle6Img from '@/assets/edowado-idle6.png';
 import walk1Img from '@/assets/edowado-walk1.png';
 import walk2Img from '@/assets/edowado-walk2.png';
 import walk3Img from '@/assets/edowado-walk3.png';
@@ -23,7 +28,12 @@ const imageCache: Map<string, HTMLImageElement> = new Map();
 let imagesLoaded = false;
 
 const SPRITE_SOURCES: Record<string, string> = {
-  idle: idleImg,
+  idle1: idle1Img,
+  idle2: idle2Img,
+  idle3: idle3Img,
+  idle4: idle4Img,
+  idle5: idle5Img,
+  idle6: idle6Img,
   walk1: walk1Img,
   walk2: walk2Img,
   walk3: walk3Img,
@@ -59,9 +69,9 @@ export function preloadSprites(): Promise<void> {
   return loadPromise;
 }
 
-// Animation config
+// Animation config - idle cycles through 6 frames for fluid breathing
 const SPRITE_FRAMES: Record<SpriteState, { keys: string[]; speed: number }> = {
-  idle:   { keys: ['idle'], speed: 0.03 },
+  idle:   { keys: ['idle1', 'idle2', 'idle3', 'idle4', 'idle5', 'idle6'], speed: 0.08 },
   walk:   { keys: ['walk1', 'walk2', 'walk3', 'walk4', 'walk5', 'walk6', 'walk7', 'walk8'], speed: 0.15 },
   attack: { keys: ['attack'],  speed: 0.2 },
   jump:   { keys: ['jump'],    speed: 0.1 },
@@ -118,10 +128,10 @@ export function drawEdowadoSprite(
 }
 
 /**
- * Get the idle sprite image for menus
+ * Get the idle sprite image for menus (first frame)
  */
 export function getIdleSpriteImage(): HTMLImageElement | null {
-  return imageCache.get('idle') || null;
+  return imageCache.get('idle1') || null;
 }
 
 /**
@@ -132,7 +142,7 @@ export function drawIdleMenuSprite(
   x: number, y: number,
   width: number, height: number
 ) {
-  const img = imageCache.get('idle');
+  const img = imageCache.get('idle1');
   if (!img) return;
   ctx.drawImage(img, x, y, width, height);
 }

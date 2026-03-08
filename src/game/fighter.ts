@@ -2,7 +2,7 @@ import { CHAR_DATA, GROUND_Y, CANVAS_W } from './constants';
 import { FloatingText, PunchCircle } from './effects';
 import { playHitSound, playSpecialSound, playBlockSound, playSuperSound } from './audio';
 import type { Controls, CustomCharData } from './types';
-import { drawEdowadoSprite, type SpriteState } from './sprites';
+import { drawEdowadoSprite, getSpriteState, type SpriteState } from './sprites';
 
 const SPEED_MAP: Record<string, number> = { lento: 3.5, normal: 5, rapido: 7, velocista: 9.5 };
 const SIZE_MAP: Record<string, number> = { 'pequeño': 0.75, normal: 1, grande: 1.3 };
@@ -455,7 +455,11 @@ export class Fighter {
 
     // Edowado uses pixel-art sprite rendering
     if (this.charIdx === 0 && !this.customData && !this.isBigBang) {
-      const state: SpriteState = 'idle'; // Force single idle sprite
+      const state: SpriteState = getSpriteState(
+        this.hitFlash, this.stun, this.isBlocking,
+        this.handMode, this.isGrounded, this.vx,
+        this.isFlying, this.isDashing
+      );
       
       if (this.hitFlash > 0) { ctx.shadowBlur = 20; ctx.shadowColor = '#ffffff'; }
       if (game.timeStopped && game.timeStopper !== this) ctx.filter = 'grayscale(100%)';

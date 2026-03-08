@@ -26,8 +26,8 @@ const StageSelect: React.FC = () => {
   }, [engine, setGameState]);
 
   return (
-    <div className="fixed inset-0 z-50 flex flex-col items-center justify-center" style={{ background: 'rgba(0,0,0,0.85)', backdropFilter: 'blur(8px)' }}>
-      <h2 style={{
+    <div className="fixed inset-0 z-50 flex flex-col items-center justify-center anim-screen-wipe scanline-overlay" style={{ background: 'rgba(0,0,0,0.85)', backdropFilter: 'blur(8px)' }}>
+      <h2 className="anim-title-slam" style={{
         color: '#00ffff', fontSize: 'clamp(28px, 5vw, 48px)',
         textShadow: '0 0 20px #00ffff, 0 0 40px rgba(0,255,255,0.3)',
         marginBottom: 50, fontFamily: "'Orbitron', monospace", letterSpacing: 6

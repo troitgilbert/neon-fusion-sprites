@@ -26,7 +26,7 @@ export class Fighter {
   isBigBang: boolean;
   isCrouching: boolean;
   emoteTimer: number; emoteType: number;
-
+  _lastHitFrame: number;
   constructor(id: number, charIdx: number, x: number, side: number, controls: Controls, isAI = false, skinId: string | null = null, customData: CustomCharData | null = null) {
     this.id = id; this.charIdx = charIdx;
     this.customData = customData;
@@ -53,6 +53,7 @@ export class Fighter {
     this.isBigBang = false;
     this.isCrouching = false;
     this.emoteTimer = 0; this.emoteType = 0;
+    this._lastHitFrame = 0;
   }
 
   reset(x: number, side: number) {
@@ -190,7 +191,6 @@ export class Fighter {
       } else if (!this.customData && keys[c.up]) {
         this.attack('uppercut', game);
       } else if (!this.customData) {
-        // Back + hit = hook to the right, Forward + hit = hook to the left
         const backKey = this.side === 1 ? c.left : c.right;
         const fwdKey = this.side === 1 ? c.right : c.left;
         if (keys[backKey]) {
@@ -198,7 +198,16 @@ export class Fighter {
         } else if (keys[fwdKey]) {
           this.attack('hook_forward', game);
         } else {
-          this.attack('hit', game);
+          // Double tap hit detection - if hit again within 18 frames, throw other fist
+          const now = this.animTimer;
+          if (this._lastHitFrame && (now - this._lastHitFrame) < 18) {
+            // Second hit = alternate punch (like a 1-2 combo)
+            this.attack('hit', game);
+            this._lastHitFrame = 0; // reset so third tap starts fresh
+          } else {
+            this.attack('hit', game);
+            this._lastHitFrame = now;
+          }
         }
       } else {
         this.attack('hit', game);
@@ -433,7 +442,7 @@ export class Fighter {
       this.handOrder *= -1;
       // Hook towards back - giant fist appears diagonal UP
       this.vx = -this.side * 6;
-      const giantFist = new GiantFist(this.x, this.y - 10, this.side, -1, '#d4af37', 22, this);
+      const giantFist = new GiantFist(this.x, this.y - 10, this.side, -1, '#d4af37', 14, this);
       game.particles.push(giantFist);
       // Extended range thanks to giant fist
       if (dist < 120 && Math.abs(this.y - opp.y) < 60) {
@@ -466,7 +475,7 @@ export class Fighter {
       this.handOrder *= -1;
       // Hook towards forward - giant fist appears diagonal DOWN
       this.vx = this.side * 16;
-      const giantFist = new GiantFist(this.x, this.y, this.side, 1, '#d4af37', 22, this);
+      const giantFist = new GiantFist(this.x, this.y, this.side, 1, '#d4af37', 14, this);
       game.particles.push(giantFist);
       // Extended range thanks to giant fist
       if (dist < 130 && Math.abs(this.y - opp.y) < 60) {
@@ -732,6 +741,25 @@ export class Fighter {
   }
 
   _drawEmote(ctx: CanvasRenderingContext2D) {
+    const isEdowado = this.charIdx === 0 && !this.customData;
+
+    // Edowado raises his hand - no speech bubble, just a golden glow on raised fist
+    if (isEdowado) {
+      ctx.save();
+      const fadeIn = Math.min(1, (90 - this.emoteTimer) / 10);
+      const fadeOut = Math.min(1, this.emoteTimer / 10);
+      ctx.globalAlpha = fadeIn * fadeOut * 0.6;
+      // Golden sparkles around raised hand
+      for (let i = 0; i < 3; i++) {
+        const sx = this.x + 22 + (Math.random() - 0.5) * 16;
+        const sy = this.y - 32 + (Math.random() - 0.5) * 16;
+        ctx.fillStyle = '#ffe066';
+        ctx.beginPath(); ctx.arc(sx, sy, 1.5 + Math.random() * 2, 0, Math.PI * 2); ctx.fill();
+      }
+      ctx.restore();
+      return;
+    }
+
     ctx.save();
     const fadeIn = Math.min(1, (90 - this.emoteTimer) / 15);
     const fadeOut = Math.min(1, this.emoteTimer / 15);
@@ -756,16 +784,10 @@ export class Fighter {
     ctx.lineTo(ex, ey + 20);
     ctx.fill();
 
-    // Emote content - character specific
     ctx.font = "bold 14px sans-serif";
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
-    let emotes: string[];
-    if (this.charIdx === 0 && !this.customData) {
-      emotes = ['👨‍🍳', '👊', '🍖', '🩺']; // Chef, Puño, Comida, Doctor
-    } else {
-      emotes = ['😤', '💪', '🔥', '⭐'];
-    }
+    const emotes = ['😤', '💪', '🔥', '⭐'];
     ctx.fillStyle = '#000';
     ctx.fillText(emotes[this.emoteType] || emotes[0], ex, ey);
 
@@ -913,23 +935,32 @@ export class Fighter {
 
     if (this.handMode === 'normal') {
       if (isEdowado) {
-        if (this.isFlying) {
+        // Boxer stance - hands up near face, slight bob and weave
+        if (this.emoteTimer > 0) {
+          // Emote: raise right hand up high
+          lx = this.x + 16; ly = this.y - 4;
+          rx = this.x + 22; ry = this.y - 32 - Math.sin(this.emoteTimer * 0.15) * 4;
+        } else if (this.isFlying) {
           const bob = Math.sin(this.handPhase * 0.6) * 3;
-          lx = this.x + 16; ly = this.y - 6 + bob;
-          rx = this.x + 30; ry = this.y - 2 - bob * 0.7;
+          lx = this.x + 16; ly = this.y - 10 + bob;
+          rx = this.x + 28; ry = this.y - 8 - bob * 0.7;
         } else if (running) {
-          const pump = Math.sin(this.handPhase * 2) * 12;
-          lx = this.x + 20 + pump; ly = this.y - 2;
-          rx = this.x + 20 - pump; ry = this.y + 2;
+          // Boxer sprint - alternating pumps
+          const pump = Math.sin(this.handPhase * 2.2) * 10;
+          lx = this.x + 18 + pump; ly = this.y - 10;
+          rx = this.x + 22 - pump; ry = this.y - 6;
         } else if (moving) {
-          const weave = Math.sin(this.handPhase * 1.2) * 3;
-          const stepBob = Math.sin(this.handPhase * 1.8) * 2;
-          lx = this.x + 14 + weave; ly = this.y - 7 + stepBob;
-          rx = this.x + 28 - weave; ry = this.y - 3 - stepBob;
+          // Boxer walk - guard up, slight weave
+          const weave = Math.sin(this.handPhase * 1.4) * 3;
+          const bob = Math.sin(this.handPhase * 1.8) * 2;
+          lx = this.x + 16 + weave; ly = this.y - 12 + bob;
+          rx = this.x + 26 - weave; ry = this.y - 8 - bob;
         } else {
-          const bob = Math.sin(this.handPhase * 0.8) * 2;
-          lx = this.x + 14; ly = this.y - 8 + bob;
-          rx = this.x + 28; ry = this.y - 4 - bob * 0.5;
+          // Boxer idle - guard up, rhythmic bob
+          const bob = Math.sin(this.handPhase * 0.9) * 2.5;
+          const sway = Math.sin(this.handPhase * 0.45) * 1.5;
+          lx = this.x + 15 + sway; ly = this.y - 12 + bob;
+          rx = this.x + 27 - sway; ry = this.y - 9 - bob;
         }
       } else if (isKaito) {
         // Kaito: relaxed ninja stance

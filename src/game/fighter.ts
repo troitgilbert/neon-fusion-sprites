@@ -1007,7 +1007,7 @@ export class Fighter {
     const hx = this.x + 36, hy = this.y + 8, hr = 14;
     if (game.state === 'FIGHT') {
       const opp = (this.id === 1) ? game.p2 : game.p1;
-      if (Math.hypot(hx - opp.x, hy - opp.y) < hr + 22 && this.handMode === 'slam_arc') {
+      if (Math.hypot(hx - opp.x, hy - opp.y) < hr + 22 && (this.handMode === 'slam_arc' || this.handMode === 'uppercut_up')) {
         opp.takeDamage(1, true);
         opp.vx = this.side * 6;
         game.spawnParticles(opp.x, opp.y, '#fff', 6, 2);

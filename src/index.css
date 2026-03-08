@@ -104,14 +104,27 @@
   100% { transform: translateX(400px) translateY(200px); opacity: 0; width: 0; }
 }
 
-.shooting-star {
-  position: absolute;
-  height: 1px;
-  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.9), transparent);
-  border-radius: 50%;
-  box-shadow: 0 0 6px rgba(255,255,255,0.6), 0 0 12px rgba(0,200,255,0.3);
-  animation: shootingStar 6s ease-in-out infinite;
-  transform-origin: left center;
+@keyframes titleGlow {
+  0%, 100% { filter: drop-shadow(0 0 20px rgba(255,120,0,0.5)) drop-shadow(0 0 50px rgba(255,60,0,0.3)) drop-shadow(0 4px 0 rgba(0,0,0,0.8)) brightness(1); }
+  50% { filter: drop-shadow(0 0 30px rgba(255,150,0,0.7)) drop-shadow(0 0 80px rgba(255,80,0,0.4)) drop-shadow(0 4px 0 rgba(0,0,0,0.9)) brightness(1.1); }
+}
+
+@keyframes sweepRight {
+  0% { transform: translateX(-100%); }
+  50% { transform: translateX(100%); }
+  100% { transform: translateX(100%); }
+}
+
+@keyframes mysteryFlicker {
+  0%, 90%, 100% { opacity: 0.4; }
+  92% { opacity: 0; }
+  95% { opacity: 0.6; }
+  97% { opacity: 0.1; }
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 0.6; }
+  50% { opacity: 1; }
 }
 
 @keyframes smokeMove { 0% { transform: translateX(0); } 100% { transform: translateX(-200px); } }

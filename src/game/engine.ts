@@ -195,8 +195,7 @@ export class GameEngine {
     } else {
       this.selectedSkins.p2 = skinId; this.p2Choice = charIdx;
     }
-    // Always return to roster — user must press Enter to proceed
-    this.setState('SELECT');
+    // Don't navigate — just store choices. The roster handles navigation via Enter.
   }
 
   // Called when user presses Enter with all selections made

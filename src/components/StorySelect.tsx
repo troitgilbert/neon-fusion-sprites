@@ -203,7 +203,7 @@ function drawChar(ctx: CanvasRenderingContext2D, cx: number, cy: number, c: Stor
     ctx.fillStyle = 'rgba(255,255,255,0.8)'; ctx.fill();
     ctx.restore();
     // Pupil
-    ctx.beginPath(); ctx.arc(ex + f * eyeR * 0.15, eyeY + eyeR * 0.05, eyeR * 0.35, 0, Math.PI * 2);
+    ctx.beginPath(); ctx.arc(ex, eyeY, eyeR * 0.35, 0, Math.PI * 2);
     ctx.fillStyle = 'rgba(0,0,0,0.5)'; ctx.fill();
   });
 }

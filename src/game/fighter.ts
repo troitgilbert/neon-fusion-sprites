@@ -398,15 +398,14 @@ export class Fighter {
     }
 
     // === DIRECTIONAL ATTACKS (all non-custom characters) ===
+    // Down + Hit = Gancho Derecho (pins enemy to ground)
     if (type === 'hook_down') {
       this.handMode = 'slam_arc'; this.handTimer = 20;
       this.vx = this.side * 12;
-      // Extended hitbox for hook_down - wider range and active during travel
       if (dist < 110 && Math.abs(this.y - opp.y) < 60) {
         const dmg = 1.2 * this.damageBoost;
         opp.takeDamage(dmg, true);
         game.trackStat('totalDamage', dmg);
-        // Pin enemy to ground - forced crouch + paralyzed 1.5 seconds (90 frames)
         opp.vx = this.side * 2; opp.vy = 8;
         opp.stun = 90;
         opp.isCrouching = true;
@@ -415,70 +414,33 @@ export class Fighter {
           game.spawnParticles(opp.x, opp.y + 10, '#ffdd00', 22, 3);
           game.particles.push(new PunchCircle(opp.x, opp.y, '#ffdd00'));
         } else {
-          game.texts.push(new FloatingText(opp.x, opp.y - 30, 'GANCHO', '#ff8800'));
+          game.texts.push(new FloatingText(opp.x, opp.y - 30, 'GANCHO DERECHO', '#ff8800'));
           game.spawnParticles(opp.x, opp.y + 10, '#ff8800', 18, 3);
           game.particles.push(new PunchCircle(opp.x, opp.y, '#ff8800'));
         }
-        // Blue energy trail reversed (downward)
         game.particles.push(new EnergyTrail(this.x + this.side * 20, this.y - 10, '#4488ff', true));
         game.hitStop = 7; game.shake = 14;
         playHitSound();
         this.comboHits++;
         game.trackStat('comboMax', this.comboHits);
       } else {
-        // Still show energy even on whiff
         game.particles.push(new EnergyTrail(this.x + this.side * 20, this.y - 10, '#4488ff', true));
       }
       this.damageBoost = 1;
       return;
     }
 
-    if (type === 'hook_back') {
-      this.handMode = this.handOrder > 0 ? 'punch_right' : 'punch_left'; this.handTimer = 14;
-      this.handOrder *= -1;
-      // Hook towards back - giant fist appears diagonal UP
-      this.vx = -this.side * 6;
-      const giantFist = new GiantFist(this.x, this.y - 10, this.side, -1, '#d4af37', 14, this);
-      game.particles.push(giantFist);
-      // Extended range thanks to giant fist
-      if (dist < 120 && Math.abs(this.y - opp.y) < 60) {
-        const dmg = 1.0 * this.damageBoost;
-        opp.takeDamage(dmg, true);
-        game.trackStat('totalDamage', dmg);
-        // Send flying diagonally upward
-        opp.vx = -this.side * 14; opp.vy = -16;
-        opp.stun = 10;
-        opp.isGrounded = false;
-        if (this.charIdx === 1) {
-          game.texts.push(new FloatingText(opp.x, opp.y - 30, 'GOLPE REVERSO', '#88ddff'));
-          game.spawnParticles(opp.x, opp.y, '#88ddff', 15, 2);
-        } else {
-          game.texts.push(new FloatingText(opp.x, opp.y - 30, 'GANCHO DERECHO', '#ff6600'));
-          game.spawnParticles(opp.x, opp.y, '#ff6600', 15, 2);
-        }
-        game.particles.push(new PunchCircle(opp.x, opp.y, this.data.eyes));
-        game.hitStop = 6; game.shake = 12;
-        playHitSound();
-        this.comboHits++;
-        game.trackStat('comboMax', this.comboHits);
-      }
-      this.damageBoost = 1;
-      return;
-    }
-
+    // Forward + Hit = Gancho Izquierdo (forward punch with giant fist)
     if (type === 'hook_forward') {
       this.handMode = this.handOrder > 0 ? 'punch_left' : 'punch_right'; this.handTimer = 14;
       this.handOrder *= -1;
-      // Hook towards forward - giant fist appears diagonal DOWN
       this.vx = this.side * 16;
-      const giantFist = new GiantFist(this.x, this.y, this.side, 1, '#d4af37', 14, this);
+      const giantFist = new GiantFist(this.x, this.y, this.side, 1, '#d4af37', 10, this);
       game.particles.push(giantFist);
-      // Extended range thanks to giant fist
       if (dist < 130 && Math.abs(this.y - opp.y) < 60) {
         const dmg = 1.3 * this.damageBoost;
         opp.takeDamage(dmg, true);
         game.trackStat('totalDamage', dmg);
-        // Send flying forward hard
         opp.vx = this.side * 22; opp.vy = -4;
         opp.stun = 9;
         if (this.charIdx === 1) {
@@ -498,31 +460,29 @@ export class Fighter {
       return;
     }
 
+    // Up + Hit = Uppercut (crescent arc animation, moderate launch)
     if (type === 'uppercut') {
-      this.handMode = 'strike'; this.handTimer = 18;
+      this.handMode = 'slam_arc'; this.handTimer = 20;
       this.vx = this.side * 8;
-      // Blue energy trail upward
       game.particles.push(new EnergyTrail(this.x + this.side * 10, this.y, '#4488ff', false));
-      if (dist < 75 && Math.abs(this.y - opp.y) < 55) {
+      if (dist < 85 && Math.abs(this.y - opp.y) < 55) {
         const dmg = 1.5 * this.damageBoost;
         opp.takeDamage(dmg, true);
         game.trackStat('totalDamage', dmg);
-        opp.vx = this.side * 6; opp.vy = -20;
-        opp.stun = 12;
+        opp.vx = this.side * 5; opp.vy = -12;
+        opp.stun = 10;
         opp.isGrounded = false;
         if (this.charIdx === 1) {
           game.texts.push(new FloatingText(opp.x, opp.y - 40, 'DESTELLO ASCENDENTE', '#ffffff'));
-          game.spawnParticles(opp.x, opp.y - 10, '#ffffff', 30, 3);
+          game.spawnParticles(opp.x, opp.y - 10, '#ffffff', 20, 3);
           game.particles.push(new PunchCircle(opp.x, opp.y, '#ffffff'));
-          this.vy = -10;
         } else {
           game.texts.push(new FloatingText(opp.x, opp.y - 40, 'UPPERCUT', '#ffff00'));
-          game.spawnParticles(opp.x, opp.y - 10, '#4488ff', 25, 3);
+          game.spawnParticles(opp.x, opp.y - 10, '#4488ff', 18, 3);
           game.particles.push(new PunchCircle(opp.x, opp.y, '#4488ff'));
         }
-        // Extra blue energy burst on hit
         game.particles.push(new EnergyTrail(opp.x, opp.y, '#66aaff', false));
-        game.hitStop = 8; game.shake = 16;
+        game.hitStop = 7; game.shake = 12;
         playSuperSound();
         this.comboHits++;
         game.trackStat('comboMax', this.comboHits);

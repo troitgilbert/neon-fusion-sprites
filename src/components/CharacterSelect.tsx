@@ -980,6 +980,26 @@ const CharacterSelect: React.FC = () => {
 
   const GRID_COLS = Math.min(allGridItems.length, 4);
 
+  // Skin color overrides for preview
+  const SKIN_COLOR_MAP: Record<string, Record<string, Partial<CharRenderData>>> = {
+    'KAITO': {
+      'demonioBlanco': { skinColor: '#000000', clothesColor: '#1a1a1a', handsColor: '#000000' },
+      'demonioBlanco2': { clothesColor: '#1a1a1a', handsColor: '#444444' },
+    },
+    'EDOWADO': {},
+  };
+
+  // Skin preview for portrait display (inline, not overlay)
+  const skinPreviewChar = React.useMemo(() => {
+    if (!skinSelectFor) return null;
+    const renderCh = charRenderData[skinSelectFor.charIdx];
+    if (!previewSkinId) return renderCh;
+    const ch = CHAR_DATA[skinSelectFor.charIdx];
+    const overrides = SKIN_COLOR_MAP[ch.name]?.[previewSkinId];
+    if (!overrides) return renderCh;
+    return { ...renderCh, ...overrides };
+  }, [skinSelectFor, previewSkinId, charRenderData]);
+
   // WASD navigation
   React.useEffect(() => {
     if (skinSelectFor || showCustomMenu) return;

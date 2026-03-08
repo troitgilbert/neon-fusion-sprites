@@ -261,35 +261,36 @@ const CanvasPortrait: React.FC<{
   return <canvas ref={canvasRef} style={{ display: 'block' }} />;
 };
 
-// ===== Big portrait for P1/P2 side =====
+// ===== Big animated portrait for P1/P2 =====
 const BigPortrait: React.FC<{
   char: CharRenderData | null;
   customChar: CustomCharData | null;
   color: string;
   facing?: number;
-}> = ({ char, customChar, color, facing = 1 }) => {
+  label: string;
+}> = ({ char, customChar, color, facing = 1, label }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const frameRef = useRef(0);
   const animRef = useRef<number>(0);
-  const size = 220;
 
   const draw = useCallback(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
+    const W = canvas.parentElement?.clientWidth || 300;
+    const H = canvas.parentElement?.clientHeight || 400;
     const dpr = Math.min(window.devicePixelRatio || 1, 2);
-    canvas.width = size * dpr;
-    canvas.height = size * dpr;
-    canvas.style.width = `${size}px`;
-    canvas.style.height = `${size}px`;
+    canvas.width = W * dpr;
+    canvas.height = H * dpr;
+    canvas.style.width = `${W}px`;
+    canvas.style.height = `${H}px`;
     ctx.scale(dpr, dpr);
-    ctx.clearRect(0, 0, size, size);
+    ctx.clearRect(0, 0, W, H);
     frameRef.current++;
     const t = frameRef.current;
 
     if (char || customChar) {
-      const sc = size / 75;
       const skinC = customChar ? customChar.skinColor : char!.skinColor;
       const hairC = customChar ? (customChar as any).hairColor || customChar.clothesColor : char!.hairColor;
       const clothC = customChar ? customChar.clothesColor : char!.clothesColor;
@@ -297,37 +298,59 @@ const BigPortrait: React.FC<{
       const eyeC = customChar ? customChar.eyesColor : char!.eyeColor;
       const handC = customChar ? skinC : char!.handsColor;
 
-      // Breathing animation
-      const breathe = 1 + Math.sin(t * 0.04) * 0.015;
+      // Background glow for character
       ctx.save();
-      ctx.translate(size / 2, size / 2);
+      ctx.globalAlpha = 0.08;
+      const bgGlow = ctx.createRadialGradient(W / 2, H * 0.45, 0, W / 2, H * 0.45, Math.min(W, H) * 0.6);
+      bgGlow.addColorStop(0, eyeC);
+      bgGlow.addColorStop(1, 'transparent');
+      ctx.fillStyle = bgGlow;
+      ctx.fillRect(0, 0, W, H);
+      ctx.restore();
+
+      // Breathing + idle sway
+      const breathe = 1 + Math.sin(t * 0.04) * 0.02;
+      const sway = Math.sin(t * 0.025) * 3;
+      const sc = Math.min(W, H) / 50;
+
+      ctx.save();
+      ctx.translate(W / 2 + sway, H * 0.45);
       ctx.scale(breathe, breathe);
-      ctx.translate(-size / 2, -size / 2);
+      ctx.translate(0, 0);
 
-      drawCharOnCanvas(ctx, size / 2, size / 2, skinC, hairC, clothC, pantsC, eyeC, handC, sc, t, facing);
+      drawCharOnCanvas(ctx, 0, 0, skinC, hairC, clothC, pantsC, eyeC, handC, sc, t, facing);
 
-      // Energy particles around the big portrait
-      ctx.globalAlpha = 0.6;
-      for (let i = 0; i < 8; i++) {
-        const angle = (t * 0.02 + i * Math.PI / 4) % (Math.PI * 2);
-        const dist = size * 0.35 + Math.sin(t * 0.05 + i) * 10;
-        const px = size / 2 + Math.cos(angle) * dist;
-        const py = size / 2 + Math.sin(angle) * dist;
-        const pSize = 2 + Math.sin(t * 0.08 + i * 2) * 1.5;
-        ctx.beginPath(); ctx.arc(px, py, pSize, 0, Math.PI * 2);
+      // Energy particles orbiting
+      ctx.globalAlpha = 0.5;
+      for (let i = 0; i < 6; i++) {
+        const angle = (t * 0.018 + i * Math.PI / 3) % (Math.PI * 2);
+        const dist = sc * 35 + Math.sin(t * 0.04 + i) * sc * 5;
+        const px = Math.cos(angle) * dist;
+        const py = Math.sin(angle) * dist;
+        const pSize = 1.5 + Math.sin(t * 0.06 + i * 2) * 1;
+        ctx.beginPath(); ctx.arc(px, py, pSize * sc * 0.1, 0, Math.PI * 2);
         ctx.fillStyle = eyeC; ctx.fill();
       }
       ctx.restore();
+
+      // Ground circle/platform
+      ctx.save();
+      ctx.globalAlpha = 0.15;
+      ctx.beginPath();
+      ctx.ellipse(W / 2, H * 0.75, W * 0.25, H * 0.04, 0, 0, Math.PI * 2);
+      ctx.fillStyle = eyeC;
+      ctx.fill();
+      ctx.restore();
     } else {
       // Empty silhouette
-      ctx.globalAlpha = 0.15;
-      ctx.beginPath(); ctx.arc(size / 2, size / 2, size * 0.3, 0, Math.PI * 2);
+      ctx.globalAlpha = 0.08;
+      ctx.beginPath(); ctx.arc(W / 2, H * 0.45, Math.min(W, H) * 0.2, 0, Math.PI * 2);
       ctx.fillStyle = color; ctx.fill();
-      ctx.globalAlpha = 0.4;
-      ctx.font = `bold ${size * 0.35}px Orbitron, monospace`;
+      ctx.globalAlpha = 0.25;
+      ctx.font = `bold ${Math.min(W, H) * 0.3}px Orbitron, monospace`;
       ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
       ctx.fillStyle = color;
-      ctx.fillText('?', size / 2, size / 2);
+      ctx.fillText('?', W / 2, H * 0.45);
     }
 
     animRef.current = requestAnimationFrame(draw);
@@ -338,7 +361,11 @@ const BigPortrait: React.FC<{
     return () => cancelAnimationFrame(animRef.current);
   }, [draw]);
 
-  return <canvas ref={canvasRef} style={{ display: 'block', maxWidth: '100%', height: 'auto' }} />;
+  return (
+    <div style={{ width: '100%', height: '100%', position: 'relative' }}>
+      <canvas ref={canvasRef} style={{ display: 'block', width: '100%', height: '100%' }} />
+    </div>
+  );
 };
 
 // ===== Animated background canvas =====

@@ -1,6 +1,6 @@
 import { Fighter } from './fighter';
 import { Projectile } from './projectile';
-import { Particle, Shockwave, FloatingText, PunchCircle, EnergyTrail, GiantFist } from './effects';
+import { Particle, Shockwave, FloatingText, PunchCircle } from './effects';
 import { CHAR_DATA, CANVAS_W, CANVAS_H, CONTROLS, FLOOR_Y, RENDER_SCALE } from './constants';
 import type { GameState, GameMode, StarData, Achievement, CustomCharData, Difficulty } from './types';
 import { DIFFICULTIES } from './types';

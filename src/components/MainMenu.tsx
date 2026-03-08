@@ -203,10 +203,10 @@ const MainMenu: React.FC = () => {
                     background: 'transparent',
                     display: 'flex', alignItems: 'center',
                     gap: 0,
-                    transform: active ? 'translateX(6px) scale(1.03)' : 'translateX(0) scale(1)',
-                    transition: 'all 0.2s cubic-bezier(0.16, 1, 0.3, 1)',
-                    animation: `mk9ItemIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) ${0.06 * i}s both`,
-                    filter: active ? 'brightness(1.2)' : 'brightness(0.7)',
+                    transform: active ? 'translateX(10px) scale(1.05)' : 'translateX(0) scale(1)',
+                    transition: 'all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1)',
+                    animation: `mk9ItemIn 0.55s cubic-bezier(0.16, 1, 0.3, 1) ${0.08 * i}s both`,
+                    filter: active ? 'brightness(1.3) drop-shadow(0 0 8px rgba(255,140,0,0.3))' : 'brightness(0.65)',
                   }}
                 >
                   {/* Number badge */}

@@ -28,6 +28,7 @@ export class Fighter {
   emoteTimer: number; emoteType: number;
   _lastHitFrame: number;
   _hookCombo: number;
+  _pendingTemblor: boolean;
   constructor(id: number, charIdx: number, x: number, side: number, controls: Controls, isAI = false, skinId: string | null = null, customData: CustomCharData | null = null) {
     this.id = id; this.charIdx = charIdx;
     this.customData = customData;
@@ -56,6 +57,7 @@ export class Fighter {
     this.emoteTimer = 0; this.emoteType = 0;
     this._lastHitFrame = 0;
     this._hookCombo = 0;
+    this._pendingTemblor = false;
   }
 
   reset(x: number, side: number) {
@@ -121,11 +123,36 @@ export class Fighter {
     if (!this.isFlying) {
       this.vy += 0.6; this.vx *= this.isDashing ? 0.95 : 0.8;
       if (this.y >= GROUND_Y) {
-        if (!this.isGrounded) {
-          this.squashX = 1.3; this.squashY = 0.7;
-          game.spawnParticles(this.x, 425, '#888', 5, 2);
-        }
-        this.y = GROUND_Y; this.vy = 0; this.isGrounded = true;
+         if (!this.isGrounded) {
+           this.squashX = 1.3; this.squashY = 0.7;
+           game.spawnParticles(this.x, 425, '#888', 5, 2);
+           // Temblor landing effect
+           if (this._pendingTemblor) {
+             this._pendingTemblor = false;
+             const opp2 = (this.id === 1) ? game.p2 : game.p1;
+             game.shake = 25;
+             game.hitStop = 10;
+             game.spawnShockwave(this.x, GROUND_Y, '#4488ff');
+             game.spawnShockwave(this.x, GROUND_Y, '#00aaff');
+             game.spawnParticles(this.x, GROUND_Y, '#4488ff', 30, 4);
+             game.texts.push(new FloatingText(this.x, this.y - 50, 'TEMBLOR', '#4488ff'));
+             playHitSound();
+             // AoE damage - anyone within range
+             const distToOpp = Math.abs(this.x - opp2.x);
+             if (distToOpp < 160) {
+               const dmg = 2.5 * this.damageBoost;
+               opp2.takeDamage(dmg, true);
+               game.trackStat('totalDamage', dmg);
+               opp2.vy = -10;
+               opp2.vx = (opp2.x > this.x ? 1 : -1) * 12;
+               opp2.stun = 15;
+               this.comboHits++;
+               game.trackStat('comboMax', this.comboHits);
+             }
+             this.damageBoost = 1;
+           }
+         }
+         this.y = GROUND_Y; this.vy = 0; this.isGrounded = true;
       }
     } else {
       this.vx *= 0.92; this.vy *= 0.92;
@@ -168,7 +195,7 @@ export class Fighter {
     if (keys[c.right]) { this.vx = currentSpeed; this.side = 1; }
 
     // Crouch
-    this.isCrouching = keys[c.down] && this.isGrounded && !this.isFlying;
+    this.isCrouching = keys[c.down] && this.isGrounded && !this.isFlying && this.handTimer === 0;
 
     if (this.isFlying) {
       if (keys[c.up]) this.vy = -currentSpeed;
@@ -188,7 +215,18 @@ export class Fighter {
 
     // Directional hits for all characters
     if (justPressed[c.hit]) {
-      if (!this.customData && keys[c.down]) {
+      if (!this.customData && !this.isGrounded && keys[c.down]) {
+        // Air + Down + Hit = Temblor
+        this.attack('temblor', game);
+      } else if (!this.customData && !this.isGrounded) {
+        const fwdKey = this.side === 1 ? c.right : c.left;
+        if (keys[fwdKey]) {
+          // Air + Forward + Hit = Gancho hacia abajo
+          this.attack('air_hook_down', game);
+        } else {
+          this.attack('hit', game);
+        }
+      } else if (!this.customData && keys[c.down]) {
         this.attack('hook_down', game);
       } else if (!this.customData && keys[c.up]) {
         this.attack('uppercut', game);
@@ -400,9 +438,49 @@ export class Fighter {
     }
 
     // === DIRECTIONAL ATTACKS (all non-custom characters) ===
-    // Down + Hit = Daño Vital (paralyzes enemy 1 second, costs energy)
+
+    // Air + Down + Hit = Temblor (ground slam, blue shockwave, screen shake, AoE)
+    if (type === 'temblor') {
+      this.vy = 28; // slam down fast
+      this.handMode = 'slam'; this.handTimer = 20;
+      // We set a flag so on landing we trigger the effect
+      this._pendingTemblor = true;
+      return;
+    }
+
+    // Air + Forward + Hit = Gancho hacia abajo (fist down, opponent sent down, blue energy)
+    if (type === 'air_hook_down') {
+      this.handMode = 'slam'; this.handTimer = 16;
+      this.vx = this.side * 14;
+      const giantFist = new GiantFist(this.x, this.y, this.side, 1, '#4488ff', 10, this);
+      game.particles.push(giantFist);
+      game.particles.push(new EnergyTrail(this.x + this.side * 10, this.y, '#4488ff', true));
+      if (dist < 100 && Math.abs(this.y - opp.y) < 70) {
+        const dmg = 1.8 * this.damageBoost;
+        opp.takeDamage(dmg, true);
+        game.trackStat('totalDamage', dmg);
+        opp.vx = this.side * 4; opp.vy = 14; // sent downward
+        opp.stun = 12;
+        opp.isGrounded = false;
+        if (this.charIdx === 1) {
+          game.texts.push(new FloatingText(opp.x, opp.y - 30, 'CAÍDA MORTAL', '#4488ff'));
+        } else {
+          game.texts.push(new FloatingText(opp.x, opp.y - 30, 'GANCHO HACIA ABAJO', '#4488ff'));
+        }
+        game.spawnParticles(opp.x, opp.y, '#4488ff', 20, 3);
+        game.particles.push(new PunchCircle(opp.x, opp.y, '#4488ff'));
+        game.hitStop = 8; game.shake = 10;
+        playHitSound();
+        this.comboHits++;
+        game.trackStat('comboMax', this.comboHits);
+      }
+      this.damageBoost = 1;
+      return;
+    }
+
+    // Down + Hit = Daño Vital (paralyzes enemy 1 second, costs energy, NO crouch)
     if (type === 'hook_down') {
-      if (this.energy < 40) return; // needs energy
+      if (this.energy < 40) return;
       this.energy -= 40;
       this.handMode = 'punch_left'; this.handTimer = 16;
       this.vx = this.side * 6;
@@ -411,15 +489,15 @@ export class Fighter {
         opp.takeDamage(dmg, true);
         game.trackStat('totalDamage', dmg);
         opp.vx = 0; opp.vy = 0;
-        opp.stun = 60; // 1 second paralysis
+        opp.stun = 60;
         if (this.charIdx === 1) {
           game.texts.push(new FloatingText(opp.x, opp.y - 30, 'PUNTO VITAL', '#ff00ff'));
           game.spawnParticles(opp.x, opp.y, '#ff00ff', 22, 3);
           game.particles.push(new PunchCircle(opp.x, opp.y, '#ff00ff'));
         } else {
-          game.texts.push(new FloatingText(opp.x, opp.y - 30, 'DAÑO VITAL', '#ff00aa'));
-          game.spawnParticles(opp.x, opp.y, '#ff00aa', 18, 3);
-          game.particles.push(new PunchCircle(opp.x, opp.y, '#ff00aa'));
+          game.texts.push(new FloatingText(opp.x, opp.y - 30, 'DAÑO VITAL', '#00ff44'));
+          game.spawnParticles(opp.x, opp.y, '#00ff44', 18, 3);
+          game.particles.push(new PunchCircle(opp.x, opp.y, '#00ff44'));
         }
         game.hitStop = 10; game.shake = 8;
         playHitSound();

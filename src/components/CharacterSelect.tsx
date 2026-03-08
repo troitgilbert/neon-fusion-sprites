@@ -1036,6 +1036,8 @@ const CharacterSelect: React.FC = () => {
           return;
         }
         case 'Enter': {
+          // Guard: skip if skin menu was just closed (prevent button Enter from triggering)
+          if (skinJustClosedRef.current) return;
           // If all players selected, proceed based on game mode
           const needsP2 = engine.mode === 'versus' || engine.mode === 'vs_cpu';
           const allSelected = needsP2

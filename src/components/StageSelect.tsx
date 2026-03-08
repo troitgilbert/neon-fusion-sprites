@@ -16,6 +16,8 @@ const StageSelect: React.FC = () => {
   React.useEffect(() => {
     const handler = (e: KeyboardEvent) => {
       if (e.code === 'ShiftLeft' || e.code === 'ShiftRight' || e.code === 'Escape') {
+        engine.p1Choice = null;
+        engine.p2Choice = null;
         setGameState('SELECT');
       }
     };

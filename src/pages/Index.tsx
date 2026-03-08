@@ -46,13 +46,16 @@ const GameApp: React.FC = () => {
       {/* Crystal counter */}
       {!inFight && gameState !== 'CREATOR' && gameState !== 'ACHIEVEMENTS' && gameState !== 'ADVENTURE_PLAY' && (
         <div style={{
-          position: 'fixed', top: 12, right: 16, fontSize: 'clamp(12px, 1.2vw, 16px)', color: '#00ffff',
+          position: 'fixed', top: 12, right: 16, color: '#00ffff',
           fontWeight: 'bold', textShadow: '0 0 8px #00ffff', zIndex: 100,
-          background: 'rgba(0,0,0,0.7)', padding: '4px 12px', borderRadius: 0,
+          background: 'rgba(0,0,0,0.7)', padding: '4px 14px', borderRadius: 0,
           border: '1px solid rgba(0,212,255,0.2)', fontFamily: "'Orbitron', monospace",
           borderBottom: '2px solid rgba(0,212,255,0.3)',
+          display: 'flex', alignItems: 'center', gap: 6,
+          fontSize: 'clamp(14px, 1.4vw, 20px)', letterSpacing: 1,
         }}>
-          🔷 {coins}
+          <img src={crystalIcon} alt="crystal" style={{ height: 'clamp(18px, 1.8vw, 28px)', filter: 'drop-shadow(0 0 6px #00bfff)' }} />
+          <span>{coins.toLocaleString()}</span>
         </div>
       )}
 

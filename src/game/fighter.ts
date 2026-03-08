@@ -922,23 +922,32 @@ export class Fighter {
 
     if (this.handMode === 'normal') {
       if (isEdowado) {
-        if (this.isFlying) {
+        // Boxer stance - hands up near face, slight bob and weave
+        if (this.emoteTimer > 0) {
+          // Emote: raise right hand up high
+          lx = this.x + 16; ly = this.y - 4;
+          rx = this.x + 22; ry = this.y - 32 - Math.sin(this.emoteTimer * 0.15) * 4;
+        } else if (this.isFlying) {
           const bob = Math.sin(this.handPhase * 0.6) * 3;
-          lx = this.x + 16; ly = this.y - 6 + bob;
-          rx = this.x + 30; ry = this.y - 2 - bob * 0.7;
+          lx = this.x + 16; ly = this.y - 10 + bob;
+          rx = this.x + 28; ry = this.y - 8 - bob * 0.7;
         } else if (running) {
-          const pump = Math.sin(this.handPhase * 2) * 12;
-          lx = this.x + 20 + pump; ly = this.y - 2;
-          rx = this.x + 20 - pump; ry = this.y + 2;
+          // Boxer sprint - alternating pumps
+          const pump = Math.sin(this.handPhase * 2.2) * 10;
+          lx = this.x + 18 + pump; ly = this.y - 10;
+          rx = this.x + 22 - pump; ry = this.y - 6;
         } else if (moving) {
-          const weave = Math.sin(this.handPhase * 1.2) * 3;
-          const stepBob = Math.sin(this.handPhase * 1.8) * 2;
-          lx = this.x + 14 + weave; ly = this.y - 7 + stepBob;
-          rx = this.x + 28 - weave; ry = this.y - 3 - stepBob;
+          // Boxer walk - guard up, slight weave
+          const weave = Math.sin(this.handPhase * 1.4) * 3;
+          const bob = Math.sin(this.handPhase * 1.8) * 2;
+          lx = this.x + 16 + weave; ly = this.y - 12 + bob;
+          rx = this.x + 26 - weave; ry = this.y - 8 - bob;
         } else {
-          const bob = Math.sin(this.handPhase * 0.8) * 2;
-          lx = this.x + 14; ly = this.y - 8 + bob;
-          rx = this.x + 28; ry = this.y - 4 - bob * 0.5;
+          // Boxer idle - guard up, rhythmic bob
+          const bob = Math.sin(this.handPhase * 0.9) * 2.5;
+          const sway = Math.sin(this.handPhase * 0.45) * 1.5;
+          lx = this.x + 15 + sway; ly = this.y - 12 + bob;
+          rx = this.x + 27 - sway; ry = this.y - 9 - bob;
         }
       } else if (isKaito) {
         // Kaito: relaxed ninja stance

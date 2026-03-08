@@ -1538,7 +1538,7 @@ const CharacterSelect: React.FC = () => {
         display: 'flex', justifyContent: 'space-between', alignItems: 'center',
         padding: '10px 30px',
         background: 'linear-gradient(0deg, rgba(5,5,15,0.95) 0%, rgba(10,8,25,0.85) 60%, transparent 100%)',
-        borderTop: '1px solid rgba(255,204,51,0.12)',
+        borderTop: '1px solid rgba(180,180,180,0.12)',
       }}>
         <div style={{
           color: 'rgba(255,204,51,0.35)', fontFamily: "'Orbitron', monospace",

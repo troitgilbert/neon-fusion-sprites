@@ -153,7 +153,7 @@ const MainMenu: React.FC = () => {
           src={titleLogo}
           alt="Jinsei No Sakoru"
           style={{
-            height: 'clamp(36px, 6vw, 72px)',
+            height: 'clamp(60px, 12vw, 140px)',
             width: 'auto',
             objectFit: 'contain',
             filter: 'drop-shadow(0 0 20px rgba(255,120,0,0.5)) drop-shadow(0 0 50px rgba(255,60,0,0.3)) drop-shadow(0 4px 2px rgba(0,0,0,0.9))',

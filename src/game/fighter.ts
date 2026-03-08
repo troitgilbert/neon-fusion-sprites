@@ -127,6 +127,33 @@ export class Fighter {
       this.specialTrail--;
     }
 
+    // Invocación Cristal: ! marker moving forward
+    if (this._invocationActive) {
+      this._invocationTimer++;
+      this._invocationX += this.side * 4;
+      // Draw ! effect as particles
+      game.spawnParticles(this._invocationX, this.y - 20, '#00ffff', 1, 2);
+      // Check if reached edge
+      if (this._invocationX < 20 || this._invocationX > CANVAS_W - 20) {
+        // Release: spawn crystal upward from ! position
+        game.spawnProjectile(this._invocationX, this.y, 0, -10, '#00ffff', this, 'crystal_rise');
+        game.texts.push(new FloatingText(this._invocationX, this.y - 50, 'INVOCACIÓN CRISTAL', '#00ffff'));
+        game.spawnParticles(this._invocationX, this.y, '#00ffff', 15, 3);
+        this._invocationActive = false;
+      }
+      // Check if forward key released
+      const fwdKey = this.id === 1
+        ? (this.side === 1 ? 'KeyD' : 'KeyA')
+        : (this.side === 1 ? 'ArrowRight' : 'ArrowLeft');
+      if (!keys[fwdKey]) {
+        // Release: spawn crystal upward from ! position
+        game.spawnProjectile(this._invocationX, this.y, 0, -10, '#00ffff', this, 'crystal_rise');
+        game.texts.push(new FloatingText(this._invocationX, this.y - 50, 'INVOCACIÓN CRISTAL', '#00ffff'));
+        game.spawnParticles(this._invocationX, this.y, '#00ffff', 15, 3);
+        this._invocationActive = false;
+      }
+    }
+
     // Physics
     if (!this.isFlying) {
       this.vy += 0.6; this.vx *= this.isDashing ? 0.95 : 0.8;

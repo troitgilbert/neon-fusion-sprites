@@ -594,38 +594,58 @@ const BigPortrait: React.FC<{
   );
 };
 
-// ===== Animated background canvas =====
+// ===== AAA Animated deep space background =====
 const BgCanvas: React.FC = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const animRef = useRef<number>(0);
 
   useEffect(() => {
-    // Particles
-    const particles: { x: number; y: number; vx: number; vy: number; size: number; color: string; alpha: number; life: number }[] = [];
-    for (let i = 0; i < 80; i++) {
-      particles.push({
-        x: Math.random() * window.innerWidth,
-        y: Math.random() * window.innerHeight,
-        vx: (Math.random() - 0.5) * 0.6,
-        vy: -Math.random() * 0.4 - 0.15,
-        size: Math.random() * 2.5 + 0.3,
-        color: ['#00ffff', '#ff8c00', '#ffff00', '#ff00ff', '#00ff88'][Math.floor(Math.random() * 5)],
-        alpha: Math.random() * 0.6 + 0.1,
-        life: Math.random() * 1000,
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+
+    // Stars - many layers for depth
+    type Star = { x: number; y: number; size: number; brightness: number; twinkleSpeed: number; twinkleOffset: number; color: string; layer: number };
+    const stars: Star[] = [];
+    const starColors = ['#ffffff', '#ffe8cc', '#cce0ff', '#ffffcc', '#ffd4e8', '#d4e8ff', '#fff5cc'];
+    for (let i = 0; i < 400; i++) {
+      const layer = Math.random() < 0.6 ? 0 : Math.random() < 0.7 ? 1 : 2; // 0=far, 1=mid, 2=near
+      stars.push({
+        x: Math.random(), y: Math.random(),
+        size: layer === 0 ? Math.random() * 0.8 + 0.2 : layer === 1 ? Math.random() * 1.2 + 0.5 : Math.random() * 2 + 1,
+        brightness: Math.random() * 0.6 + 0.4,
+        twinkleSpeed: Math.random() * 0.03 + 0.005,
+        twinkleOffset: Math.random() * Math.PI * 2,
+        color: starColors[Math.floor(Math.random() * starColors.length)],
+        layer,
       });
     }
 
-    // Nebula clouds
-    const nebulas: { x: number; y: number; r: number; color: string; speed: number }[] = [];
-    for (let i = 0; i < 5; i++) {
-      nebulas.push({
-        x: Math.random() * window.innerWidth,
-        y: Math.random() * window.innerHeight,
-        r: 100 + Math.random() * 200,
-        color: ['#ffcc33', '#ff8800', '#8844ff', '#ff4400', '#ffaa00'][i],
-        speed: (Math.random() - 0.5) * 0.3,
+    // Galaxies / nebula clusters
+    type Galaxy = { x: number; y: number; rx: number; ry: number; angle: number; color1: string; color2: string; opacity: number; rotSpeed: number; type: 'spiral' | 'elliptical' | 'nebula' };
+    const galaxies: Galaxy[] = [
+      { x: 0.15, y: 0.25, rx: 120, ry: 60, angle: 0.4, color1: '#4422aa', color2: '#220066', opacity: 0.06, rotSpeed: 0.0003, type: 'spiral' },
+      { x: 0.82, y: 0.18, rx: 80, ry: 40, angle: -0.3, color1: '#ff660030', color2: '#aa220010', opacity: 0.05, rotSpeed: -0.0002, type: 'elliptical' },
+      { x: 0.5, y: 0.7, rx: 150, ry: 80, angle: 0.8, color1: '#002244', color2: '#001122', opacity: 0.04, rotSpeed: 0.0001, type: 'nebula' },
+      { x: 0.9, y: 0.75, rx: 60, ry: 35, angle: 1.2, color1: '#331155', color2: '#110033', opacity: 0.05, rotSpeed: -0.0004, type: 'spiral' },
+      { x: 0.3, y: 0.8, rx: 90, ry: 45, angle: -0.6, color1: '#003355', color2: '#001133', opacity: 0.04, rotSpeed: 0.0002, type: 'elliptical' },
+      { x: 0.65, y: 0.35, rx: 70, ry: 50, angle: 0.2, color1: '#220033', color2: '#110022', opacity: 0.035, rotSpeed: -0.0003, type: 'nebula' },
+    ];
+
+    // Dust clouds
+    type DustCloud = { x: number; y: number; r: number; color: string; drift: number };
+    const dustClouds: DustCloud[] = [];
+    for (let i = 0; i < 12; i++) {
+      dustClouds.push({
+        x: Math.random(), y: Math.random(),
+        r: 80 + Math.random() * 200,
+        color: ['#110022', '#001122', '#0a0a1a', '#0f0520', '#050a15', '#100818'][Math.floor(Math.random() * 6)],
+        drift: (Math.random() - 0.5) * 0.00008,
       });
     }
+
+    // Shooting stars
+    type ShootingStar = { x: number; y: number; vx: number; vy: number; life: number; maxLife: number; active: boolean };
+    const shootingStars: ShootingStar[] = [];
+    for (let i = 0; i < 3; i++) shootingStars.push({ x: 0, y: 0, vx: 0, vy: 0, life: 0, maxLife: 0, active: false });
 
     let frame = 0;
     const draw = () => {
@@ -635,41 +655,174 @@ const BgCanvas: React.FC = () => {
       if (!ctx) return;
       const W = window.innerWidth;
       const H = window.innerHeight;
-      canvas.width = W;
-      canvas.height = H;
+      canvas.width = W * dpr;
+      canvas.height = H * dpr;
+      canvas.style.width = `${W}px`;
+      canvas.style.height = `${H}px`;
+      ctx.scale(dpr, dpr);
       frame++;
 
-      // Deep space gradient
-      const bg = ctx.createRadialGradient(W * 0.5, H * 0.5, 0, W * 0.5, H * 0.5, Math.max(W, H) * 0.8);
-      bg.addColorStop(0, '#0c0c30');
-      bg.addColorStop(0.4, '#080822');
-      bg.addColorStop(0.7, '#050518');
-      bg.addColorStop(1, '#020210');
+      // Pure black base
+      ctx.fillStyle = '#000000';
+      ctx.fillRect(0, 0, W, H);
+
+      // Very subtle deep space gradient (barely visible, keeps it black)
+      const bg = ctx.createRadialGradient(W * 0.5, H * 0.5, 0, W * 0.5, H * 0.5, Math.max(W, H) * 0.9);
+      bg.addColorStop(0, 'rgba(8,6,18,0.4)');
+      bg.addColorStop(0.5, 'rgba(4,3,12,0.2)');
+      bg.addColorStop(1, 'transparent');
       ctx.fillStyle = bg;
       ctx.fillRect(0, 0, W, H);
 
-      // Nebula clouds (soft glowing blobs)
-      nebulas.forEach(n => {
-        n.x += n.speed;
-        if (n.x < -n.r) n.x = W + n.r;
-        if (n.x > W + n.r) n.x = -n.r;
+      // Dust clouds (very subtle dark patches)
+      dustClouds.forEach(d => {
+        d.x += d.drift;
+        if (d.x < -0.2) d.x = 1.2;
+        if (d.x > 1.2) d.x = -0.2;
         ctx.save();
-        ctx.globalAlpha = 0.04 + Math.sin(frame * 0.008 + n.y) * 0.015;
-        const ng = ctx.createRadialGradient(n.x, n.y, 0, n.x, n.y, n.r);
-        ng.addColorStop(0, n.color);
-        ng.addColorStop(0.5, n.color + '40');
-        ng.addColorStop(1, 'transparent');
-        ctx.fillStyle = ng;
-        ctx.fillRect(n.x - n.r, n.y - n.r, n.r * 2, n.r * 2);
+        ctx.globalAlpha = 0.15;
+        const dg = ctx.createRadialGradient(d.x * W, d.y * H, 0, d.x * W, d.y * H, d.r);
+        dg.addColorStop(0, d.color);
+        dg.addColorStop(0.6, d.color + '60');
+        dg.addColorStop(1, 'transparent');
+        ctx.fillStyle = dg;
+        ctx.fillRect(d.x * W - d.r, d.y * H - d.r, d.r * 2, d.r * 2);
         ctx.restore();
       });
 
-      // Hexagonal grid pattern (faint)
+      // Galaxies
+      galaxies.forEach(g => {
+        g.angle += g.rotSpeed;
+        const gx = g.x * W, gy = g.y * H;
+        ctx.save();
+        ctx.translate(gx, gy);
+        ctx.rotate(g.angle);
+        ctx.globalAlpha = g.opacity + Math.sin(frame * 0.008) * 0.01;
+
+        if (g.type === 'spiral') {
+          // Spiral arms
+          for (let arm = 0; arm < 2; arm++) {
+            const armAngle = arm * Math.PI;
+            ctx.save();
+            ctx.rotate(armAngle);
+            for (let t = 0; t < 60; t++) {
+              const dist = t * 2.5;
+              const theta = t * 0.12;
+              const px = Math.cos(theta) * dist;
+              const py = Math.sin(theta) * dist * 0.5;
+              const dotSize = Math.max(0.5, 3 - t * 0.04);
+              ctx.globalAlpha = Math.max(0, (g.opacity * 2) * (1 - t / 60));
+              ctx.beginPath();
+              ctx.arc(px, py, dotSize, 0, Math.PI * 2);
+              ctx.fillStyle = g.color1;
+              ctx.fill();
+            }
+            ctx.restore();
+          }
+          // Core glow
+          const coreG = ctx.createRadialGradient(0, 0, 0, 0, 0, 15);
+          coreG.addColorStop(0, g.color1 + '80');
+          coreG.addColorStop(0.5, g.color1 + '30');
+          coreG.addColorStop(1, 'transparent');
+          ctx.globalAlpha = g.opacity * 3;
+          ctx.fillStyle = coreG;
+          ctx.fillRect(-15, -15, 30, 30);
+        } else {
+          // Elliptical / nebula - soft glow
+          const eg = ctx.createRadialGradient(0, 0, 0, 0, 0, g.rx);
+          eg.addColorStop(0, g.color1);
+          eg.addColorStop(0.3, g.color1 + '60');
+          eg.addColorStop(0.6, g.color2 + '30');
+          eg.addColorStop(1, 'transparent');
+          ctx.fillStyle = eg;
+          ctx.scale(1, g.ry / g.rx);
+          ctx.beginPath();
+          ctx.arc(0, 0, g.rx, 0, Math.PI * 2);
+          ctx.fill();
+        }
+        ctx.restore();
+      });
+
+      // Stars with twinkling
+      stars.forEach(s => {
+        const sx = s.x * W, sy = s.y * H;
+        const twinkle = 0.5 + 0.5 * Math.sin(frame * s.twinkleSpeed + s.twinkleOffset);
+        const alpha = s.brightness * twinkle;
+        ctx.save();
+        ctx.globalAlpha = alpha;
+
+        if (s.layer === 2 && s.size > 2) {
+          // Bright near stars with cross-shaped diffraction spikes
+          const spLen = s.size * 3;
+          ctx.strokeStyle = s.color;
+          ctx.lineWidth = 0.3;
+          ctx.globalAlpha = alpha * 0.3;
+          ctx.beginPath(); ctx.moveTo(sx - spLen, sy); ctx.lineTo(sx + spLen, sy); ctx.stroke();
+          ctx.beginPath(); ctx.moveTo(sx, sy - spLen); ctx.lineTo(sx, sy + spLen); ctx.stroke();
+          ctx.globalAlpha = alpha;
+        }
+
+        // Star glow
+        if (s.size > 1) {
+          const sg = ctx.createRadialGradient(sx, sy, 0, sx, sy, s.size * 3);
+          sg.addColorStop(0, s.color + '60');
+          sg.addColorStop(1, 'transparent');
+          ctx.globalAlpha = alpha * 0.4;
+          ctx.fillStyle = sg;
+          ctx.fillRect(sx - s.size * 3, sy - s.size * 3, s.size * 6, s.size * 6);
+          ctx.globalAlpha = alpha;
+        }
+
+        // Star core
+        ctx.beginPath();
+        ctx.arc(sx, sy, s.size * dpr * 0.5, 0, Math.PI * 2);
+        ctx.fillStyle = s.color;
+        ctx.fill();
+        ctx.restore();
+      });
+
+      // Shooting stars (occasional)
+      shootingStars.forEach(ss => {
+        if (!ss.active && Math.random() < 0.001) {
+          ss.active = true;
+          ss.x = Math.random() * W * 0.8;
+          ss.y = Math.random() * H * 0.3;
+          ss.vx = 4 + Math.random() * 6;
+          ss.vy = 2 + Math.random() * 3;
+          ss.life = 0;
+          ss.maxLife = 30 + Math.random() * 40;
+        }
+        if (ss.active) {
+          ss.x += ss.vx;
+          ss.y += ss.vy;
+          ss.life++;
+          const progress = ss.life / ss.maxLife;
+          const alpha = progress < 0.3 ? progress / 0.3 : 1 - (progress - 0.3) / 0.7;
+          ctx.save();
+          ctx.globalAlpha = alpha * 0.8;
+          ctx.strokeStyle = '#ffffff';
+          ctx.lineWidth = 1.5;
+          ctx.beginPath();
+          ctx.moveTo(ss.x, ss.y);
+          ctx.lineTo(ss.x - ss.vx * 8, ss.y - ss.vy * 8);
+          ctx.stroke();
+          // Head glow
+          const hg = ctx.createRadialGradient(ss.x, ss.y, 0, ss.x, ss.y, 4);
+          hg.addColorStop(0, '#ffffff');
+          hg.addColorStop(1, 'transparent');
+          ctx.fillStyle = hg;
+          ctx.fillRect(ss.x - 4, ss.y - 4, 8, 8);
+          ctx.restore();
+          if (ss.life >= ss.maxLife) ss.active = false;
+        }
+      });
+
+      // Very faint hex grid overlay
       ctx.save();
-      ctx.globalAlpha = 0.025;
-      ctx.strokeStyle = '#886622';
-      ctx.lineWidth = 0.5;
-      const hexSize = 40;
+      ctx.globalAlpha = 0.015;
+      ctx.strokeStyle = '#ffcc33';
+      ctx.lineWidth = 0.3;
+      const hexSize = 45;
       const hexH = hexSize * Math.sqrt(3);
       for (let row = -1; row < H / hexH + 1; row++) {
         for (let col = -1; col < W / (hexSize * 1.5) + 1; col++) {
@@ -687,62 +840,30 @@ const BgCanvas: React.FC = () => {
       }
       ctx.restore();
 
-      // Central energy column
-      const centerX = W / 2;
+      // P1 side glow (very subtle cyan)
       ctx.save();
-      ctx.globalAlpha = 0.06 + Math.sin(frame * 0.025) * 0.03;
-      const colGrad = ctx.createLinearGradient(centerX - 80, 0, centerX + 80, 0);
-      colGrad.addColorStop(0, 'transparent');
-      colGrad.addColorStop(0.3, '#ff8c0015');
-      colGrad.addColorStop(0.5, '#ff8c0040');
-      colGrad.addColorStop(0.7, '#ff8c0015');
-      colGrad.addColorStop(1, 'transparent');
-      ctx.fillStyle = colGrad;
-      ctx.fillRect(centerX - 80, 0, 160, H);
-      ctx.restore();
-
-      // P1 side glow (cyan, left)
-      ctx.save();
-      ctx.globalAlpha = 0.035;
-      const p1Glow = ctx.createRadialGradient(0, H * 0.5, 0, 0, H * 0.5, W * 0.4);
+      ctx.globalAlpha = 0.02;
+      const p1Glow = ctx.createRadialGradient(0, H * 0.5, 0, 0, H * 0.5, W * 0.35);
       p1Glow.addColorStop(0, '#00ffff');
       p1Glow.addColorStop(1, 'transparent');
       ctx.fillStyle = p1Glow;
       ctx.fillRect(0, 0, W * 0.5, H);
       ctx.restore();
 
-      // P2 side glow (orange, right)
+      // P2 side glow (very subtle orange)
       ctx.save();
-      ctx.globalAlpha = 0.035;
-      const p2Glow = ctx.createRadialGradient(W, H * 0.5, 0, W, H * 0.5, W * 0.4);
+      ctx.globalAlpha = 0.02;
+      const p2Glow = ctx.createRadialGradient(W, H * 0.5, 0, W, H * 0.5, W * 0.35);
       p2Glow.addColorStop(0, '#ff8c00');
       p2Glow.addColorStop(1, 'transparent');
       ctx.fillStyle = p2Glow;
       ctx.fillRect(W * 0.5, 0, W * 0.5, H);
       ctx.restore();
 
-      // Particles
-      particles.forEach(p => {
-        p.x += p.vx;
-        p.y += p.vy;
-        p.life++;
-        if (p.y < -10) { p.y = H + 10; p.x = Math.random() * W; }
-        if (p.x < -10) p.x = W + 10;
-        if (p.x > W + 10) p.x = -10;
-        ctx.save();
-        ctx.globalAlpha = p.alpha * (0.4 + Math.sin(p.life * 0.04) * 0.6);
-        ctx.beginPath(); ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
-        const pg = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, p.size * 2);
-        pg.addColorStop(0, p.color);
-        pg.addColorStop(1, 'transparent');
-        ctx.fillStyle = pg; ctx.fill();
-        ctx.restore();
-      });
-
-      // Scanlines (very subtle)
+      // Subtle scanlines
       ctx.save();
-      ctx.globalAlpha = 0.015;
-      for (let y = 0; y < H; y += 3) {
+      ctx.globalAlpha = 0.012;
+      for (let y = 0; y < H; y += 2) {
         ctx.fillStyle = '#000';
         ctx.fillRect(0, y, W, 1);
       }

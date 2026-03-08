@@ -635,7 +635,6 @@ export class Fighter {
 
   _drawEmote(ctx: CanvasRenderingContext2D) {
     ctx.save();
-    const progress = this.emoteTimer / 90;
     const fadeIn = Math.min(1, (90 - this.emoteTimer) / 15);
     const fadeOut = Math.min(1, this.emoteTimer / 15);
     ctx.globalAlpha = fadeIn * fadeOut;
@@ -659,13 +658,18 @@ export class Fighter {
     ctx.lineTo(ex, ey + 20);
     ctx.fill();
 
-    // Emote content
+    // Emote content - character specific
     ctx.font = "bold 14px sans-serif";
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
-    const emotes = ['😤', '💪', '🔥', '⭐'];
+    let emotes: string[];
+    if (this.charIdx === 0 && !this.customData) {
+      emotes = ['👨‍🍳', '👊', '🍖', '🩺']; // Chef, Puño, Comida, Doctor
+    } else {
+      emotes = ['😤', '💪', '🔥', '⭐'];
+    }
     ctx.fillStyle = '#000';
-    ctx.fillText(emotes[this.emoteType] || '😤', ex, ey);
+    ctx.fillText(emotes[this.emoteType] || emotes[0], ex, ey);
 
     ctx.restore();
   }

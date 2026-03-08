@@ -132,7 +132,7 @@ export function drawIdleMenuSprite(
   x: number, y: number,
   width: number, height: number
 ) {
-  const img = imageCache.get('idle1');
+  const img = imageCache.get('idle');
   if (!img) return;
   ctx.drawImage(img, x, y, width, height);
 }

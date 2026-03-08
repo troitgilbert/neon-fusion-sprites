@@ -503,25 +503,24 @@ export class Fighter {
     ctx.scale(this.side * this.squashX, this.squashY);
     ctx.rotate(this.lean * this.side);
 
-      // Breathing
-      if (Math.abs(this.vx) < 1 && Math.abs(this.vy) < 1) {
-        const breath = Math.sin(this.animTimer * 0.1) * 0.03;
-        ctx.scale(1, 1 + breath);
-      }
-
-      if (this.hitFlash > 0) { ctx.shadowBlur = 20; ctx.shadowColor = '#ffffff'; }
-      if (game.timeStopped && game.timeStopper !== this) ctx.filter = 'grayscale(100%)';
-
-      // Scale characters 30% smaller around their center
-      ctx.translate(-this.x, -this.y);
-      ctx.translate(this.x, this.y);
-      ctx.scale(0.7, 0.7);
-      ctx.translate(-this.x, -this.y);
-
-      // Draw character
-      this._drawBody(ctx);
-      this._drawHands(ctx, game);
+    // Breathing
+    if (Math.abs(this.vx) < 1 && Math.abs(this.vy) < 1) {
+      const breath = Math.sin(this.animTimer * 0.1) * 0.03;
+      ctx.scale(1, 1 + breath);
     }
+
+    if (this.hitFlash > 0) { ctx.shadowBlur = 20; ctx.shadowColor = '#ffffff'; }
+    if (game.timeStopped && game.timeStopper !== this) ctx.filter = 'grayscale(100%)';
+
+    // Scale characters 30% smaller around their center
+    ctx.translate(-this.x, -this.y);
+    ctx.translate(this.x, this.y);
+    ctx.scale(0.7, 0.7);
+    ctx.translate(-this.x, -this.y);
+
+    // Draw character
+    this._drawBody(ctx);
+    this._drawHands(ctx, game);
 
     ctx.restore();
   }

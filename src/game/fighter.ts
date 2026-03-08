@@ -2,6 +2,7 @@ import { CHAR_DATA, GROUND_Y, CANVAS_W } from './constants';
 import { FloatingText, PunchCircle } from './effects';
 import { playHitSound, playSpecialSound, playBlockSound, playSuperSound } from './audio';
 import type { Controls, CustomCharData } from './types';
+import { getEdowadoSprites, type SpriteState } from './sprites';
 
 const SPEED_MAP: Record<string, number> = { lento: 3.5, normal: 5, rapido: 7, velocista: 9.5 };
 const SIZE_MAP: Record<string, number> = { 'pequeño': 0.75, normal: 1, grande: 1.3 };

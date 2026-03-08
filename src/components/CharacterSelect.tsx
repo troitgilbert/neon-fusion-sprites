@@ -1161,34 +1161,60 @@ const CharacterSelect: React.FC = () => {
     );
   }
 
+  // Skin color overrides for preview
+  const SKIN_COLOR_MAP: Record<string, Record<string, Partial<CharRenderData>>> = {
+    'KAITO': {
+      'demonioBlanco': { skinColor: '#000000', clothesColor: '#1a1a1a', handsColor: '#000000' },
+      'demonioBlanco2': { clothesColor: '#1a1a1a', handsColor: '#444444' },
+    },
+    'EDOWADO': {},
+  };
+
   // Skin selector overlay
   if (skinSelectFor) {
     const skins = availableSkins(skinSelectFor.charIdx);
     const ch = CHAR_DATA[skinSelectFor.charIdx];
     const renderCh = charRenderData[skinSelectFor.charIdx];
+
+    const getSkinPreviewData = (skinId: string | null): CharRenderData => {
+      if (!skinId) return renderCh;
+      const overrides = SKIN_COLOR_MAP[ch.name]?.[skinId];
+      if (!overrides) return renderCh;
+      return { ...renderCh, ...overrides };
+    };
+
     return (
       <div className="fixed inset-0 z-50 flex items-center justify-center" style={{ background: 'rgba(0,0,0,0.9)', backdropFilter: 'blur(12px)', animation: 'fadeIn 0.3s ease-out' }}>
-        <div style={{ maxWidth: 600, width: '90%', textAlign: 'center' }}>
+        <div style={{ maxWidth: 650, width: '90%', textAlign: 'center' }}>
           <h2 style={{ color: '#00ffff', fontSize: 'clamp(22px, 3.5vw, 36px)', textShadow: '0 0 20px #00ffff', marginBottom: 25, fontFamily: "'Orbitron', monospace", letterSpacing: 4 }}>
             ELIGE ESTILO P{skinSelectFor.pNum}: {ch.name}
           </h2>
-          <div style={{ margin: '0 auto 25px', display: 'flex', justifyContent: 'center' }}>
-            <CanvasPortrait char={renderCh} size={120} isSelected facing={1} />
-          </div>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(130px, 1fr))', gap: 12 }}>
-            {skins.map(skin => (
-              <button key={skin.id || 'original'} onClick={() => handleSkinConfirm(skin.id)}
-                style={{
-                  border: '2px solid rgba(0,255,255,0.3)', background: 'rgba(10,10,30,0.8)',
-                  padding: 16, cursor: 'pointer', color: '#87ceeb',
-                  fontFamily: "'Orbitron', monospace", fontSize: 13, transition: 'all 0.3s',
-                }}
-                onMouseEnter={e => { e.currentTarget.style.borderColor = '#00ffff'; e.currentTarget.style.boxShadow = '0 0 20px rgba(0,255,255,0.4)'; }}
-                onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(0,255,255,0.3)'; e.currentTarget.style.boxShadow = 'none'; }}
-              >
-                {skin.name}
-              </button>
-            ))}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 14, maxHeight: '55vh', overflowY: 'auto', padding: '4px 0' }}>
+            {skins.map(skin => {
+              const previewData = getSkinPreviewData(skin.id);
+              return (
+                <button key={skin.id || 'original'} onClick={() => handleSkinConfirm(skin.id)}
+                  style={{
+                    display: 'flex', alignItems: 'center', gap: 20,
+                    border: '2px solid rgba(0,255,255,0.3)', background: 'rgba(10,10,30,0.85)',
+                    padding: '10px 20px', cursor: 'pointer', color: '#87ceeb',
+                    fontFamily: "'Orbitron', monospace", fontSize: 15, transition: 'all 0.3s',
+                    textAlign: 'left', width: '100%',
+                  }}
+                  onMouseEnter={e => { e.currentTarget.style.borderColor = '#00ffff'; e.currentTarget.style.boxShadow = '0 0 25px rgba(0,255,255,0.4)'; e.currentTarget.style.background = 'rgba(0,255,255,0.08)'; }}
+                  onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(0,255,255,0.3)'; e.currentTarget.style.boxShadow = 'none'; e.currentTarget.style.background = 'rgba(10,10,30,0.85)'; }}
+                >
+                  <div style={{ flexShrink: 0, background: 'rgba(0,0,0,0.5)', border: '1px solid rgba(0,255,255,0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 4 }}>
+                    <CanvasPortrait char={previewData} size={80} isSelected facing={1} />
+                  </div>
+                  <div style={{ flex: 1 }}>
+                    <div style={{ color: '#ffffff', fontWeight: 'bold', fontSize: 16, letterSpacing: 2, marginBottom: 4 }}>{skin.name}</div>
+                    <div style={{ color: '#87ceebaa', fontSize: 11, letterSpacing: 1 }}>{skin.id ? 'SKIN ESPECIAL' : 'ESTILO BASE'}</div>
+                  </div>
+                  <div style={{ color: '#00ffff', fontSize: 20 }}>▶</div>
+                </button>
+              );
+            })}
           </div>
           <button onClick={() => setSkinSelectFor(null)} style={{
             marginTop: 25, padding: '10px 35px', background: 'transparent',

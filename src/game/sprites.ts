@@ -24,7 +24,8 @@ const imageCache: Map<string, HTMLImageElement> = new Map();
 let imagesLoaded = false;
 
 const SPRITE_SOURCES: Record<string, string> = {
-  idle: idleImg,
+  idle1: idleImg,
+  idle2: idle2Img,
   walk1: walk1Img,
   walk2: walk2Img,
   walk3: walk3Img,

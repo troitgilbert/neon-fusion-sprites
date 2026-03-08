@@ -20,8 +20,8 @@ const PauseMenu: React.FC = () => {
   };
 
   return (
-    <div className="absolute inset-0 z-10 flex items-center justify-center" style={{ background: 'rgba(0,0,0,0.85)', backdropFilter: 'blur(4px)' }}>
-      <div style={{
+    <div className="absolute inset-0 z-10 flex items-center justify-center anim-screen-fade scanline-overlay" style={{ background: 'rgba(0,0,0,0.85)', backdropFilter: 'blur(4px)' }}>
+      <div className="anim-screen-zoom anim-neon-flash" style={{
         border: '2px solid #87ceeb', boxShadow: '0 0 20px rgba(0,255,255,.4)',
         background: 'rgba(10,10,20,0.95)', padding: 25, textAlign: 'center', transform: 'skew(-2deg)',
         minWidth: 320,

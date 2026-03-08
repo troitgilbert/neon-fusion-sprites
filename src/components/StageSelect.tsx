@@ -9,8 +9,21 @@ const stages = [
 ];
 
 const StageSelect: React.FC = () => {
-  const { engine } = useGame();
+  const { engine, setGameState } = useGame();
   const owned = engine.inventory?.stages || {};
+
+  // Shift to go back
+  React.useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      if (e.code === 'ShiftLeft' || e.code === 'ShiftRight' || e.code === 'Escape') {
+        engine.p1Choice = null;
+        engine.p2Choice = null;
+        setGameState('SELECT');
+      }
+    };
+    window.addEventListener('keydown', handler);
+    return () => window.removeEventListener('keydown', handler);
+  }, [engine, setGameState]);
 
   return (
     <div className="fixed inset-0 z-50 flex flex-col items-center justify-center" style={{ background: 'rgba(0,0,0,0.85)', backdropFilter: 'blur(8px)' }}>

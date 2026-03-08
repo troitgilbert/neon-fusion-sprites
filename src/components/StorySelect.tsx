@@ -43,7 +43,156 @@ const STORIES = [
   },
 ];
 
-const StorySelect: React.FC = () => {
+// Draw a fighter character on canvas
+function drawChar(ctx: CanvasRenderingContext2D, cx: number, cy: number, c: StoryChar, scale: number, time: number) {
+  const s = scale;
+  const r = 25 * s;
+  const handSwing = Math.sin(time * 0.03) * 5 * s;
+
+  // Shadow
+  ctx.save();
+  ctx.globalAlpha = 0.3;
+  ctx.fillStyle = '#000';
+  ctx.beginPath();
+  ctx.ellipse(cx, cy + r * 1.1, r * 0.7, r * 0.15, 0, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.restore();
+
+  // Shoes
+  ctx.fillStyle = c.shoesColor;
+  ctx.strokeStyle = '#000'; ctx.lineWidth = 1.5 * s;
+  ctx.beginPath(); ctx.arc(cx - r * 0.4, cy + r * 0.85, r * 0.22, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+  ctx.beginPath(); ctx.arc(cx + r * 0.4, cy + r * 0.85, r * 0.22, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+
+  // Pants
+  ctx.save(); ctx.translate(cx, cy + r * 0.44); ctx.scale(1, 0.6);
+  ctx.beginPath(); ctx.arc(0, 0, r * 0.9, 0, Math.PI);
+  ctx.fillStyle = c.pantsColor; ctx.fill();
+  ctx.strokeStyle = '#000'; ctx.lineWidth = 1.5 * s; ctx.stroke(); ctx.restore();
+
+  // Body (skin)
+  ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI * 2);
+  ctx.fillStyle = c.skinColor; ctx.fill();
+  ctx.strokeStyle = '#000'; ctx.lineWidth = 2 * s; ctx.stroke();
+
+  // Clothes (torso)
+  ctx.beginPath();
+  ctx.rect(cx - r, cy, r * 2, r * 0.44);
+  ctx.fillStyle = c.clothesColor; ctx.fill();
+  ctx.strokeStyle = '#000'; ctx.lineWidth = 1.5 * s; ctx.stroke();
+
+  // Hands
+  ctx.fillStyle = c.handsColor;
+  ctx.strokeStyle = '#000'; ctx.lineWidth = 1.5 * s;
+  // Left hand
+  ctx.beginPath(); ctx.arc(cx - r * 1.2, cy + handSwing, r * 0.2, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+  // Right hand
+  ctx.beginPath(); ctx.arc(cx + r * 1.2, cy - handSwing, r * 0.2, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+
+  // Hair
+  ctx.save(); ctx.translate(cx, cy - 10 * s); ctx.scale(1, 0.7);
+  ctx.beginPath(); ctx.arc(0, 0, 22 * s, Math.PI, 0);
+  ctx.fillStyle = c.hairColor; ctx.fill();
+  ctx.strokeStyle = '#000'; ctx.lineWidth = 1.5 * s; ctx.stroke(); ctx.restore();
+
+  // Eyes
+  ctx.fillStyle = c.eyeColor;
+  const eyeX = cx + 6 * s;
+  ctx.beginPath(); ctx.arc(eyeX - 4 * s, cy - 6 * s, 3 * s, 0, Math.PI * 2);
+  ctx.strokeStyle = '#000'; ctx.lineWidth = 1.5 * s; ctx.stroke(); ctx.fill();
+  ctx.beginPath(); ctx.arc(eyeX + 4 * s, cy - 6 * s, 3 * s, 0, Math.PI * 2); ctx.stroke(); ctx.fill();
+
+  // Eye glow
+  ctx.save();
+  ctx.globalAlpha = 0.4;
+  const glow = ctx.createRadialGradient(eyeX, cy - 6 * s, 0, eyeX, cy - 6 * s, 12 * s);
+  glow.addColorStop(0, c.eyeColor);
+  glow.addColorStop(1, 'transparent');
+  ctx.fillStyle = glow;
+  ctx.fillRect(eyeX - 12 * s, cy - 18 * s, 24 * s, 24 * s);
+  ctx.restore();
+}
+
+const CharacterPreview: React.FC<{ chars: StoryChar[] | null; color: string; accent: string; id: string }> = ({ chars, color, accent, id }) => {
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const timeRef = useRef(0);
+
+  const draw = useCallback(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    const w = 200, h = 200;
+    canvas.width = w * dpr;
+    canvas.height = h * dpr;
+    canvas.style.width = `${w}px`;
+    canvas.style.height = `${h}px`;
+    ctx.scale(dpr, dpr);
+
+    ctx.clearRect(0, 0, w, h);
+    timeRef.current++;
+    const t = timeRef.current;
+
+    if (chars && chars.length > 0) {
+      if (chars.length === 1) {
+        drawChar(ctx, w / 2, h / 2 + 10, chars[0], 2.2, t);
+      } else {
+        drawChar(ctx, w / 2 - 35, h / 2 + 10, chars[0], 1.6, t);
+        drawChar(ctx, w / 2 + 35, h / 2 + 10, chars[1], 1.6, t + 50);
+      }
+    } else {
+      // Custom: question mark
+      ctx.fillStyle = color;
+      ctx.font = 'bold 60px Orbitron, monospace';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.globalAlpha = 0.7 + Math.sin(t * 0.05) * 0.3;
+      ctx.fillText('?', w / 2, h / 2);
+      ctx.globalAlpha = 1;
+    }
+
+    requestAnimationFrame(draw);
+  }, [chars, color]);
+
+  useEffect(() => {
+    const id = requestAnimationFrame(draw);
+    return () => cancelAnimationFrame(id);
+  }, [draw]);
+
+  return (
+    <div style={{
+      width: 200, height: 200,
+      borderRadius: '50%',
+      overflow: 'hidden',
+      border: `3px solid ${color}60`,
+      boxShadow: `0 0 40px ${color}25, 0 0 80px ${color}10, inset 0 0 30px ${color}15`,
+      marginBottom: 'clamp(16px, 2.5vh, 30px)',
+      position: 'relative',
+      background: `radial-gradient(circle at 35% 35%, ${color}20, rgba(10,5,20,0.95))`,
+    }}>
+      {/* Orbital ring */}
+      <div style={{
+        position: 'absolute', inset: -12,
+        border: `1px solid ${color}20`,
+        borderRadius: '50%',
+        animation: 'storyOrbit 8s linear infinite',
+        pointerEvents: 'none',
+      }}>
+        <div style={{
+          position: 'absolute', top: -3, left: '50%', transform: 'translateX(-50%)',
+          width: 6, height: 6, borderRadius: '50%',
+          background: color,
+          boxShadow: `0 0 10px ${color}`,
+        }} />
+      </div>
+      <canvas ref={canvasRef} style={{ width: '100%', height: '100%' }} />
+    </div>
+  );
+};
+
+
   const { setGameState } = useGame();
   const [selectedIdx, setSelectedIdx] = useState(0);
   const [phase, setPhase] = useState(0);

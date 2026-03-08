@@ -258,6 +258,20 @@ const StorySelect: React.FC = () => {
           {/* Character canvas */}
           <CharacterPreview chars={selected.chars} color={selected.color} accent={selected.accent} id={selected.id} />
 
+          {/* Story name */}
+          <h2 style={{
+            fontFamily: "'Orbitron', serif",
+            fontSize: 'clamp(22px, 3vw, 38px)',
+            fontWeight: 900,
+            letterSpacing: 'clamp(4px, 0.8vw, 10px)',
+            color: selected.color,
+            textShadow: `0 0 20px ${selected.color}60, 0 0 50px ${selected.accent}30`,
+            marginBottom: 8,
+            transition: 'all 0.4s',
+          }}>
+            {selected.name}
+          </h2>
+
           {/* Stats row */}
           <div style={{
             display: 'flex', gap: 'clamp(16px, 2vw, 30px)',

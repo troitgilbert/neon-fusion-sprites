@@ -651,12 +651,12 @@ const BgCanvas: React.FC = () => {
       ctx.scale(dpr, dpr);
       time++;
 
-      // Deep warm background
+    // Deep cool grayscale background
       const bgGrad = ctx.createLinearGradient(0, 0, W * 0.3, H);
-      bgGrad.addColorStop(0, '#0a0503');
-      bgGrad.addColorStop(0.3, '#120806');
-      bgGrad.addColorStop(0.7, '#150a07');
-      bgGrad.addColorStop(1, '#0c0604');
+      bgGrad.addColorStop(0, '#060608');
+      bgGrad.addColorStop(0.3, '#0a0a0e');
+      bgGrad.addColorStop(0.7, '#0c0c10');
+      bgGrad.addColorStop(1, '#080809');
       ctx.fillStyle = bgGrad;
       ctx.fillRect(0, 0, W, H);
 

@@ -24,15 +24,15 @@ interface SheetConfig {
 }
 
 const SHEET_CONFIGS: Record<SpriteState, SheetConfig> = {
-  idle:    { src: idleSheet,    cols: 7, rows: 2, totalFrames: 14, speed: 0.12, loop: true },
+  idle:    { src: idleSheet,    cols: 8, rows: 1, totalFrames: 8,  speed: 0.1,  loop: true },
   walk:    { src: walkSheet,    cols: 8, rows: 1, totalFrames: 8,  speed: 0.15, loop: true },
-  attack:  { src: attackSheet,  cols: 6, rows: 1, totalFrames: 6,  speed: 0.25, loop: false },
-  jump:    { src: jumpSheet,    cols: 5, rows: 1, totalFrames: 5,  speed: 0.12, loop: false },
+  attack:  { src: attackSheet,  cols: 4, rows: 2, totalFrames: 8,  speed: 0.22, loop: false },
+  jump:    { src: jumpSheet,    cols: 5, rows: 1, totalFrames: 5,  speed: 0.1,  loop: false },
   fly:     { src: jumpSheet,    cols: 5, rows: 1, totalFrames: 5,  speed: 0.08, loop: true },
-  block:   { src: blockSheet,   cols: 4, rows: 2, totalFrames: 8,  speed: 0.1,  loop: true },
-  hurt:    { src: hurtSheet,    cols: 6, rows: 1, totalFrames: 6,  speed: 0.2,  loop: false },
-  dash:    { src: dashSheet,    cols: 4, rows: 1, totalFrames: 4,  speed: 0.2,  loop: false },
-  special: { src: specialSheet, cols: 6, rows: 2, totalFrames: 8,  speed: 0.15, loop: false },
+  block:   { src: blockSheet,   cols: 6, rows: 1, totalFrames: 6,  speed: 0.1,  loop: true },
+  hurt:    { src: hurtSheet,    cols: 4, rows: 2, totalFrames: 8,  speed: 0.18, loop: false },
+  dash:    { src: dashSheet,    cols: 3, rows: 1, totalFrames: 3,  speed: 0.2,  loop: false },
+  special: { src: specialSheet, cols: 5, rows: 2, totalFrames: 10, speed: 0.12, loop: false },
 };
 
 // Loaded sheet images

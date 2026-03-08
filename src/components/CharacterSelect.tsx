@@ -568,15 +568,28 @@ const BigPortrait: React.FC<{
       ctx.fill();
       ctx.restore();
     } else {
-      // Empty silhouette with pulsing ? 
-      ctx.globalAlpha = 0.06;
-      ctx.beginPath(); ctx.arc(W / 2, H * 0.42, Math.min(W, H) * 0.22, 0, Math.PI * 2);
-      ctx.fillStyle = color; ctx.fill();
-      ctx.globalAlpha = 0.2 + Math.sin(t * 0.04) * 0.1;
-      ctx.font = `bold ${Math.min(W, H) * 0.3}px Orbitron, monospace`;
+      // Empty silhouette with intense pulsing ?
+      ctx.globalAlpha = 0.15;
+      ctx.beginPath(); ctx.arc(W / 2, H * 0.42, Math.min(W, H) * 0.25, 0, Math.PI * 2);
+      const emptyGlow = ctx.createRadialGradient(W / 2, H * 0.42, 0, W / 2, H * 0.42, Math.min(W, H) * 0.25);
+      emptyGlow.addColorStop(0, color);
+      emptyGlow.addColorStop(1, 'transparent');
+      ctx.fillStyle = emptyGlow; ctx.fill();
+
+      // Pulsing ring
+      ctx.globalAlpha = 0.25 + Math.sin(t * 0.05) * 0.15;
+      ctx.beginPath(); ctx.arc(W / 2, H * 0.42, Math.min(W, H) * 0.2, 0, Math.PI * 2);
+      ctx.strokeStyle = color; ctx.lineWidth = 2; ctx.stroke();
+
+      // Big bright ?
+      ctx.globalAlpha = 0.5 + Math.sin(t * 0.04) * 0.25;
+      ctx.font = `bold ${Math.min(W, H) * 0.35}px Orbitron, monospace`;
       ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
       ctx.fillStyle = color;
+      ctx.shadowColor = color;
+      ctx.shadowBlur = 30;
       ctx.fillText('?', W / 2, H * 0.42);
+      ctx.shadowBlur = 0;
     }
 
     animRef.current = requestAnimationFrame(draw);
@@ -1227,10 +1240,10 @@ const CharacterSelect: React.FC = () => {
             transition: 'all 0.4s',
           }} />
           <span style={{
-            color: displayP1 ? '#00ffff' : 'rgba(0,255,255,0.4)',
-            fontFamily: "'Orbitron', monospace", fontSize: 'clamp(9px, 1.2vw, 13px)',
-            letterSpacing: 4, fontWeight: 700,
-            textShadow: displayP1 ? '0 0 12px #00ffff60' : 'none',
+            color: displayP1 ? '#00ffff' : 'rgba(0,255,255,0.7)',
+            fontFamily: "'Orbitron', monospace", fontSize: 'clamp(10px, 1.4vw, 15px)',
+            letterSpacing: 4, fontWeight: 900,
+            textShadow: displayP1 ? '0 0 15px #00ffff, 0 0 30px #00ffff80' : '0 0 8px #00ffff40',
             transition: 'all 0.3s',
           }}>PLAYER 1</span>
         </div>
@@ -1263,10 +1276,10 @@ const CharacterSelect: React.FC = () => {
         {/* P2 indicator */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
           <span style={{
-            color: isP2Turn ? '#ff8c00' : 'rgba(255,140,0,0.4)',
-            fontFamily: "'Orbitron', monospace", fontSize: 'clamp(9px, 1.2vw, 13px)',
-            letterSpacing: 4, fontWeight: 700,
-            textShadow: isP2Turn ? '0 0 12px #ff8c0060' : 'none',
+            color: isP2Turn ? '#ff8c00' : 'rgba(255,140,0,0.7)',
+            fontFamily: "'Orbitron', monospace", fontSize: 'clamp(10px, 1.4vw, 15px)',
+            letterSpacing: 4, fontWeight: 900,
+            textShadow: isP2Turn ? '0 0 15px #ff8c00, 0 0 30px #ff8c0080' : '0 0 8px #ff8c0040',
             transition: 'all 0.3s',
           }}>PLAYER 2</span>
           <div style={{
@@ -1519,36 +1532,6 @@ const CharacterSelect: React.FC = () => {
             })()}
           </div>
 
-          {/* Character name below grid - solid golden bar */}
-          <div style={{
-            marginTop: 8, height: 32, textAlign: 'center', position: 'relative', zIndex: 2,
-            minWidth: 250,
-          }}>
-            {hoveredIdx !== null && hoveredIdx >= 0 && hoveredIdx < charRenderData.length ? (
-              <div style={{
-                padding: '6px 30px',
-                background: 'linear-gradient(90deg, rgba(0,0,0,0.3), rgba(10,8,5,0.95) 15%, rgba(10,8,5,0.98) 50%, rgba(10,8,5,0.95) 85%, rgba(0,0,0,0.3))',
-                borderTop: '2px solid rgba(255,204,51,0.5)',
-                borderBottom: '2px solid rgba(255,204,51,0.5)',
-                boxShadow: '0 0 15px rgba(255,204,51,0.1)',
-              }}>
-                <span style={{
-                  color: '#ffdd44', fontFamily: "'Orbitron', monospace",
-                  fontSize: 'clamp(14px, 2vw, 20px)',
-                  letterSpacing: 6, fontWeight: 900,
-                  textShadow: '0 0 20px #ffcc33, 0 0 40px #ff8800aa',
-                  background: 'linear-gradient(180deg, #ffffff, #ffee88, #ffcc33)',
-                  WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text',
-                }}>
-                  {charRenderData[hoveredIdx].name}
-                </span>
-              </div>
-            ) : (
-              <div style={{ color: 'rgba(255,204,51,0.15)', fontFamily: "'Orbitron', monospace", fontSize: 'clamp(9px, 1vw, 11px)', letterSpacing: 4 }}>
-                SELECT A FIGHTER
-              </div>
-            )}
-          </div>
         </div>
         </div>
       </div>

@@ -141,8 +141,8 @@ const GameApp: React.FC = () => {
           <div style={{ color: '#87ceeb', fontSize: 11, marginTop: 3 }}>
             {achievementPopup.description}
           </div>
-          <div style={{ color: '#00ff66', fontFamily: "'Orbitron', monospace", fontSize: 12, marginTop: 6, fontWeight: 'bold' }}>
-            🔷 +{achievementPopup.reward} CRISTALES
+          <div style={{ color: '#00ff66', fontFamily: "'Orbitron', monospace", fontSize: 12, marginTop: 6, fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: 5 }}>
+            <img src={crystalIcon} alt="crystal" style={{ height: 16, filter: 'drop-shadow(0 0 4px #00bfff)' }} /> +{achievementPopup.reward} CRISTALES
           </div>
         </div>
       )}

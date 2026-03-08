@@ -41,7 +41,7 @@ export class Fighter {
     this.isBlocking = false; this.blockCooldown = 0;
     this.isDodging = false; this.dodgeCooldown = 0;
     this.side = side; this.controls = controls; this.isAI = isAI;
-    this.hp = 100; this.energy = 0; this.rounds = 0;
+    this.hp = 70; this.energy = 0; this.rounds = 0;
     this.isFlying = false; this.isGrounded = true;
     this.stun = 0; this.isDashing = false; this.comboTimer = 0;
     this.squashX = 1; this.squashY = 1; this.lean = 0; this.animTimer = 0;
@@ -57,7 +57,7 @@ export class Fighter {
 
   reset(x: number, side: number) {
     this.x = x; this.y = 0; this.vx = 0; this.vy = 0;
-    this.side = side; this.hp = 100;
+    this.side = side; this.hp = 70;
     this.isFlying = false; this.stun = 0; this.isDashing = false;
     this.comboTimer = 0; this.squashX = 1; this.squashY = 1;
     this.hitFlash = 0; this.comboHits = 0; this.blockTime = 0;
@@ -189,6 +189,17 @@ export class Fighter {
         this.attack('hook_down', game);
       } else if (!this.customData && keys[c.up]) {
         this.attack('uppercut', game);
+      } else if (!this.customData) {
+        // Back + hit = hook to the right, Forward + hit = hook to the left
+        const backKey = this.side === 1 ? c.left : c.right;
+        const fwdKey = this.side === 1 ? c.right : c.left;
+        if (keys[backKey]) {
+          this.attack('hook_back', game);
+        } else if (keys[fwdKey]) {
+          this.attack('hook_forward', game);
+        } else {
+          this.attack('hit', game);
+        }
       } else {
         this.attack('hit', game);
       }
@@ -384,28 +395,83 @@ export class Fighter {
     // === DIRECTIONAL ATTACKS (all non-custom characters) ===
     if (type === 'hook_down') {
       this.handMode = 'slam'; this.handTimer = 15;
-      this.vx = this.side * 10;
-      if (dist < 65 && Math.abs(this.y - opp.y) < 50) {
-        const dmg = 1.5 * this.damageBoost;
+      this.vx = this.side * 12;
+      // Extended hitbox for hook_down - wider range and active during travel
+      if (dist < 110 && Math.abs(this.y - opp.y) < 60) {
+        const dmg = 1.2 * this.damageBoost;
         opp.takeDamage(dmg, true);
         game.trackStat('totalDamage', dmg);
-        opp.vx = this.side * 6; opp.vy = 5;
-        opp.stun = 18;
+        opp.vx = this.side * 4; opp.vy = 3;
+        opp.stun = 10; // Low stun = combo-friendly
         if (this.charIdx === 1) {
-          // Kaito: Meteor Kick - golden slam
           game.texts.push(new FloatingText(opp.x, opp.y - 30, 'PATADA METEORO', '#ffdd00'));
           game.spawnParticles(opp.x, opp.y + 10, '#ffdd00', 22, 3);
-          game.spawnShockwave(opp.x, opp.y, '#ffdd00');
           game.particles.push(new PunchCircle(opp.x, opp.y, '#ffdd00'));
         } else {
-          // Edowado: Gancho
           game.texts.push(new FloatingText(opp.x, opp.y - 30, 'GANCHO', '#ff8800'));
           game.spawnParticles(opp.x, opp.y + 10, '#ff8800', 18, 3);
-          game.spawnShockwave(opp.x, opp.y, '#ff8800');
           game.particles.push(new PunchCircle(opp.x, opp.y, '#ff8800'));
         }
-        game.hitStop = 8; game.shake = 15;
+        game.hitStop = 5; game.shake = 10;
         playHitSound();
+        this.comboHits++;
+        game.trackStat('comboMax', this.comboHits);
+      }
+      this.damageBoost = 1;
+      return;
+    }
+
+    if (type === 'hook_back') {
+      this.handMode = this.handOrder > 0 ? 'punch_right' : 'punch_left'; this.handTimer = 14;
+      this.handOrder *= -1;
+      // Hook towards back - swings away from facing direction
+      this.vx = -this.side * 6;
+      if (dist < 85 && Math.abs(this.y - opp.y) < 50) {
+        const dmg = 1.0 * this.damageBoost;
+        opp.takeDamage(dmg, true);
+        game.trackStat('totalDamage', dmg);
+        opp.vx = -this.side * 10; opp.vy = -5;
+        opp.stun = 8; // Very combo-friendly
+        if (this.charIdx === 1) {
+          game.texts.push(new FloatingText(opp.x, opp.y - 30, 'GOLPE REVERSO', '#88ddff'));
+          game.spawnParticles(opp.x, opp.y, '#88ddff', 15, 2);
+        } else {
+          game.texts.push(new FloatingText(opp.x, opp.y - 30, 'GANCHO DERECHO', '#ff6600'));
+          game.spawnParticles(opp.x, opp.y, '#ff6600', 15, 2);
+        }
+        game.particles.push(new PunchCircle(opp.x, opp.y, this.data.eyes));
+        game.hitStop = 4; game.shake = 8;
+        playHitSound();
+        this.comboHits++;
+        game.trackStat('comboMax', this.comboHits);
+      }
+      this.damageBoost = 1;
+      return;
+    }
+
+    if (type === 'hook_forward') {
+      this.handMode = this.handOrder > 0 ? 'punch_left' : 'punch_right'; this.handTimer = 14;
+      this.handOrder *= -1;
+      // Hook towards forward - lunging punch
+      this.vx = this.side * 16;
+      if (dist < 90 && Math.abs(this.y - opp.y) < 50) {
+        const dmg = 1.3 * this.damageBoost;
+        opp.takeDamage(dmg, true);
+        game.trackStat('totalDamage', dmg);
+        opp.vx = this.side * 12; opp.vy = -3;
+        opp.stun = 9; // Combo-friendly
+        if (this.charIdx === 1) {
+          game.texts.push(new FloatingText(opp.x, opp.y - 30, 'EMBESTIDA', '#ffaa00'));
+          game.spawnParticles(opp.x, opp.y, '#ffaa00', 18, 3);
+        } else {
+          game.texts.push(new FloatingText(opp.x, opp.y - 30, 'GANCHO IZQUIERDO', '#ff4400'));
+          game.spawnParticles(opp.x, opp.y, '#ff4400', 18, 3);
+        }
+        game.particles.push(new PunchCircle(opp.x, opp.y, this.data.eyes));
+        game.hitStop = 5; game.shake = 12;
+        playHitSound();
+        this.comboHits++;
+        game.trackStat('comboMax', this.comboHits);
       }
       this.damageBoost = 1;
       return;
@@ -414,29 +480,26 @@ export class Fighter {
     if (type === 'uppercut') {
       this.handMode = 'strike'; this.handTimer = 15;
       this.vx = this.side * 8;
-      if (dist < 65 && Math.abs(this.y - opp.y) < 50) {
-        const dmg = 1.8 * this.damageBoost;
+      if (dist < 75 && Math.abs(this.y - opp.y) < 55) {
+        const dmg = 1.5 * this.damageBoost;
         opp.takeDamage(dmg, true);
         game.trackStat('totalDamage', dmg);
-        opp.vx = this.side * 8; opp.vy = -20;
-        opp.stun = 20;
+        opp.vx = this.side * 6; opp.vy = -20;
+        opp.stun = 12; // Combo-friendly - can follow up in air
         if (this.charIdx === 1) {
-          // Kaito: Rising Flash - white/gold launch
           game.texts.push(new FloatingText(opp.x, opp.y - 40, 'DESTELLO ASCENDENTE', '#ffffff'));
           game.spawnParticles(opp.x, opp.y - 10, '#ffffff', 30, 3);
-          game.spawnShockwave(opp.x, opp.y, '#ffffff');
           game.particles.push(new PunchCircle(opp.x, opp.y, '#ffffff'));
-          // Kaito launches himself a bit too
           this.vy = -10;
         } else {
-          // Edowado: Uppercut
           game.texts.push(new FloatingText(opp.x, opp.y - 40, 'UPPERCUT', '#ffff00'));
           game.spawnParticles(opp.x, opp.y - 10, '#ffff00', 25, 3);
-          game.spawnShockwave(opp.x, opp.y, '#ffff00');
           game.particles.push(new PunchCircle(opp.x, opp.y, '#ffff00'));
         }
-        game.hitStop = 10; game.shake = 20;
+        game.hitStop = 7; game.shake = 14;
         playSuperSound();
+        this.comboHits++;
+        game.trackStat('comboMax', this.comboHits);
       }
       this.damageBoost = 1;
       return;

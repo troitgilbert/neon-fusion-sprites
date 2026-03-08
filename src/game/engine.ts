@@ -188,28 +188,32 @@ export class GameEngine {
   confirmSkinChoice(charIdx: number, skinId: string | null, pNum: number) {
     if (pNum === 1) {
       this.selectedSkins.p1 = skinId; this.p1Choice = charIdx;
-      if (this.mode === 'arcade') {
+      // For modes that don't need P2 selection, auto-assign P2
+      if (this.mode !== 'versus' && this.mode !== 'vs_cpu') {
         this.p2Choice = (charIdx === 0 || charIdx >= 100) ? 1 : 0;
-        this.arcadeStage = 0;
-        this.setState('ARCADE_TOWER');
-      } else if (this.mode === 'survival' || this.mode === 'training') {
-        this.p2Choice = (charIdx === 0 || charIdx >= 100) ? 1 : 0;
-        this.selectedStage = 'default'; this.startMatch(charIdx, this.p2Choice!);
-      } else if (this.mode === 'boss_rush' || this.mode === 'boss_select') {
-        // Go directly to fight with boss
-        this.startBossFight(charIdx);
-      } else if (this.mode === 'versus' || this.mode === 'vs_cpu') {
-        this.setState('SELECT');
-      } else {
-        // Default: go to stage select
-        this.p2Choice = (charIdx === 0 || charIdx >= 100) ? 1 : 0;
-        this.setState('STAGE_SELECT');
       }
     } else {
       this.selectedSkins.p2 = skinId; this.p2Choice = charIdx;
-      // Return to roster — user must press Enter to go to stage select
-      this.setState('SELECT');
     }
+    // Always return to roster — user must press Enter to proceed
+    this.setState('SELECT');
+  }
+
+  // Called when user presses Enter with all selections made
+  proceedFromRoster() {
+    if (this.p1Choice === null) return;
+    if (this.mode === 'arcade') {
+      this.arcadeStage = 0;
+      this.setState('ARCADE_TOWER');
+    } else if (this.mode === 'survival' || this.mode === 'training') {
+      this.selectedStage = 'default';
+      this.startMatch(this.p1Choice, this.p2Choice!);
+    } else if (this.mode === 'boss_rush' || this.mode === 'boss_select') {
+      this.startBossFight(this.p1Choice);
+    } else {
+      this.setState('STAGE_SELECT');
+    }
+  }
   }
 
   startBossFight(playerCharIdx: number) {

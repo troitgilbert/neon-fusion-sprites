@@ -33,6 +33,11 @@ export class Fighter {
   _invocationX: number;
   _invocationTimer: number;
   _pendingImpactoCristalico: boolean;
+  _agarreActive: boolean;
+  _agarreVx: number;
+  _agarreVy: number;
+  _agarreBounces: number;
+  _pendingCohete: boolean;
   constructor(id: number, charIdx: number, x: number, side: number, controls: Controls, isAI = false, skinId: string | null = null, customData: CustomCharData | null = null) {
     this.id = id; this.charIdx = charIdx;
     this.customData = customData;
@@ -66,6 +71,11 @@ export class Fighter {
     this._invocationX = 0;
     this._invocationTimer = 0;
     this._pendingImpactoCristalico = false;
+    this._agarreActive = false;
+    this._agarreVx = 0;
+    this._agarreVy = 0;
+    this._agarreBounces = 0;
+    this._pendingCohete = false;
   }
 
   reset(x: number, side: number) {
@@ -78,6 +88,8 @@ export class Fighter {
     this.handMode = 'normal'; this.handTimer = 0; this.specialTrail = 0;
     this.isCrouching = false; this.emoteTimer = 0;
     this._invocationActive = false; this._pendingImpactoCristalico = false;
+    this._agarreActive = false; this._agarreVx = 0; this._agarreVy = 0; this._agarreBounces = 0;
+    this._pendingCohete = false;
   }
 
   isKaitoAsesino() { return this.charIdx === 1 && this.skinId === 'demonioBlanco2'; }
@@ -152,6 +164,53 @@ export class Fighter {
         game.texts.push(new FloatingText(this._invocationX, this.y - 50, 'INVOCACIÓN CRISTAL', '#00ffff'));
         game.spawnParticles(this._invocationX, this.y, '#00ffff', 15, 3);
         this._invocationActive = false;
+      }
+    }
+
+    // Agarre bouncing movement
+    if (this._agarreActive) {
+      this.vx = this._agarreVx;
+      this.vy = this._agarreVy;
+      game.spawnParticles(this.x, this.y, '#ff4400', 2, 2);
+      // Bounce off walls
+      if (this.x < 40 || this.x > CANVAS_W - 40) {
+        this._agarreVx *= -1;
+        this._agarreBounces++;
+        game.spawnParticles(this.x, this.y, '#ff0000', 10, 3);
+      }
+      // Bounce off top and ground
+      if (this.y < 60 || this.y > GROUND_Y - 20) {
+        this._agarreVy *= -1;
+        this._agarreBounces++;
+        game.spawnParticles(this.x, this.y, '#ff0000', 10, 3);
+      }
+      // Check collision with opponent
+      const agDist = Math.hypot(this.x - opp.x, this.y - opp.y);
+      if (agDist < 60) {
+        // Grab success!
+        this._agarreActive = false;
+        game.texts.push(new FloatingText(this.x, this.y - 60, 'AGARRE', '#ff0000'));
+        const dmg = 10 * this.damageBoost;
+        opp.takeDamage(dmg, true);
+        game.trackStat('totalDamage', dmg);
+        opp.stun = 40;
+        opp.vx = this.side * 20;
+        opp.vy = -15;
+        game.flashScreen();
+        game.shake = 30;
+        game.hitStop = 15;
+        game.spawnExplosion(opp.x, opp.y, '#ff0000');
+        game.spawnShockwave(opp.x, opp.y, '#ff0000');
+        game.spawnParticles(opp.x, opp.y, '#ff4400', 40, 4);
+        playHitSound();
+        this.comboHits++;
+        game.trackStat('comboMax', this.comboHits);
+      }
+      // Stop after 5 bounces
+      if (this._agarreBounces >= 5) {
+        this._agarreActive = false;
+        this.vx = 0;
+        this.vy = 0;
       }
     }
 
@@ -318,7 +377,27 @@ export class Fighter {
         this.attack('special', game);
       }
     }
-    if (justPressed[c.super]) this.attack('super', game);
+    // Directional Super for Edowado
+    if (justPressed[c.super]) {
+      if (!this.customData && this.charIdx === 0) {
+        const fwdKey = this.side === 1 ? c.right : c.left;
+        if (!this.isGrounded && keys[c.down]) {
+          this.attack('super_presion', game);
+        } else if (!this.isGrounded && keys[fwdKey]) {
+          this.attack('super_agarre', game);
+        } else if (keys[c.down]) {
+          this.attack('super_impulso', game);
+        } else if (keys[c.up]) {
+          this.attack('super_cohete', game);
+        } else if (keys[fwdKey]) {
+          this.attack('super_atraccion', game);
+        } else {
+          this.attack('super', game);
+        }
+      } else {
+        this.attack('super', game);
+      }
+    }
     if (justPressed[c.ultra]) this.attack('ultra', game);
 
     if (this.dodgeCooldown > 0) this.dodgeCooldown--;
@@ -708,6 +787,144 @@ export class Fighter {
       this.vy = 30; // slam down
       this._pendingImpactoCristalico = true;
       game.trackStat('totalSpecials');
+      return;
+    }
+
+    // === EDOWADO DIRECTIONAL SUPERS ===
+
+    // Down + Super: Impulso (ground hit, launches grounded enemies up)
+    if (type === 'super_impulso' && this.energy >= 100) {
+      this.energy -= 100;
+      playSuperSound();
+      game.flashScreen();
+      game.shake = 20;
+      game.texts.push(new FloatingText(this.x, this.y - 50, 'IMPULSO', '#ff4400'));
+      this.handMode = 'slam'; this.handTimer = 20;
+      game.spawnShockwave(this.x, GROUND_Y, '#ff4400');
+      game.spawnParticles(this.x, GROUND_Y, '#ff6600', 25, 3);
+      // Hits grounded enemy
+      if (dist < 140 && opp.isGrounded) {
+        const dmg = 7 * this.damageBoost;
+        opp.takeDamage(dmg, true);
+        game.trackStat('totalDamage', dmg);
+        opp.vy = -22; // Launch up high
+        opp.vx = (opp.x > this.x ? 1 : -1) * 5;
+        opp.isGrounded = false;
+        opp.stun = 20;
+        game.spawnExplosion(opp.x, opp.y, '#ff4400');
+        game.hitStop = 12;
+        this.comboHits++;
+        game.trackStat('comboMax', this.comboHits);
+        playHitSound();
+      }
+      game.trackStat('totalSupers');
+      this.damageBoost = 1;
+      return;
+    }
+
+    // Up + Super: Cohete (red fire effects, upward punch, critical)
+    if (type === 'super_cohete' && this.energy >= 100) {
+      this.energy -= 100;
+      playSuperSound();
+      game.flashScreen();
+      game.texts.push(new FloatingText(this.x, this.y - 50, 'COHETE', '#ff0000'));
+      this.handMode = 'uppercut_up'; this.handTimer = 25;
+      this.vy = -20; // Launch self up
+      this.isGrounded = false;
+      // Red fire trail
+      for (let i = 0; i < 8; i++) {
+        game.spawnParticles(this.x + (Math.random() - 0.5) * 30, this.y + i * 10, '#ff4400', 3, 3);
+        game.spawnParticles(this.x + (Math.random() - 0.5) * 20, this.y + i * 8, '#ff0000', 2, 2);
+      }
+      game.spawnShockwave(this.x, this.y, '#ff0000');
+      game.shake = 18;
+      // Critical upward punch
+      if (dist < 90 && opp.y <= this.y + 30) {
+        const dmg = 10 * this.damageBoost; // Critical damage
+        opp.takeDamage(dmg, true);
+        game.trackStat('totalDamage', dmg);
+        opp.vy = -25;
+        opp.vx = this.side * 8;
+        opp.isGrounded = false;
+        opp.stun = 25;
+        game.spawnExplosion(opp.x, opp.y, '#ff0000');
+        game.texts.push(new FloatingText(opp.x, opp.y - 30, 'CRÍTICO!', '#ffff00'));
+        game.hitStop = 15;
+        game.shake = 25;
+        this.comboHits++;
+        game.trackStat('comboMax', this.comboHits);
+        playHitSound();
+      }
+      game.trackStat('totalSupers');
+      this.damageBoost = 1;
+      return;
+    }
+
+    // Forward + Super: Atracción (blue aura, pulls enemy)
+    if (type === 'super_atraccion' && this.energy >= 100) {
+      this.energy -= 100;
+      playSuperSound();
+      game.flashScreen();
+      game.texts.push(new FloatingText(this.x, this.y - 50, 'ATRACCIÓN', '#4488ff'));
+      this.handMode = 'block'; this.handTimer = 30;
+      // Blue aura around enemy
+      game.spawnShockwave(opp.x, opp.y, '#4488ff');
+      game.spawnShockwave(opp.x, opp.y, '#00aaff');
+      game.spawnParticles(opp.x, opp.y, '#66bbff', 30, 3);
+      game.shake = 12;
+      // Pull enemy toward self
+      opp.vx = (this.x - opp.x) * 0.3;
+      opp.vy = (this.y - opp.y) * 0.2;
+      opp.stun = 25;
+      game.trackStat('totalSupers');
+      this.damageBoost = 1;
+      return;
+    }
+
+    // Air + Down + Super: Presión (big red energy fist downward)
+    if (type === 'super_presion' && this.energy >= 100) {
+      this.energy -= 100;
+      playSuperSound();
+      game.flashScreen();
+      game.texts.push(new FloatingText(this.x, this.y - 50, 'PRESIÓN', '#ff0000'));
+      this.handMode = 'slam'; this.handTimer = 20;
+      // Spawn giant red fist going down
+      const giantFist = new GiantFist(this.x, this.y + 20, this.side, 1, '#ff0000', 25, this);
+      game.particles.push(giantFist);
+      game.spawnParticles(this.x, this.y, '#ff4400', 20, 4);
+      game.shake = 15;
+      // Check hit below
+      if (dist < 120 && opp.y > this.y - 30) {
+        const dmg = 9 * this.damageBoost;
+        opp.takeDamage(dmg, true);
+        game.trackStat('totalDamage', dmg);
+        opp.vy = 18; // Slam down
+        opp.vx = this.side * 6;
+        opp.stun = 18;
+        game.spawnExplosion(opp.x, opp.y, '#ff0000');
+        game.hitStop = 12;
+        game.shake = 22;
+        this.comboHits++;
+        game.trackStat('comboMax', this.comboHits);
+        playHitSound();
+      }
+      game.trackStat('totalSupers');
+      this.damageBoost = 1;
+      return;
+    }
+
+    // Air + Forward + Super: Agarre (bouncing self, grab on hit)
+    if (type === 'super_agarre' && this.energy >= 100) {
+      this.energy -= 100;
+      playSuperSound();
+      this._agarreActive = true;
+      this._agarreVx = this.side * 18;
+      this._agarreVy = 12;
+      this._agarreBounces = 0;
+      game.spawnParticles(this.x, this.y, '#ff4400', 20, 3);
+      game.shake = 10;
+      game.trackStat('totalSupers');
+      // Note: "AGARRE" text only appears on hit
       return;
     }
 

@@ -14,7 +14,7 @@ const DifficultySelect: React.FC<Props> = ({ onSelect, onBack, title = 'ELIGE DI
 
   return (
     <div className="fixed inset-0 z-50 flex flex-col items-center justify-center anim-screen-shutter" style={{ background: 'linear-gradient(135deg, #0a0a2e 0%, #1a0a3e 50%, #0a0a2e 100%)' }}>
-      <h2 style={{ color: '#ffcc33', fontFamily: "'Orbitron', monospace", fontSize: 28, letterSpacing: 5, marginBottom: 35, textShadow: '0 0 15px #ff6600' }}>
+      <h2 className="anim-title-slam" style={{ color: '#ffcc33', fontFamily: "'Orbitron', monospace", fontSize: 28, letterSpacing: 5, marginBottom: 35, textShadow: '0 0 15px #ff6600' }}>
         {title}
       </h2>
 

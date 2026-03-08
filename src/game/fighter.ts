@@ -54,6 +54,7 @@ export class Fighter {
     this.isCrouching = false;
     this.emoteTimer = 0; this.emoteType = 0;
     this._lastHitFrame = 0;
+  }
 
   reset(x: number, side: number) {
     this.x = x; this.y = 0; this.vx = 0; this.vy = 0;

@@ -538,7 +538,7 @@ const BigPortrait: React.FC<{
       const sc = Math.min(W, H) / 55;
 
       ctx.save();
-      ctx.translate(W / 2 + sway, H * 0.45);
+      ctx.translate(W / 2 + sway, H * 0.5);
       ctx.scale(breathe, breathe);
 
       drawCharOnCanvas(ctx, 0, 0, skinC, hairC, clothC, pantsC, eyeC, handC, sc, t, facing);
@@ -1082,7 +1082,7 @@ const CharacterSelect: React.FC = () => {
         {/* LAYER 1 (behind): Big portraits P1 left side, P2 right side */}
         <div style={{
           position: 'absolute', inset: 0, display: 'flex', justifyContent: 'space-between', zIndex: 1,
-          pointerEvents: 'none',
+          pointerEvents: 'none', padding: '0 clamp(10px, 3vw, 40px)',
         }}>
           <div style={{ width: 'clamp(140px, 22vw, 280px)', height: '100%', position: 'relative' }}>
             <BigPortrait char={displayP1 || null} customChar={p1Custom} color="#00ffff" facing={1} label="P1" />

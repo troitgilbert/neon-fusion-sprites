@@ -231,7 +231,6 @@ const CharacterPreview: React.FC<{ chars: StoryChar[] | null; color: string; acc
         drawChar(ctx, w / 2 - 35, h / 2 + 10, chars[0], 1.6, t, 1);    // left char faces right (center)
         drawChar(ctx, w / 2 + 35, h / 2 + 10, chars[1], 1.6, t + 50, -1); // right char faces left (center)
       }
-      }
     } else {
       // Custom: question mark
       ctx.fillStyle = color;

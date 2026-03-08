@@ -1425,7 +1425,7 @@ const CharacterSelect: React.FC = () => {
             {/* Subtle roster backdrop */}
             <div style={{
               position: 'absolute', inset: '-8px -16px',
-              background: 'radial-gradient(ellipse at center, rgba(0,0,0,0.25) 0%, rgba(0,0,0,0.1) 60%, transparent 100%)',
+              background: 'radial-gradient(ellipse at center, rgba(0,0,0,0.1) 0%, transparent 70%)',
               borderRadius: 8, pointerEvents: 'none',
             }} />
 
@@ -1476,7 +1476,7 @@ const CharacterSelect: React.FC = () => {
                                 ? 'linear-gradient(135deg, rgba(255,204,51,0.25), rgba(255,136,0,0.15))'
                                 : isHovered
                                   ? `linear-gradient(135deg, rgba(40,35,20,0.95), rgba(30,25,15,0.9))`
-                                  : 'linear-gradient(135deg, rgba(15,14,30,0.95), rgba(10,8,22,0.98))',
+                                  : 'linear-gradient(135deg, rgba(15,14,30,0.55), rgba(10,8,22,0.6))',
                             display: 'flex', alignItems: 'center', justifyContent: 'center',
                             transition: 'all 0.2s ease-out',
                             transform: isHovered ? 'scale(1.18)' : 'scale(1)',
@@ -1517,7 +1517,7 @@ const CharacterSelect: React.FC = () => {
                             cursor: 'pointer',
                             background: isCursor
                               ? 'linear-gradient(135deg, rgba(40,35,20,0.95), rgba(30,25,15,0.9))'
-                              : 'linear-gradient(135deg, rgba(15,14,30,0.95), rgba(10,8,22,0.98))',
+                              : 'linear-gradient(135deg, rgba(15,14,30,0.55), rgba(10,8,22,0.6))',
                             display: 'flex', alignItems: 'center', justifyContent: 'center',
                             transition: 'all 0.2s',
                             transform: isCursor ? 'scale(1.18)' : 'scale(1)',
@@ -1540,7 +1540,7 @@ const CharacterSelect: React.FC = () => {
                           cursor: 'pointer',
                           background: isCursor
                             ? 'linear-gradient(135deg, rgba(40,35,20,0.95), rgba(30,25,15,0.9))'
-                            : 'linear-gradient(135deg, rgba(15,14,30,0.95), rgba(10,8,22,0.98))',
+                            : 'linear-gradient(135deg, rgba(15,14,30,0.55), rgba(10,8,22,0.6))',
                           display: 'flex', alignItems: 'center', justifyContent: 'center',
                           transition: 'all 0.2s',
                           transform: isCursor ? 'scale(1.18)' : 'scale(1)',

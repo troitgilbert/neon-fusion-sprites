@@ -617,14 +617,14 @@ const BgCanvas: React.FC = () => {
       });
     }
 
-    // Warm nebulae (orange/amber like main menu)
+    // Cool grayscale nebulae
     const nebulae = [
-      { bx: 0.12, by: 0.18, r: 0.45, color: [180,80,10], alpha: 0.12, sx: 0.0003, sy: 0.0004 },
-      { bx: 0.82, by: 0.72, r: 0.5, color: [200,100,15], alpha: 0.11, sx: 0.0002, sy: 0.0003 },
-      { bx: 0.48, by: 0.08, r: 0.35, color: [220,120,20], alpha: 0.09, sx: 0.00025, sy: 0.0002 },
-      { bx: 0.72, by: 0.32, r: 0.3, color: [160,60,15], alpha: 0.08, sx: 0.00035, sy: 0.0005 },
-      { bx: 0.28, by: 0.78, r: 0.38, color: [200,90,10], alpha: 0.08, sx: 0.0004, sy: 0.00025 },
-      { bx: 0.55, by: 0.52, r: 0.55, color: [170,70,10], alpha: 0.07, sx: 0.0002, sy: 0.00015 },
+      { bx: 0.12, by: 0.18, r: 0.45, color: [80,80,90], alpha: 0.12, sx: 0.0003, sy: 0.0004 },
+      { bx: 0.82, by: 0.72, r: 0.5, color: [100,100,110], alpha: 0.11, sx: 0.0002, sy: 0.0003 },
+      { bx: 0.48, by: 0.08, r: 0.35, color: [120,120,130], alpha: 0.09, sx: 0.00025, sy: 0.0002 },
+      { bx: 0.72, by: 0.32, r: 0.3, color: [60,60,70], alpha: 0.08, sx: 0.00035, sy: 0.0005 },
+      { bx: 0.28, by: 0.78, r: 0.38, color: [90,90,100], alpha: 0.08, sx: 0.0004, sy: 0.00025 },
+      { bx: 0.55, by: 0.52, r: 0.55, color: [70,70,80], alpha: 0.07, sx: 0.0002, sy: 0.00015 },
     ];
 
     // Shooting stars
@@ -634,7 +634,7 @@ const BgCanvas: React.FC = () => {
     // Particles (warm colored, floating upward)
     type Particle = { x: number; y: number; vx: number; vy: number; size: number; life: number; maxLife: number; color: [number,number,number] };
     const particles: Particle[] = [];
-    const pColors: [number,number,number][] = [[255,140,0],[255,180,50],[200,100,20],[255,200,80],[220,120,30]];
+    const pColors: [number,number,number][] = [[180,180,190],[200,200,210],[140,140,150],[220,220,230],[160,160,170]];
 
     let time = 0;
     const draw = () => {
@@ -651,12 +651,12 @@ const BgCanvas: React.FC = () => {
       ctx.scale(dpr, dpr);
       time++;
 
-      // Deep warm background
+    // Deep cool grayscale background
       const bgGrad = ctx.createLinearGradient(0, 0, W * 0.3, H);
-      bgGrad.addColorStop(0, '#0a0503');
-      bgGrad.addColorStop(0.3, '#120806');
-      bgGrad.addColorStop(0.7, '#150a07');
-      bgGrad.addColorStop(1, '#0c0604');
+      bgGrad.addColorStop(0, '#060608');
+      bgGrad.addColorStop(0.3, '#0a0a0e');
+      bgGrad.addColorStop(0.7, '#0c0c10');
+      bgGrad.addColorStop(1, '#080809');
       ctx.fillStyle = bgGrad;
       ctx.fillRect(0, 0, W, H);
 
@@ -681,8 +681,8 @@ const BgCanvas: React.FC = () => {
       ctx.rotate(time * 0.0002);
       const gxSize = W * 0.08;
       const gxCore = ctx.createRadialGradient(0, 0, 0, 0, 0, gxSize * 0.3);
-      gxCore.addColorStop(0, 'rgba(255,220,150,0.8)');
-      gxCore.addColorStop(0.5, 'rgba(255,160,60,0.3)');
+      gxCore.addColorStop(0, 'rgba(220,220,230,0.8)');
+      gxCore.addColorStop(0.5, 'rgba(160,160,170,0.3)');
       gxCore.addColorStop(1, 'transparent');
       ctx.fillStyle = gxCore;
       ctx.fillRect(-gxSize, -gxSize, gxSize * 2, gxSize * 2);
@@ -695,7 +695,7 @@ const BgCanvas: React.FC = () => {
           const y = Math.sin(angle) * r;
           if (t === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
         }
-        ctx.strokeStyle = 'rgba(255,200,120,0.25)';
+        ctx.strokeStyle = 'rgba(200,200,210,0.25)';
         ctx.lineWidth = gxSize * 0.06;
         ctx.stroke();
       }
@@ -730,22 +730,22 @@ const BgCanvas: React.FC = () => {
       // Ringed planet (center-right)
       const p4x = W * 0.72, p4y = H * 0.65, p4r = W * 0.04;
       const p4bod = ctx.createRadialGradient(p4x - p4r * 0.25, p4y - p4r * 0.25, p4r * 0.05, p4x, p4y, p4r);
-      p4bod.addColorStop(0, 'rgba(220,180,120,0.45)');
-      p4bod.addColorStop(0.6, 'rgba(160,110,50,0.3)');
-      p4bod.addColorStop(1, 'rgba(80,50,20,0.12)');
+      p4bod.addColorStop(0, 'rgba(200,200,210,0.45)');
+      p4bod.addColorStop(0.6, 'rgba(140,140,150,0.3)');
+      p4bod.addColorStop(1, 'rgba(70,70,80,0.12)');
       ctx.beginPath(); ctx.arc(p4x, p4y, p4r, 0, Math.PI * 2); ctx.fillStyle = p4bod; ctx.fill();
       ctx.save();
       ctx.translate(p4x, p4y); ctx.scale(1, 0.3);
       ctx.beginPath(); ctx.arc(0, 0, p4r * 1.8, 0, Math.PI * 2);
-      ctx.strokeStyle = 'rgba(220,180,120,0.18)'; ctx.lineWidth = p4r * 0.15; ctx.stroke();
+      ctx.strokeStyle = 'rgba(200,200,210,0.18)'; ctx.lineWidth = p4r * 0.15; ctx.stroke();
       ctx.restore();
 
-      // Small orange planet (top area)
+      // Small gray planet (top area)
       const p2x = W * 0.25, p2y = H * 0.18, p2r = W * 0.02;
       const p2grad = ctx.createRadialGradient(p2x - p2r * 0.3, p2y - p2r * 0.3, p2r * 0.05, p2x, p2y, p2r);
-      p2grad.addColorStop(0, 'rgba(255,180,80,0.6)');
-      p2grad.addColorStop(0.5, 'rgba(200,100,30,0.4)');
-      p2grad.addColorStop(1, 'rgba(120,50,10,0.2)');
+      p2grad.addColorStop(0, 'rgba(200,200,210,0.6)');
+      p2grad.addColorStop(0.5, 'rgba(140,140,150,0.4)');
+      p2grad.addColorStop(1, 'rgba(80,80,90,0.2)');
       ctx.beginPath(); ctx.arc(p2x, p2y, p2r, 0, Math.PI * 2); ctx.fillStyle = p2grad; ctx.fill();
 
       // Cosmic dust band
@@ -755,9 +755,9 @@ const BgCanvas: React.FC = () => {
       ctx.rotate(0.35 + Math.sin(time * 0.0001) * 0.04);
       const dustGrad = ctx.createLinearGradient(-W, 0, W, 0);
       dustGrad.addColorStop(0, 'transparent');
-      dustGrad.addColorStop(0.25, 'rgba(200,110,30,1)');
-      dustGrad.addColorStop(0.5, 'rgba(180,90,20,1)');
-      dustGrad.addColorStop(0.75, 'rgba(160,75,15,1)');
+      dustGrad.addColorStop(0.25, 'rgba(120,120,130,1)');
+      dustGrad.addColorStop(0.5, 'rgba(100,100,110,1)');
+      dustGrad.addColorStop(0.75, 'rgba(80,80,90,1)');
       dustGrad.addColorStop(1, 'transparent');
       ctx.fillStyle = dustGrad;
       ctx.fillRect(-W, -H * 0.12, W * 2, H * 0.24);
@@ -855,9 +855,9 @@ const BgCanvas: React.FC = () => {
           ctx.fillStyle = `rgba(220,240,255,${ta})`;
           ctx.fill();
         }
-        const headG = ctx.createRadialGradient(ss.x, ss.y, 0, ss.x, ss.y, 15);
+      const headG = ctx.createRadialGradient(ss.x, ss.y, 0, ss.x, ss.y, 15);
         headG.addColorStop(0, `rgba(255,255,255,${fade * 0.9})`);
-        headG.addColorStop(0.3, `rgba(150,200,255,${fade * 0.35})`);
+        headG.addColorStop(0.3, `rgba(200,200,220,${fade * 0.35})`);
         headG.addColorStop(1, 'transparent');
         ctx.fillStyle = headG;
         ctx.fillRect(ss.x - 15, ss.y - 15, 30, 30);
@@ -871,7 +871,7 @@ const BgCanvas: React.FC = () => {
       // Faint hex grid
       ctx.save();
       ctx.globalAlpha = 0.012;
-      ctx.strokeStyle = '#ffcc33';
+      ctx.strokeStyle = '#999999';
       ctx.lineWidth = 0.3;
       const hexSize = 45;
       const hexH = hexSize * Math.sqrt(3);
@@ -895,7 +895,7 @@ const BgCanvas: React.FC = () => {
       ctx.save();
       ctx.globalAlpha = 0.025;
       const p1Glow = ctx.createRadialGradient(0, H * 0.5, 0, 0, H * 0.5, W * 0.35);
-      p1Glow.addColorStop(0, '#00ddff');
+      p1Glow.addColorStop(0, '#aabbcc');
       p1Glow.addColorStop(1, 'transparent');
       ctx.fillStyle = p1Glow;
       ctx.fillRect(0, 0, W * 0.5, H);
@@ -903,7 +903,7 @@ const BgCanvas: React.FC = () => {
       ctx.save();
       ctx.globalAlpha = 0.025;
       const p2Glow2 = ctx.createRadialGradient(W, H * 0.5, 0, W, H * 0.5, W * 0.35);
-      p2Glow2.addColorStop(0, '#ff8c00');
+      p2Glow2.addColorStop(0, '#aaaaaa');
       p2Glow2.addColorStop(1, 'transparent');
       ctx.fillStyle = p2Glow2;
       ctx.fillRect(W * 0.5, 0, W * 0.5, H);
@@ -916,11 +916,11 @@ const BgCanvas: React.FC = () => {
       ctx.fillStyle = vig;
       ctx.fillRect(0, 0, W, H);
 
-      // Warm lens glow
+      // Cool lens glow
       const la = 0.02 + Math.sin(time * 0.006) * 0.01;
       const lens = ctx.createRadialGradient(W * 0.1, H * 0.12, 0, W * 0.1, H * 0.12, W * 0.35);
-      lens.addColorStop(0, `rgba(255,180,80,${la})`);
-      lens.addColorStop(0.5, `rgba(255,80,30,${la * 0.25})`);
+      lens.addColorStop(0, `rgba(180,180,200,${la})`);
+      lens.addColorStop(0.5, `rgba(120,120,140,${la * 0.25})`);
       lens.addColorStop(1, 'transparent');
       ctx.fillStyle = lens;
       ctx.fillRect(0, 0, W, H);
@@ -1216,11 +1216,11 @@ const CharacterSelect: React.FC = () => {
     <div className="fixed inset-0 z-50 flex flex-col" style={{ overflow: 'hidden', animation: 'fadeIn 0.4s ease-out' }}>
       <BgCanvas />
 
-      {/* === GOLDEN TOP BORDER with animated shimmer === */}
+      {/* === SILVER TOP BORDER with animated shimmer === */}
       <div style={{
         position: 'relative', zIndex: 3, height: 3,
-        background: 'linear-gradient(90deg, transparent 2%, #ffcc33 15%, #ff8800 35%, #ffee88 50%, #ff8800 65%, #ffcc33 85%, transparent 98%)',
-        boxShadow: '0 2px 20px #ffcc3360, 0 0 40px #ff880020',
+        background: 'linear-gradient(90deg, transparent 2%, #999999 15%, #bbbbbb 35%, #dddddd 50%, #bbbbbb 65%, #999999 85%, transparent 98%)',
+        boxShadow: '0 2px 20px rgba(180,180,180,0.3), 0 0 40px rgba(150,150,150,0.1)',
       }} />
 
       {/* === TOP BAR: P1 SIDE | TITLE | P2 SIDE === */}
@@ -1229,7 +1229,7 @@ const CharacterSelect: React.FC = () => {
         display: 'flex', justifyContent: 'space-between', alignItems: 'center',
         padding: '10px 30px',
         background: 'linear-gradient(180deg, rgba(5,5,15,0.95) 0%, rgba(10,8,25,0.85) 60%, transparent 100%)',
-        borderBottom: '1px solid rgba(255,204,51,0.15)',
+        borderBottom: '1px solid rgba(180,180,180,0.15)',
       }}>
         {/* P1 indicator */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
@@ -1251,17 +1251,17 @@ const CharacterSelect: React.FC = () => {
         {/* Center title */}
         <div style={{ textAlign: 'center' }}>
           <div style={{
-            color: '#ffcc33', fontFamily: "'Orbitron', monospace",
+            color: '#cccccc', fontFamily: "'Orbitron', monospace",
             fontSize: 'clamp(14px, 2.5vw, 28px)', fontWeight: 900,
-            textShadow: '0 0 20px #ffcc3350, 0 0 40px #ff880020, 0 2px 4px rgba(0,0,0,0.8)',
+            textShadow: '0 0 20px rgba(200,200,200,0.3), 0 0 40px rgba(150,150,150,0.1), 0 2px 4px rgba(0,0,0,0.8)',
             letterSpacing: 8,
-            background: 'linear-gradient(180deg, #ffee88 0%, #ffcc33 40%, #ff8800 100%)',
+            background: 'linear-gradient(180deg, #eeeeee 0%, #cccccc 40%, #888888 100%)',
             WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text',
           }}>
             {isP2Turn ? '⬥ PLAYER SELECT ⬥' : '⬥ CHARACTER SELECT ⬥'}
           </div>
           <div style={{
-            color: 'rgba(255,204,51,0.3)', fontFamily: "'Orbitron', monospace",
+            color: 'rgba(180,180,180,0.3)', fontFamily: "'Orbitron', monospace",
             fontSize: 'clamp(6px, 0.7vw, 8px)', letterSpacing: 6, marginTop: 2,
           }}>CHOOSE YOUR FIGHTER</div>
         </div>
@@ -1413,21 +1413,21 @@ const CharacterSelect: React.FC = () => {
                             clipPath: 'polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%)',
                             cursor: 'pointer', position: 'relative',
                             background: isFlashing
-                              ? `linear-gradient(135deg, #ffcc3370, #ffcc3330)`
+                              ? `linear-gradient(135deg, rgba(200,200,200,0.4), rgba(180,180,180,0.2))`
                               : isP1Selected
-                                ? 'linear-gradient(135deg, rgba(255,204,51,0.25), rgba(255,136,0,0.15))'
+                                ? 'linear-gradient(135deg, rgba(200,200,200,0.25), rgba(150,150,150,0.15))'
                                 : isHovered
-                                  ? `linear-gradient(135deg, rgba(50,42,15,0.95), rgba(35,30,10,0.92))`
+                                  ? `linear-gradient(135deg, rgba(45,45,50,0.95), rgba(30,30,35,0.92))`
                                   : 'linear-gradient(135deg, rgba(10,10,25,0.92), rgba(8,6,18,0.95))',
                             display: 'flex', alignItems: 'center', justifyContent: 'center',
                             transition: 'all 0.2s ease-out',
                             transform: isHovered ? 'scale(1.18)' : 'scale(1)',
                             zIndex: isHovered ? 10 : 1,
                             filter: isP1Selected
-                              ? 'drop-shadow(0 0 12px #ffcc3360)'
+                              ? 'drop-shadow(0 0 12px rgba(200,200,200,0.35))'
                               : isHovered
                                 ? `drop-shadow(0 0 14px ${ch.eyeColor}60)`
-                                : 'drop-shadow(0 0 2px rgba(255,204,51,0.1))',
+                                : 'drop-shadow(0 0 2px rgba(180,180,180,0.1))',
                           }}
                         >
                           <CanvasPortrait
@@ -1438,10 +1438,10 @@ const CharacterSelect: React.FC = () => {
                             facing={1}
                           />
                           {isP1Selected && (
-                            <div style={{
+                             <div style={{
                               position: 'absolute', bottom: '10%',
-                              color: '#ffcc33', fontSize: 7, fontFamily: "'Orbitron', monospace",
-                              fontWeight: 900, textShadow: '0 0 8px #ffcc33', letterSpacing: 2,
+                              color: '#cccccc', fontSize: 7, fontFamily: "'Orbitron', monospace",
+                              fontWeight: 900, textShadow: '0 0 8px #cccccc', letterSpacing: 2,
                             }}>P1</div>
                           )}
                         </div>
@@ -1458,16 +1458,16 @@ const CharacterSelect: React.FC = () => {
                             clipPath: 'polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%)',
                             cursor: 'pointer',
                             background: isCursor
-                              ? 'linear-gradient(135deg, rgba(50,42,15,0.95), rgba(35,30,10,0.92))'
+                              ? 'linear-gradient(135deg, rgba(45,45,50,0.95), rgba(30,30,35,0.92))'
                               : 'linear-gradient(135deg, rgba(10,10,25,0.92), rgba(8,6,18,0.95))',
                             display: 'flex', alignItems: 'center', justifyContent: 'center',
                             transition: 'all 0.2s',
                             transform: isCursor ? 'scale(1.18)' : 'scale(1)',
                             zIndex: isCursor ? 10 : 1,
-                            filter: isCursor ? 'drop-shadow(0 0 14px #ffcc3360)' : 'drop-shadow(0 0 2px rgba(255,204,51,0.1))',
+                            filter: isCursor ? 'drop-shadow(0 0 14px rgba(200,200,200,0.35))' : 'drop-shadow(0 0 2px rgba(180,180,180,0.1))',
                           }}
                         >
-                          <span style={{ color: '#ffcc33', fontSize: hexW * 0.3, fontWeight: 900, fontFamily: "'Orbitron', monospace", textShadow: '0 0 12px #ffcc3350' }}>?</span>
+                          <span style={{ color: '#cccccc', fontSize: hexW * 0.3, fontWeight: 900, fontFamily: "'Orbitron', monospace", textShadow: '0 0 12px rgba(200,200,200,0.3)' }}>?</span>
                         </div>
                       );
                     }
@@ -1481,13 +1481,13 @@ const CharacterSelect: React.FC = () => {
                           clipPath: 'polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%)',
                           cursor: 'pointer',
                           background: isCursor
-                            ? 'linear-gradient(135deg, rgba(50,42,15,0.95), rgba(35,30,10,0.92))'
+                            ? 'linear-gradient(135deg, rgba(45,45,50,0.95), rgba(30,30,35,0.92))'
                             : 'linear-gradient(135deg, rgba(10,10,25,0.92), rgba(8,6,18,0.95))',
                           display: 'flex', alignItems: 'center', justifyContent: 'center',
                           transition: 'all 0.2s',
                           transform: isCursor ? 'scale(1.18)' : 'scale(1)',
                           zIndex: isCursor ? 10 : 1,
-                          filter: isCursor ? 'drop-shadow(0 0 14px #ffcc3360)' : 'drop-shadow(0 0 2px rgba(255,204,51,0.1))',
+                          filter: isCursor ? 'drop-shadow(0 0 14px rgba(200,200,200,0.35))' : 'drop-shadow(0 0 2px rgba(180,180,180,0.1))',
                         }}
                       >
                         <span style={{ fontSize: hexW * 0.25 }}>🎲</span>
@@ -1508,15 +1508,15 @@ const CharacterSelect: React.FC = () => {
               <div style={{
                 padding: '5px 25px',
                 background: 'linear-gradient(90deg, transparent, rgba(10,8,20,0.85) 15%, rgba(10,8,20,0.9) 50%, rgba(10,8,20,0.85) 85%, transparent)',
-                borderTop: '2px solid rgba(255,204,51,0.35)',
-                borderBottom: '2px solid rgba(255,204,51,0.35)',
+                borderTop: '2px solid rgba(180,180,180,0.35)',
+                borderBottom: '2px solid rgba(180,180,180,0.35)',
               }}>
                 <span style={{
-                  color: '#ffcc33', fontFamily: "'Orbitron', monospace",
+                  color: '#cccccc', fontFamily: "'Orbitron', monospace",
                   fontSize: 'clamp(12px, 1.6vw, 16px)',
                   letterSpacing: 6, fontWeight: 900,
-                  textShadow: '0 0 15px #ffcc3360, 0 0 30px #ff880030',
-                  background: 'linear-gradient(180deg, #ffee88, #ffcc33, #ff8800)',
+                  textShadow: '0 0 15px rgba(200,200,200,0.35), 0 0 30px rgba(150,150,150,0.2)',
+                  background: 'linear-gradient(180deg, #eeeeee, #cccccc, #888888)',
                   WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text',
                 }}>
                   {charRenderData[hoveredIdx].name}
@@ -1538,28 +1538,28 @@ const CharacterSelect: React.FC = () => {
         display: 'flex', justifyContent: 'space-between', alignItems: 'center',
         padding: '10px 30px',
         background: 'linear-gradient(0deg, rgba(5,5,15,0.95) 0%, rgba(10,8,25,0.85) 60%, transparent 100%)',
-        borderTop: '1px solid rgba(255,204,51,0.12)',
+        borderTop: '1px solid rgba(180,180,180,0.12)',
       }}>
         <div style={{
-          color: 'rgba(255,204,51,0.35)', fontFamily: "'Orbitron', monospace",
+          color: 'rgba(180,180,180,0.35)', fontFamily: "'Orbitron', monospace",
           fontSize: 'clamp(7px, 0.85vw, 10px)', letterSpacing: 3,
           display: 'flex', alignItems: 'center', gap: 8,
         }}>
           <span style={{ color: 'rgba(0,255,255,0.4)' }}>◆</span> 1P: WASD + F/G/H
         </div>
         <button onClick={() => setGameState('MENU')} style={{
-          padding: '7px 30px', background: 'linear-gradient(180deg, rgba(255,204,51,0.08), rgba(255,204,51,0.03))',
-          border: '1px solid rgba(255,204,51,0.25)', color: '#ffcc33',
+          padding: '7px 30px', background: 'linear-gradient(180deg, rgba(180,180,180,0.08), rgba(180,180,180,0.03))',
+          border: '1px solid rgba(180,180,180,0.25)', color: '#cccccc',
           cursor: 'pointer', fontFamily: "'Orbitron', monospace",
           fontSize: 'clamp(8px, 1.1vw, 11px)', letterSpacing: 5,
-          transition: 'all 0.3s', textShadow: '0 0 8px #ffcc3330',
+          transition: 'all 0.3s', textShadow: '0 0 8px rgba(200,200,200,0.2)',
           position: 'relative', overflow: 'hidden',
         }}
-        onMouseEnter={e => { e.currentTarget.style.borderColor = '#ffcc33'; e.currentTarget.style.boxShadow = '0 0 20px #ffcc3330, inset 0 0 20px #ffcc3310'; e.currentTarget.style.background = 'linear-gradient(180deg, rgba(255,204,51,0.15), rgba(255,204,51,0.05))'; }}
-        onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(255,204,51,0.25)'; e.currentTarget.style.boxShadow = 'none'; e.currentTarget.style.background = 'linear-gradient(180deg, rgba(255,204,51,0.08), rgba(255,204,51,0.03))'; }}
+        onMouseEnter={e => { e.currentTarget.style.borderColor = '#cccccc'; e.currentTarget.style.boxShadow = '0 0 20px rgba(200,200,200,0.2), inset 0 0 20px rgba(200,200,200,0.06)'; e.currentTarget.style.background = 'linear-gradient(180deg, rgba(180,180,180,0.15), rgba(180,180,180,0.05))'; }}
+        onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(180,180,180,0.25)'; e.currentTarget.style.boxShadow = 'none'; e.currentTarget.style.background = 'linear-gradient(180deg, rgba(180,180,180,0.08), rgba(180,180,180,0.03))'; }}
         >VOLVER</button>
         <div style={{
-          color: 'rgba(255,204,51,0.35)', fontFamily: "'Orbitron', monospace",
+          color: 'rgba(180,180,180,0.35)', fontFamily: "'Orbitron', monospace",
           fontSize: 'clamp(7px, 0.85vw, 10px)', letterSpacing: 3, textAlign: 'right',
           display: 'flex', alignItems: 'center', gap: 8,
         }}>
@@ -1567,11 +1567,11 @@ const CharacterSelect: React.FC = () => {
         </div>
       </div>
 
-      {/* Golden bottom border */}
+      {/* Silver bottom border */}
       <div style={{
         position: 'relative', zIndex: 3, height: 3,
-        background: 'linear-gradient(90deg, transparent 2%, #ffcc33 15%, #ff8800 35%, #ffee88 50%, #ff8800 65%, #ffcc33 85%, transparent 98%)',
-        boxShadow: '0 -2px 20px #ffcc3360, 0 0 40px #ff880020',
+        background: 'linear-gradient(90deg, transparent 2%, #999999 15%, #bbbbbb 35%, #dddddd 50%, #bbbbbb 65%, #999999 85%, transparent 98%)',
+        boxShadow: '0 -2px 20px rgba(180,180,180,0.3), 0 0 40px rgba(150,150,150,0.1)',
       }} />
 
       <style>{`

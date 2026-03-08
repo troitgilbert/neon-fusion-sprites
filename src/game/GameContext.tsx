@@ -75,11 +75,11 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
   }, []);
 
   const setGameState = useCallback((s: GameState, mode?: GameMode) => {
-    engineRef.current.setState(s, mode);
+    engineRef.current!.setState(s, mode);
   }, []);
 
   return (
-    <GameCtx.Provider value={{ engine: engineRef.current, gameState, coins, announcerText, achievementPopup, cheatNotification, setGameState }}>
+    <GameCtx.Provider value={{ engine: engineRef.current!, gameState, coins, announcerText, achievementPopup, cheatNotification, setGameState }}>
       {children}
     </GameCtx.Provider>
   );

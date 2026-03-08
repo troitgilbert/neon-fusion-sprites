@@ -1790,17 +1790,46 @@ const CharacterSelect: React.FC = () => {
         }}>
           <span style={{ color: 'rgba(0,255,255,0.4)' }}>◆</span> 1P: WASD + F/G/H
         </div>
-        <button onClick={() => setGameState('MENU')} style={{
-          padding: '7px 30px', background: 'linear-gradient(180deg, rgba(255,204,51,0.15), rgba(255,204,51,0.06))',
-          border: '2px solid rgba(255,204,51,0.5)', color: '#ffdd44',
-          cursor: 'pointer', fontFamily: "'Orbitron', monospace",
-          fontSize: 'clamp(9px, 1.2vw, 13px)', letterSpacing: 5, fontWeight: 700,
-          transition: 'all 0.3s', textShadow: '0 0 12px #ffcc3380',
-          position: 'relative', overflow: 'hidden',
-        }}
-        onMouseEnter={e => { e.currentTarget.style.borderColor = '#ffcc33'; e.currentTarget.style.boxShadow = '0 0 20px #ffcc3330, inset 0 0 20px #ffcc3310'; e.currentTarget.style.background = 'linear-gradient(180deg, rgba(255,204,51,0.15), rgba(255,204,51,0.05))'; }}
-        onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(255,204,51,0.25)'; e.currentTarget.style.boxShadow = 'none'; e.currentTarget.style.background = 'linear-gradient(180deg, rgba(255,204,51,0.08), rgba(255,204,51,0.03))'; }}
-        >VOLVER</button>
+
+        {/* Center: CONTINUAR button or VOLVER */}
+        <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
+          {(() => {
+            const needsP2 = engine.mode === 'versus' || engine.mode === 'vs_cpu';
+            const allReady = needsP2
+              ? (engine.p1Choice !== null && engine.p2Choice !== null)
+              : (engine.p1Choice !== null);
+            if (allReady && !skinSelectFor && !showCustomMenu) {
+              return (
+                <button onClick={() => { playConfirmSound(); engine.proceedFromRoster(); }} style={{
+                  padding: '7px 30px',
+                  background: 'linear-gradient(180deg, rgba(0,255,100,0.2), rgba(0,200,80,0.08))',
+                  border: '2px solid rgba(0,255,100,0.6)', color: '#00ff66',
+                  cursor: 'pointer', fontFamily: "'Orbitron', monospace",
+                  fontSize: 'clamp(9px, 1.2vw, 13px)', letterSpacing: 5, fontWeight: 700,
+                  transition: 'all 0.3s', textShadow: '0 0 12px #00ff6680',
+                  position: 'relative', overflow: 'hidden',
+                  animation: 'energyPulse 2s ease-in-out infinite',
+                }}
+                onMouseEnter={e => { e.currentTarget.style.borderColor = '#00ff66'; e.currentTarget.style.boxShadow = '0 0 25px rgba(0,255,100,0.4), inset 0 0 20px rgba(0,255,100,0.1)'; e.currentTarget.style.transform = 'scale(1.05)'; }}
+                onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(0,255,100,0.6)'; e.currentTarget.style.boxShadow = ''; e.currentTarget.style.transform = 'scale(1)'; }}
+                >▶ CONTINUAR</button>
+              );
+            }
+            return null;
+          })()}
+          <button onClick={() => setGameState('MENU')} style={{
+            padding: '7px 30px', background: 'linear-gradient(180deg, rgba(255,204,51,0.15), rgba(255,204,51,0.06))',
+            border: '2px solid rgba(255,204,51,0.5)', color: '#ffdd44',
+            cursor: 'pointer', fontFamily: "'Orbitron', monospace",
+            fontSize: 'clamp(9px, 1.2vw, 13px)', letterSpacing: 5, fontWeight: 700,
+            transition: 'all 0.3s', textShadow: '0 0 12px #ffcc3380',
+            position: 'relative', overflow: 'hidden',
+          }}
+          onMouseEnter={e => { e.currentTarget.style.borderColor = '#ffcc33'; e.currentTarget.style.boxShadow = '0 0 20px #ffcc3330, inset 0 0 20px #ffcc3310'; e.currentTarget.style.background = 'linear-gradient(180deg, rgba(255,204,51,0.15), rgba(255,204,51,0.05))'; }}
+          onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(255,204,51,0.25)'; e.currentTarget.style.boxShadow = 'none'; e.currentTarget.style.background = 'linear-gradient(180deg, rgba(255,204,51,0.08), rgba(255,204,51,0.03))'; }}
+          >VOLVER</button>
+        </div>
+
         <div style={{
           color: 'rgba(255,204,51,0.6)', fontFamily: "'Orbitron', monospace",
           fontSize: 'clamp(7px, 0.85vw, 10px)', letterSpacing: 3, textAlign: 'right',

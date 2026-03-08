@@ -1076,32 +1076,65 @@ const CharacterSelect: React.FC = () => {
         </div>
       </div>
 
-      {/* === MAIN AREA: SPRITES TOP | ROSTER MIDDLE | PORTRAITS BOTTOM === */}
-      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', position: 'relative', zIndex: 2, minHeight: 0 }}>
+      {/* === MAIN AREA: Everything layered in one space === */}
+      <div style={{ flex: 1, position: 'relative', zIndex: 2, minHeight: 0, overflow: 'hidden' }}>
 
-        {/* TOP: Idle sprites facing each other */}
+        {/* LAYER 1 (behind): Big portraits P1 left, P2 right - centered vertically */}
         <div style={{
-          flex: '0 0 30%', position: 'relative', overflow: 'hidden',
-          borderBottom: '2px solid rgba(255,204,51,0.15)',
+          position: 'absolute', inset: 0, display: 'flex', zIndex: 1,
+          pointerEvents: 'none',
         }}>
-          <StageCanvas
-            p1Char={displayP1 || null}
-            p2Char={displayP2 || null}
-            p1Custom={p1Custom}
-          />
-          <div style={{
-            position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)',
-            fontSize: 'clamp(40px, 8vw, 80px)', fontFamily: "'Orbitron', monospace", fontWeight: 900,
-            color: 'rgba(255,204,51,0.04)', letterSpacing: 10, pointerEvents: 'none',
-          }}>VS</div>
+          <div style={{ flex: 1, position: 'relative' }}>
+            <BigPortrait char={displayP1 || null} customChar={p1Custom} color="#00ffff" facing={1} label="P1" />
+            <div style={{ position: 'absolute', bottom: 10, left: 15, right: 15 }}>
+              <div style={{
+                color: '#ffcc33', fontFamily: "'Orbitron', monospace",
+                fontSize: 'clamp(14px, 2.5vw, 24px)', fontWeight: 900,
+                letterSpacing: 3, textShadow: '0 0 15px #ffcc3360, 0 2px 8px rgba(0,0,0,0.8)',
+              }}>{p1Name}</div>
+              {displayP1 && (
+                <div style={{ marginTop: 4, display: 'flex', gap: 10, maxWidth: 180 }}>
+                  <StatBar label="VEL" value={displayP1.speed / 10} color="#ffcc33" />
+                  <StatBar label="POD" value={displayP1.weight} color="#ff6600" />
+                </div>
+              )}
+            </div>
+          </div>
+          <div style={{ flex: 1, position: 'relative' }}>
+            <BigPortrait char={displayP2 || null} customChar={null} color="#ff8c00" facing={-1} label="P2" />
+            <div style={{ position: 'absolute', bottom: 10, left: 15, right: 15, textAlign: 'right' }}>
+              <div style={{
+                color: '#ffcc33', fontFamily: "'Orbitron', monospace",
+                fontSize: 'clamp(14px, 2.5vw, 24px)', fontWeight: 900,
+                letterSpacing: 3, textShadow: '0 0 15px #ffcc3360, 0 2px 8px rgba(0,0,0,0.8)',
+              }}>{p2Name}</div>
+              {displayP2 && (
+                <div style={{ marginTop: 4, display: 'flex', gap: 10, justifyContent: 'flex-end', maxWidth: 180, marginLeft: 'auto' }}>
+                  <StatBar label="VEL" value={displayP2.speed / 10} color="#ffcc33" />
+                  <StatBar label="POD" value={displayP2.weight} color="#ff6600" />
+                </div>
+              )}
+            </div>
+          </div>
         </div>
 
-        {/* MIDDLE: Roster grid */}
+        {/* LAYER 2 (front): Idle sprites on top + roster grid in center */}
         <div style={{
-          flex: '0 0 auto', display: 'flex', flexDirection: 'column',
-          alignItems: 'center', justifyContent: 'center',
-          position: 'relative', padding: '12px 0', zIndex: 10,
+          position: 'relative', zIndex: 5, height: '100%',
+          display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+          pointerEvents: 'none',
         }}>
+          {/* Idle sprites at the top */}
+          <div style={{ width: '60%', height: '35%', position: 'relative', pointerEvents: 'none' }}>
+            <StageCanvas p1Char={displayP1 || null} p2Char={displayP2 || null} p1Custom={p1Custom} />
+          </div>
+
+          {/* Roster grid */}
+          <div style={{
+            display: 'flex', flexDirection: 'column',
+            alignItems: 'center', justifyContent: 'center',
+            padding: '8px 0', pointerEvents: 'auto',
+          }}>
           {/* Hex grid */}
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 0 }}>
             {(() => {

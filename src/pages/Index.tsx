@@ -45,10 +45,11 @@ const GameApp: React.FC = () => {
       {/* Crystal counter */}
       {!inFight && gameState !== 'CREATOR' && gameState !== 'ACHIEVEMENTS' && gameState !== 'ADVENTURE_PLAY' && (
         <div style={{
-          position: 'fixed', top: 20, right: 20, fontSize: 20, color: '#00ffff',
-          fontWeight: 'bold', textShadow: '0 0 10px #00ffff', zIndex: 100,
-          background: 'rgba(0,0,0,0.6)', padding: '5px 15px', borderRadius: 20,
-          border: '1px solid #87ceeb', fontFamily: "'Orbitron', monospace",
+          position: 'fixed', top: 12, right: 16, fontSize: 'clamp(12px, 1.2vw, 16px)', color: '#00ffff',
+          fontWeight: 'bold', textShadow: '0 0 8px #00ffff', zIndex: 100,
+          background: 'rgba(0,0,0,0.7)', padding: '4px 12px', borderRadius: 0,
+          border: '1px solid rgba(0,212,255,0.2)', fontFamily: "'Orbitron', monospace",
+          borderBottom: '2px solid rgba(0,212,255,0.3)',
         }}>
           🔷 {coins}
         </div>

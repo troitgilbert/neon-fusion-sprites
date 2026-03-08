@@ -1399,9 +1399,21 @@ const CharacterSelect: React.FC = () => {
             onMouseEnter={e => { e.currentTarget.style.background = 'rgba(200,40,40,0.15)'; e.currentTarget.style.borderColor = 'rgba(255,80,80,0.45)'; }}
             onMouseLeave={e => { e.currentTarget.style.background = 'rgba(180,40,40,0.06)'; e.currentTarget.style.borderColor = 'rgba(255,70,70,0.18)'; }}
             >CANCELAR</button>
-            <div style={{
-              fontFamily: "'Orbitron', monospace", fontSize: 10, color: '#4a7a9a', letterSpacing: 2,
-            }}>ENTER PARA CONFIRMAR</div>
+            <button onClick={() => {
+              playConfirmSound();
+              engine.confirmSkinChoice(skinSelectFor.charIdx, previewSkinId, skinSelectFor.pNum);
+              setSkinSelectFor(null);
+              setPreviewSkinId(null);
+            }} style={{
+              padding: '8px 28px', background: 'linear-gradient(135deg, rgba(40,100,200,0.15), rgba(30,80,160,0.1))',
+              border: '1px solid rgba(80,160,255,0.4)', color: '#7ab8ff',
+              cursor: 'pointer', fontFamily: "'Orbitron', monospace",
+              fontSize: 11, fontWeight: 700, letterSpacing: 4, borderRadius: 2,
+              transition: 'all 0.3s',
+            }}
+            onMouseEnter={e => { e.currentTarget.style.background = 'linear-gradient(135deg, rgba(40,100,200,0.3), rgba(30,80,160,0.2))'; e.currentTarget.style.borderColor = 'rgba(100,180,255,0.7)'; e.currentTarget.style.boxShadow = '0 0 20px rgba(80,160,255,0.2)'; }}
+            onMouseLeave={e => { e.currentTarget.style.background = 'linear-gradient(135deg, rgba(40,100,200,0.15), rgba(30,80,160,0.1))'; e.currentTarget.style.borderColor = 'rgba(80,160,255,0.4)'; e.currentTarget.style.boxShadow = 'none'; }}
+            >CONFIRMAR</button>
           </div>
         </div>
 

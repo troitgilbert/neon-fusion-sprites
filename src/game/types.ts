@@ -24,7 +24,7 @@ export type GameMode = '' | 'arcade' | 'survival' | 'versus' | 'vs_cpu' | 'train
 export interface Controls {
   up: string; down: string; left: string; right: string;
   hit: string; spec: string; super: string; ultra: string;
-  block: string; dodge: string;
+  block: string; dodge: string; emote: string;
 }
 
 export interface CharData {

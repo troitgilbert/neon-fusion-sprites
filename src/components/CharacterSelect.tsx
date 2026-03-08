@@ -965,6 +965,7 @@ const CharacterSelect: React.FC = () => {
   const [konamiProgress, setKonamiProgress] = useState(0);
   const [cheatActive, setCheatActive] = useState(false);
   const [selectFlash, setSelectFlash] = useState<number | null>(null);
+  const skinJustClosedRef = useRef(false);
 
   const charRenderData = getCharRenderData();
 
@@ -1036,6 +1037,8 @@ const CharacterSelect: React.FC = () => {
           return;
         }
         case 'Enter': {
+          // Guard: skip if skin menu was just closed (prevent button Enter from triggering)
+          if (skinJustClosedRef.current) return;
           // If all players selected, proceed based on game mode
           const needsP2 = engine.mode === 'versus' || engine.mode === 'vs_cpu';
           const allSelected = needsP2
@@ -1398,6 +1401,8 @@ const CharacterSelect: React.FC = () => {
             <button onClick={() => {
               playConfirmSound();
               engine.confirmSkinChoice(skinSelectFor.charIdx, previewSkinId, skinSelectFor.pNum);
+              skinJustClosedRef.current = true;
+              setTimeout(() => { skinJustClosedRef.current = false; }, 200);
               setSkinSelectFor(null);
               setPreviewSkinId(null);
             }} style={{

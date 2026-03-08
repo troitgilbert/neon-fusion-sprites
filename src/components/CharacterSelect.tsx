@@ -1036,10 +1036,14 @@ const CharacterSelect: React.FC = () => {
           return;
         }
         case 'Enter': {
-          // If both players selected, start battle
-          if (engine.p1Choice !== null && engine.p2Choice !== null) {
+          // If all players selected, proceed based on game mode
+          const needsP2 = engine.mode === 'versus' || engine.mode === 'vs_cpu';
+          const allSelected = needsP2
+            ? (engine.p1Choice !== null && engine.p2Choice !== null)
+            : (engine.p1Choice !== null);
+          if (allSelected) {
             playConfirmSound();
-            setGameState('STAGE_SELECT');
+            engine.proceedFromRoster();
           }
           return;
         }

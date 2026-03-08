@@ -457,45 +457,60 @@ export class Fighter {
       const sprites = getEdowadoSprites();
       const state = this._getSpriteState();
       const frames = sprites[state];
-      const frameIdx = Math.floor(this.animTimer * 0.15) % frames.length;
-      const img = frames[frameIdx];
+      if (frames && frames.length > 0) {
+        const frameIdx = Math.floor(this.animTimer * 0.15) % frames.length;
+        const img = frames[frameIdx];
 
-      if (isSpriteReady(img)) {
-        ctx.save();
-        if (this.hitFlash > 0) { ctx.shadowBlur = 20; ctx.shadowColor = '#ffffff'; }
-        if (game.timeStopped && game.timeStopper !== this) ctx.filter = 'grayscale(100%)';
-
-        const spriteH = 70; // target height in game units
-        const aspectRatio = img.naturalWidth / img.naturalHeight;
-        const spriteW = spriteH * aspectRatio;
-
-        // Flip based on side
-        ctx.translate(this.x, this.y);
-        ctx.scale(this.side, 1);
-
-        // Squash/stretch
-        ctx.scale(this.squashX, this.squashY);
-        ctx.rotate(this.lean * this.side);
-
-        // Breathing for idle
-        if (state === 'idle' && Math.abs(this.vx) < 1 && Math.abs(this.vy) < 1) {
-          const breath = Math.sin(this.animTimer * 0.1) * 0.02;
-          ctx.scale(1, 1 + breath);
+        // Log once to debug
+        if (this.animTimer === 1) {
+          console.log('[SPRITE DEBUG]', {
+            charIdx: this.charIdx,
+            state,
+            imgSrc: img.src?.substring(0, 60),
+            complete: img.complete,
+            naturalW: img.naturalWidth,
+            naturalH: img.naturalHeight,
+          });
         }
 
-        // Enable pixelated rendering for crisp pixel art
-        ctx.imageSmoothingEnabled = false;
+        if (img.complete && img.naturalWidth > 0) {
+          if (this.hitFlash > 0) { ctx.shadowBlur = 20; ctx.shadowColor = '#ffffff'; }
+          if (game.timeStopped && game.timeStopper !== this) ctx.filter = 'grayscale(100%)';
 
-        // Draw sprite centered on character position, feet at floor
-        ctx.drawImage(img, -spriteW / 2, -spriteH * 0.65, spriteW, spriteH);
-        ctx.restore();
+          const spriteH = 70;
+          const aspectRatio = img.naturalWidth / img.naturalHeight;
+          const spriteW = spriteH * aspectRatio;
 
-        // Hand hitbox still needed for combat
-        this._drawSpriteHitbox(ctx, game);
-        ctx.restore();
-        return; // Skip the rest of draw
+          ctx.translate(this.x, this.y);
+          ctx.scale(this.side, 1);
+          ctx.scale(this.squashX, this.squashY);
+          ctx.rotate(this.lean * this.side);
+
+          if (state === 'idle' && Math.abs(this.vx) < 1 && Math.abs(this.vy) < 1) {
+            const breath = Math.sin(this.animTimer * 0.1) * 0.02;
+            ctx.scale(1, 1 + breath);
+          }
+
+          ctx.imageSmoothingEnabled = false;
+          ctx.drawImage(img, -spriteW / 2, -spriteH * 0.65, spriteW, spriteH);
+
+          // Hand hitbox
+          ctx.restore(); // restore the outer save
+          ctx.save();
+          const hx = this.x + this.side * 25, hy = this.y + 8;
+          if (game.state === 'FIGHT' && this.handMode === 'strike') {
+            const opp = (this.id === 1) ? game.p2 : game.p1;
+            if (Math.hypot(hx - opp.x, hy - opp.y) < 36) {
+              opp.takeDamage(1, true);
+              opp.vx = this.side * 6;
+              game.spawnParticles(opp.x, opp.y, '#fff', 6, 2);
+            }
+          }
+          ctx.restore();
+          return;
+        }
       }
-      // If sprite not ready, fall through to normal drawing
+      // Fall through to programmatic drawing if sprites not ready
     }
 
     // Non-sprite / fallback drawing

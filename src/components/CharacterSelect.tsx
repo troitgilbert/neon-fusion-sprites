@@ -1401,6 +1401,8 @@ const CharacterSelect: React.FC = () => {
             <button onClick={() => {
               playConfirmSound();
               engine.confirmSkinChoice(skinSelectFor.charIdx, previewSkinId, skinSelectFor.pNum);
+              skinJustClosedRef.current = true;
+              setTimeout(() => { skinJustClosedRef.current = false; }, 200);
               setSkinSelectFor(null);
               setPreviewSkinId(null);
             }} style={{

@@ -1,4 +1,4 @@
-import { CHAR_DATA, GROUND_Y, CANVAS_W } from './constants';
+import { CHAR_DATA, GROUND_Y, CANVAS_W, CHAR_SCALE } from './constants';
 import { FloatingText, PunchCircle } from './effects';
 import { playHitSound, playSpecialSound, playBlockSound, playSuperSound } from './audio';
 import type { Controls, CustomCharData } from './types';

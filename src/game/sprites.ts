@@ -1,7 +1,6 @@
 // Image-based sprite system for Edowado
 // Uses high-quality anime-style sprites
 
-import idleImg from '@/assets/edowado-idle.png';
 import idle2Img from '@/assets/edowado-idle2.png';
 import idle3Img from '@/assets/edowado-idle3.png';
 import idle4Img from '@/assets/edowado-idle4.png';
@@ -30,7 +29,6 @@ const imageCache: Map<string, HTMLImageElement> = new Map();
 let imagesLoaded = false;
 
 const SPRITE_SOURCES: Record<string, string> = {
-  idle1: idleImg,
   idle2: idle2Img,
   idle3: idle3Img,
   idle4: idle4Img,
@@ -75,7 +73,7 @@ export function preloadSprites(): Promise<void> {
 
 // Animation config
 const SPRITE_FRAMES: Record<SpriteState, { keys: string[]; speed: number }> = {
-  idle:   { keys: ['idle1', 'idle2', 'idle3', 'idle4', 'idle5', 'idle6', 'idle7', 'idle6', 'idle5', 'idle4', 'idle3', 'idle2'], speed: 0.06 },
+  idle:   { keys: ['idle2', 'idle3', 'idle4', 'idle5', 'idle6', 'idle7', 'idle6', 'idle5', 'idle4', 'idle3'], speed: 0.06 },
   walk:   { keys: ['walk1', 'walk2', 'walk3', 'walk4', 'walk5', 'walk6', 'walk7', 'walk8'], speed: 0.15 },
   attack: { keys: ['attack'],  speed: 0.2 },
   jump:   { keys: ['jump'],    speed: 0.1 },

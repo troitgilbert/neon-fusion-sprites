@@ -1216,11 +1216,11 @@ const CharacterSelect: React.FC = () => {
     <div className="fixed inset-0 z-50 flex flex-col" style={{ overflow: 'hidden', animation: 'fadeIn 0.4s ease-out' }}>
       <BgCanvas />
 
-      {/* === GOLDEN TOP BORDER with animated shimmer === */}
+      {/* === SILVER TOP BORDER with animated shimmer === */}
       <div style={{
         position: 'relative', zIndex: 3, height: 3,
-        background: 'linear-gradient(90deg, transparent 2%, #ffcc33 15%, #ff8800 35%, #ffee88 50%, #ff8800 65%, #ffcc33 85%, transparent 98%)',
-        boxShadow: '0 2px 20px #ffcc3360, 0 0 40px #ff880020',
+        background: 'linear-gradient(90deg, transparent 2%, #999999 15%, #bbbbbb 35%, #dddddd 50%, #bbbbbb 65%, #999999 85%, transparent 98%)',
+        boxShadow: '0 2px 20px rgba(180,180,180,0.3), 0 0 40px rgba(150,150,150,0.1)',
       }} />
 
       {/* === TOP BAR: P1 SIDE | TITLE | P2 SIDE === */}

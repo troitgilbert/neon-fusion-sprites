@@ -53,11 +53,11 @@ const NebulaBackground: React.FC = () => {
     // Nebula cloud points for smooth animation
     const nebulae = [
       { bx: 0.12, by: 0.18, r: 0.5, color: [80,0,0], alpha: 0.08, sx: 0.0003, sy: 0.0004 },
-      { bx: 0.82, by: 0.72, r: 0.55, color: [40,10,0], alpha: 0.06, sx: 0.0002, sy: 0.0003 },
+      { bx: 0.82, by: 0.72, r: 0.55, color: [10,30,80], alpha: 0.06, sx: 0.0002, sy: 0.0003 },
       { bx: 0.48, by: 0.08, r: 0.38, color: [150,20,0], alpha: 0.05, sx: 0.00025, sy: 0.0002 },
-      { bx: 0.72, by: 0.32, r: 0.32, color: [100,0,40], alpha: 0.04, sx: 0.00035, sy: 0.0005 },
+      { bx: 0.72, by: 0.32, r: 0.32, color: [20,15,70], alpha: 0.05, sx: 0.00035, sy: 0.0005 },
       { bx: 0.28, by: 0.78, r: 0.42, color: [20,40,30], alpha: 0.03, sx: 0.0004, sy: 0.00025 },
-      { bx: 0.55, by: 0.52, r: 0.6, color: [40,0,60], alpha: 0.03, sx: 0.0002, sy: 0.00015 },
+      { bx: 0.55, by: 0.52, r: 0.6, color: [15,10,50], alpha: 0.04, sx: 0.0002, sy: 0.00015 },
       { bx: 0.35, by: 0.45, r: 0.35, color: [60,20,0], alpha: 0.03, sx: 0.00018, sy: 0.00028 },
     ] as const;
 

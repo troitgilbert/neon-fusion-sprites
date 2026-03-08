@@ -460,7 +460,7 @@ export class Fighter {
       const frameIdx = Math.floor(this.animTimer * 0.15) % frames.length;
       const img = frames[frameIdx];
 
-      if (img.complete && img.naturalWidth > 0) {
+      if (isSpriteReady(img)) {
         ctx.save();
         if (this.hitFlash > 0) { ctx.shadowBlur = 20; ctx.shadowColor = '#ffffff'; }
         if (game.timeStopped && game.timeStopper !== this) ctx.filter = 'grayscale(100%)';

@@ -8,8 +8,8 @@ const EventsMenu: React.FC = () => {
   const hasSkin = engine.inventory?.kaito?.demonioBlanco === true;
 
   return (
-    <div className="fixed inset-0 z-50 flex flex-col items-center justify-center" style={{ background: 'linear-gradient(135deg, #0a0a2e 0%, #1a0000 50%, #0a0a2e 100%)' }}>
-      <h1 style={{ color: '#ff4444', fontFamily: "'Orbitron', monospace", fontSize: 36, letterSpacing: 6, marginBottom: 50, textShadow: '0 0 30px #ff0000' }}>
+    <div className="fixed inset-0 z-50 flex flex-col items-center justify-center anim-screen-glitch" style={{ background: 'linear-gradient(135deg, #0a0a2e 0%, #1a0000 50%, #0a0a2e 100%)' }}>
+      <h1 className="anim-title-slam" style={{ color: '#ff4444', fontFamily: "'Orbitron', monospace", fontSize: 36, letterSpacing: 6, marginBottom: 50, textShadow: '0 0 30px #ff0000' }}>
         EVENTOS
       </h1>
 

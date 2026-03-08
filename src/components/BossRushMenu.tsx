@@ -22,9 +22,10 @@ const BossRushMenu: React.FC = () => {
 
       <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', justifyContent: 'center', maxWidth: 700 }}>
         {BOSSES.map((b, i) => (
-          <div key={b.name} style={{
+          <div key={b.name} className="game-card-transition" style={{
             padding: '12px 18px', background: 'rgba(0,0,0,0.6)', border: `1px solid ${b.color}30`,
             textAlign: 'center', minWidth: 120,
+            animation: `itemCascade 0.4s cubic-bezier(0.16,1,0.3,1) ${0.08 * i}s both`,
           }}>
             <div style={{ color: b.color, fontFamily: "'Orbitron', monospace", fontSize: 11, letterSpacing: 2, fontWeight: 900 }}>
               {i + 1}. {b.name}

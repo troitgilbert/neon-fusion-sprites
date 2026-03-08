@@ -26,11 +26,11 @@ const PauseMenu: React.FC = () => {
         background: 'rgba(10,10,20,0.95)', padding: 25, textAlign: 'center', transform: 'skew(-2deg)',
         minWidth: 320,
       }}>
-        <h2 style={{ color: '#00ffff', textShadow: '0 0 10px #00ffff', marginBottom: 15 }}>PAUSA</h2>
-        <button onClick={() => engine.resume()} style={btnStyle}>Continuar</button>
-        <button onClick={() => setGameState('CONFIG')} style={btnStyle}>Configuración</button>
-        <button onClick={() => engine.restart()} style={btnStyle}>Reiniciar</button>
-        <button onClick={() => engine.goToMainMenu()} style={btnStyle}>Menú Principal</button>
+        <h2 className="anim-title-slam" style={{ color: '#00ffff', textShadow: '0 0 10px #00ffff', marginBottom: 15 }}>PAUSA</h2>
+        <button onMouseEnter={e => { e.currentTarget.style.transform = 'translateX(6px) scale(1.04)'; e.currentTarget.style.borderColor = '#00ffff'; e.currentTarget.style.boxShadow = '0 0 20px rgba(0,255,255,0.4)'; }} onMouseLeave={e => { e.currentTarget.style.transform = ''; e.currentTarget.style.borderColor = '#87ceeb'; e.currentTarget.style.boxShadow = ''; }} onClick={() => engine.resume()} style={{...btnStyle, animation: 'itemCascade 0.4s cubic-bezier(0.16,1,0.3,1) 0.1s both'}}>Continuar</button>
+        <button onMouseEnter={e => { e.currentTarget.style.transform = 'translateX(6px) scale(1.04)'; e.currentTarget.style.borderColor = '#00ffff'; e.currentTarget.style.boxShadow = '0 0 20px rgba(0,255,255,0.4)'; }} onMouseLeave={e => { e.currentTarget.style.transform = ''; e.currentTarget.style.borderColor = '#87ceeb'; e.currentTarget.style.boxShadow = ''; }} onClick={() => setGameState('CONFIG')} style={{...btnStyle, animation: 'itemCascade 0.4s cubic-bezier(0.16,1,0.3,1) 0.2s both'}}>Configuración</button>
+        <button onMouseEnter={e => { e.currentTarget.style.transform = 'translateX(6px) scale(1.04)'; e.currentTarget.style.borderColor = '#00ffff'; e.currentTarget.style.boxShadow = '0 0 20px rgba(0,255,255,0.4)'; }} onMouseLeave={e => { e.currentTarget.style.transform = ''; e.currentTarget.style.borderColor = '#87ceeb'; e.currentTarget.style.boxShadow = ''; }} onClick={() => engine.restart()} style={{...btnStyle, animation: 'itemCascade 0.4s cubic-bezier(0.16,1,0.3,1) 0.3s both'}}>Reiniciar</button>
+        <button onMouseEnter={e => { e.currentTarget.style.transform = 'translateX(6px) scale(1.04)'; e.currentTarget.style.borderColor = '#00ffff'; e.currentTarget.style.boxShadow = '0 0 20px rgba(0,255,255,0.4)'; }} onMouseLeave={e => { e.currentTarget.style.transform = ''; e.currentTarget.style.borderColor = '#87ceeb'; e.currentTarget.style.boxShadow = ''; }} onClick={() => engine.goToMainMenu()} style={{...btnStyle, animation: 'itemCascade 0.4s cubic-bezier(0.16,1,0.3,1) 0.4s both'}}>Menú Principal</button>
 
         {isTraining && (
           <div style={{ marginTop: 20, borderTop: '1px solid rgba(0,255,255,0.2)', paddingTop: 15 }}>

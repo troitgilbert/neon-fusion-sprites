@@ -22,7 +22,7 @@ const AchievementsMenu: React.FC = () => {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex flex-col" style={{ background: 'linear-gradient(135deg, #0a0a2e 0%, #1a0a3e 50%, #0a0a2e 100%)' }}>
+    <div className="fixed inset-0 z-50 flex flex-col anim-screen-wipe" style={{ background: 'linear-gradient(135deg, #0a0a2e 0%, #1a0a3e 50%, #0a0a2e 100%)' }}>
       <div style={{ padding: '18px 30px', borderBottom: '2px solid rgba(255,140,0,0.4)', background: 'rgba(0,0,0,0.5)', textAlign: 'center' }}>
         <h2 style={{ color: '#ffcc66', fontFamily: "'Orbitron', monospace", fontSize: 'clamp(20px, 4vw, 34px)', letterSpacing: 4, textShadow: '0 0 20px #ff8c00' }}>
           LOGROS Y RECOMPENSAS

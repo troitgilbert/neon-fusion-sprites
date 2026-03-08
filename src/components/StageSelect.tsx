@@ -42,12 +42,14 @@ const StageSelect: React.FC = () => {
             <div
               key={s.id}
               onClick={() => engine.selectStage(s.id)}
+              className="game-card-transition"
               style={{
                 width: 180, padding: 15, cursor: 'pointer', textAlign: 'center',
                 color: s.color, fontFamily: "'Orbitron', monospace", fontSize: 16,
                 background: 'rgba(10,10,30,0.8)', border: '2px solid rgba(0,255,255,0.3)',
-                transition: 'all 0.3s', boxShadow: '0 0 15px rgba(0,255,255,0.1)',
+                boxShadow: '0 0 15px rgba(0,255,255,0.1)',
                 letterSpacing: 2,
+                animation: `itemCascade 0.5s cubic-bezier(0.16,1,0.3,1) ${0.1 * stages.indexOf(s)}s both`,
               }}
               onMouseEnter={e => { e.currentTarget.style.borderColor = s.color; e.currentTarget.style.boxShadow = `0 0 30px ${s.color}40`; e.currentTarget.style.transform = 'scale(1.05)'; }}
               onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(0,255,255,0.3)'; e.currentTarget.style.boxShadow = '0 0 15px rgba(0,255,255,0.1)'; e.currentTarget.style.transform = 'scale(1)'; }}

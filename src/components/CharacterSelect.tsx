@@ -610,8 +610,8 @@ const BgCanvas: React.FC = () => {
       const layer = Math.random() < 0.5 ? 0 : Math.random() < 0.6 ? 1 : 2;
       stars.push({
         x: Math.random(), y: Math.random(),
-        size: layer === 0 ? Math.random() * 1.2 + 0.5 : layer === 1 ? Math.random() * 2 + 1 : Math.random() * 3 + 1.5,
-        brightness: Math.random() * 0.4 + 0.6,
+        size: layer === 0 ? Math.random() * 1.6 + 0.8 : layer === 1 ? Math.random() * 2.4 + 1.4 : Math.random() * 3.6 + 2,
+        brightness: Math.random() * 0.25 + 0.75,
         twinkleSpeed: Math.random() * 0.03 + 0.005,
         twinkleOffset: Math.random() * Math.PI * 2,
         color: starColors[Math.floor(Math.random() * starColors.length)],

@@ -1227,10 +1227,10 @@ const CharacterSelect: React.FC = () => {
             transition: 'all 0.4s',
           }} />
           <span style={{
-            color: displayP1 ? '#00ffff' : 'rgba(0,255,255,0.4)',
-            fontFamily: "'Orbitron', monospace", fontSize: 'clamp(9px, 1.2vw, 13px)',
-            letterSpacing: 4, fontWeight: 700,
-            textShadow: displayP1 ? '0 0 12px #00ffff60' : 'none',
+            color: displayP1 ? '#00ffff' : 'rgba(0,255,255,0.7)',
+            fontFamily: "'Orbitron', monospace", fontSize: 'clamp(10px, 1.4vw, 15px)',
+            letterSpacing: 4, fontWeight: 900,
+            textShadow: displayP1 ? '0 0 15px #00ffff, 0 0 30px #00ffff80' : '0 0 8px #00ffff40',
             transition: 'all 0.3s',
           }}>PLAYER 1</span>
         </div>

@@ -1,164 +1,173 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useGame } from '../game/GameContext';
 
 const PauseMenu: React.FC = () => {
   const { engine, setGameState } = useGame();
   const isTraining = engine.mode === 'training';
   const [hoveredBtn, setHoveredBtn] = useState<number | null>(null);
+  const [show, setShow] = useState(false);
+
+  useEffect(() => {
+    requestAnimationFrame(() => setShow(true));
+  }, []);
 
   const buttons = [
-    { label: 'CONTINUAR', action: () => engine.resume() },
-    { label: 'CONFIGURACIÓN', action: () => setGameState('CONFIG') },
-    { label: 'REINICIAR', action: () => engine.restart() },
-    { label: 'MENÚ PRINCIPAL', action: () => engine.goToMainMenu(), danger: true },
+    { label: 'CONTINUAR', icon: '▶', action: () => engine.resume() },
+    { label: 'REINICIAR', icon: '↻', action: () => engine.restart() },
+    { label: 'CONFIGURACIÓN', icon: '⚙', action: () => setGameState('CONFIG') },
+    { label: 'MENÚ PRINCIPAL', icon: '✕', action: () => engine.goToMainMenu(), danger: true },
   ];
 
   return (
     <div className="absolute inset-0 z-10 flex items-center justify-center"
-      style={{ background: 'rgba(0,0,0,0.7)', backdropFilter: 'blur(12px)' }}>
+      style={{
+        background: 'radial-gradient(ellipse at center, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0.85) 100%)',
+        backdropFilter: 'blur(16px) saturate(0.7)',
+        opacity: show ? 1 : 0,
+        transition: 'opacity 0.3s ease',
+      }}>
 
       <div style={{
-        width: 'clamp(300px, 28vw, 380px)',
-        background: 'linear-gradient(180deg, rgba(8,10,25,0.97), rgba(4,6,16,0.99))',
-        border: '1px solid rgba(255,204,51,0.2)',
-        boxShadow: '0 0 60px rgba(0,0,0,0.8), 0 0 30px rgba(255,204,51,0.05), inset 0 0 40px rgba(0,0,0,0.3)',
-        padding: 0, overflow: 'hidden',
-        animation: 'pauseIn 0.25s cubic-bezier(0.16,1,0.3,1)',
+        width: 'clamp(320px, 30vw, 420px)',
+        background: 'linear-gradient(180deg, rgba(12,14,32,0.98) 0%, rgba(6,8,20,0.99) 100%)',
+        border: '1px solid rgba(255,255,255,0.06)',
+        borderRadius: 16,
+        boxShadow: `
+          0 40px 80px rgba(0,0,0,0.7),
+          0 0 80px rgba(0,180,255,0.04),
+          inset 0 1px 0 rgba(255,255,255,0.08),
+          inset 0 -1px 0 rgba(0,0,0,0.3)
+        `,
+        overflow: 'hidden',
+        transform: show ? 'scale(1) translateY(0)' : 'scale(0.9) translateY(-20px)',
+        transition: 'transform 0.4s cubic-bezier(0.16,1,0.3,1)',
       }}>
-        {/* Header */}
+
+        {/* Top accent line */}
         <div style={{
-          padding: '18px 24px 14px',
-          borderBottom: '1px solid rgba(255,204,51,0.12)',
-          background: 'linear-gradient(180deg, rgba(255,204,51,0.06), transparent)',
-        }}>
+          height: 2,
+          background: 'linear-gradient(90deg, transparent 5%, rgba(0,180,255,0.5) 30%, rgba(0,220,255,0.8) 50%, rgba(0,180,255,0.5) 70%, transparent 95%)',
+        }} />
+
+        {/* Header */}
+        <div style={{ padding: '28px 24px 20px', textAlign: 'center' }}>
           <div style={{
             fontFamily: "'Orbitron', monospace",
-            fontSize: 'clamp(18px, 2.5vw, 24px)', fontWeight: 900,
-            letterSpacing: 8, textAlign: 'center',
-            background: 'linear-gradient(180deg, #fff8e0 0%, #ffcc33 50%, #cc8800 100%)',
-            WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text',
+            fontSize: 'clamp(14px, 1.8vw, 18px)',
+            fontWeight: 900,
+            letterSpacing: 12,
+            color: 'rgba(200,220,255,0.9)',
+            textShadow: '0 0 30px rgba(0,180,255,0.3)',
           }}>PAUSA</div>
           <div style={{
-            width: 60, height: 2, margin: '8px auto 0',
-            background: 'linear-gradient(90deg, transparent, rgba(255,204,51,0.5), transparent)',
+            width: 40, height: 1, margin: '12px auto 0',
+            background: 'linear-gradient(90deg, transparent, rgba(0,180,255,0.3), transparent)',
           }} />
         </div>
 
         {/* Buttons */}
-        <div style={{ padding: '12px 16px' }}>
-          {buttons.map((btn, i) => (
-            <button
-              key={i}
-              onClick={btn.action}
-              onMouseEnter={() => setHoveredBtn(i)}
-              onMouseLeave={() => setHoveredBtn(null)}
-              style={{
-                display: 'flex', alignItems: 'center', gap: 12,
-                width: '100%', padding: '12px 18px', marginBottom: 4,
-                background: hoveredBtn === i
-                  ? btn.danger
-                    ? 'linear-gradient(90deg, rgba(200,40,40,0.12), transparent)'
-                    : 'linear-gradient(90deg, rgba(255,204,51,0.08), transparent)'
-                  : 'transparent',
-                border: 'none', borderLeft: hoveredBtn === i
-                  ? `3px solid ${btn.danger ? '#cc4444' : '#ffcc33'}`
-                  : '3px solid transparent',
-                cursor: 'pointer',
-                fontFamily: "'Orbitron', monospace",
-                fontSize: 12, letterSpacing: 4, fontWeight: 700,
-                color: hoveredBtn === i
-                  ? btn.danger ? '#ff6666' : '#ffdd66'
-                  : btn.danger ? '#884444' : '#667',
-                transition: 'all 0.2s cubic-bezier(0.16,1,0.3,1)',
-                textAlign: 'left',
-                transform: hoveredBtn === i ? 'translateX(4px)' : 'translateX(0)',
-              }}
-            >
-              <span style={{
-                fontSize: 8, opacity: hoveredBtn === i ? 1 : 0.3,
-                color: btn.danger ? '#cc4444' : '#ffcc33',
-                transition: 'opacity 0.2s',
-              }}>▶</span>
-              {btn.label}
-            </button>
-          ))}
+        <div style={{ padding: '4px 14px 16px' }}>
+          {buttons.map((btn, i) => {
+            const isHovered = hoveredBtn === i;
+            const accentColor = btn.danger ? '#ff4466' : '#00ccff';
+            return (
+              <button
+                key={i}
+                onClick={btn.action}
+                onMouseEnter={() => setHoveredBtn(i)}
+                onMouseLeave={() => setHoveredBtn(null)}
+                style={{
+                  display: 'flex', alignItems: 'center', gap: 14,
+                  width: '100%', padding: '14px 20px', marginBottom: 2,
+                  background: isHovered
+                    ? `linear-gradient(90deg, ${accentColor}10, transparent 80%)`
+                    : 'transparent',
+                  border: 'none',
+                  borderRadius: 10,
+                  cursor: 'pointer',
+                  fontFamily: "'Orbitron', monospace",
+                  fontSize: 11, letterSpacing: 4, fontWeight: 700,
+                  color: isHovered ? accentColor : 'rgba(150,160,180,0.6)',
+                  transition: 'all 0.25s cubic-bezier(0.16,1,0.3,1)',
+                  textAlign: 'left',
+                  position: 'relative',
+                  overflow: 'hidden',
+                }}
+              >
+                {/* Left accent bar */}
+                <div style={{
+                  position: 'absolute', left: 0, top: '20%', bottom: '20%',
+                  width: 2, borderRadius: 1,
+                  background: isHovered ? accentColor : 'transparent',
+                  boxShadow: isHovered ? `0 0 8px ${accentColor}` : 'none',
+                  transition: 'all 0.25s',
+                }} />
+                <span style={{
+                  fontSize: 16, width: 24, textAlign: 'center',
+                  opacity: isHovered ? 1 : 0.3,
+                  transition: 'opacity 0.2s',
+                  filter: isHovered ? `drop-shadow(0 0 4px ${accentColor})` : 'none',
+                }}>{btn.icon}</span>
+                <span>{btn.label}</span>
+              </button>
+            );
+          })}
         </div>
 
         {/* Training options */}
         {isTraining && (
           <div style={{
-            padding: '12px 16px 16px',
-            borderTop: '1px solid rgba(255,204,51,0.08)',
+            padding: '14px 20px 18px',
+            margin: '0 14px',
+            borderTop: '1px solid rgba(255,255,255,0.04)',
+            borderRadius: '0 0 8px 8px',
           }}>
             <div style={{
               fontFamily: "'Orbitron', monospace", fontSize: 8,
-              letterSpacing: 4, color: 'rgba(255,204,51,0.4)',
-              marginBottom: 10, textAlign: 'center',
+              letterSpacing: 5, color: 'rgba(0,200,255,0.35)',
+              marginBottom: 14, textAlign: 'center',
             }}>ENTRENAMIENTO</div>
 
-            <div style={{ marginBottom: 8 }}>
-              <div style={{
-                fontFamily: "'Orbitron', monospace", fontSize: 8,
-                letterSpacing: 2, color: '#445', marginBottom: 4,
-              }}>OPONENTE</div>
-              <select
-                value={engine.trainingAI}
-                onChange={e => { engine.trainingAI = e.target.value as any; }}
-                style={{
-                  width: '100%', padding: '6px 10px',
-                  background: 'rgba(10,10,25,0.9)',
-                  border: '1px solid rgba(255,204,51,0.12)',
-                  color: '#8899aa', fontFamily: "'Orbitron', monospace",
-                  fontSize: 10, letterSpacing: 1, cursor: 'pointer',
-                }}
-              >
-                <option value="dummy">MANIQUÍ</option>
-                <option value="fight">PELEA</option>
-              </select>
-            </div>
-
-            <div>
-              <div style={{
-                fontFamily: "'Orbitron', monospace", fontSize: 8,
-                letterSpacing: 2, color: '#445', marginBottom: 4,
-              }}>ENERGÍA</div>
-              <select
-                value={engine.trainingEnergy}
-                onChange={e => { engine.trainingEnergy = e.target.value as any; }}
-                style={{
-                  width: '100%', padding: '6px 10px',
-                  background: 'rgba(10,10,25,0.9)',
-                  border: '1px solid rgba(255,204,51,0.12)',
-                  color: '#8899aa', fontFamily: "'Orbitron', monospace",
-                  fontSize: 10, letterSpacing: 1, cursor: 'pointer',
-                }}
-              >
-                <option value="infinite">INFINITA</option>
-                <option value="progressive">PROGRESIVA</option>
-                <option value="none">SIN ENERGÍA</option>
-              </select>
-            </div>
+            {[
+              { label: 'OPONENTE', value: engine.trainingAI, onChange: (v: string) => { engine.trainingAI = v as any; }, options: [{ v: 'dummy', l: 'MANIQUÍ' }, { v: 'fight', l: 'PELEA' }] },
+              { label: 'ENERGÍA', value: engine.trainingEnergy, onChange: (v: string) => { engine.trainingEnergy = v as any; }, options: [{ v: 'infinite', l: 'INFINITA' }, { v: 'progressive', l: 'PROGRESIVA' }, { v: 'none', l: 'SIN ENERGÍA' }] },
+            ].map((opt, i) => (
+              <div key={i} style={{ marginBottom: i === 0 ? 10 : 0 }}>
+                <div style={{
+                  fontFamily: "'Orbitron', monospace", fontSize: 8,
+                  letterSpacing: 3, color: 'rgba(150,160,180,0.4)', marginBottom: 5,
+                }}>{opt.label}</div>
+                <select
+                  value={opt.value}
+                  onChange={e => opt.onChange(e.target.value)}
+                  style={{
+                    width: '100%', padding: '8px 12px',
+                    background: 'rgba(0,0,0,0.4)',
+                    border: '1px solid rgba(255,255,255,0.06)',
+                    borderRadius: 6,
+                    color: 'rgba(180,200,220,0.8)', fontFamily: "'Orbitron', monospace",
+                    fontSize: 10, letterSpacing: 2, cursor: 'pointer',
+                    outline: 'none',
+                  }}
+                >
+                  {opt.options.map(o => <option key={o.v} value={o.v}>{o.l}</option>)}
+                </select>
+              </div>
+            ))}
           </div>
         )}
 
-        {/* Footer hint */}
+        {/* Footer */}
         <div style={{
-          padding: '8px 16px', textAlign: 'center',
+          padding: '10px 20px 14px', textAlign: 'center',
           borderTop: '1px solid rgba(255,255,255,0.03)',
         }}>
           <span style={{
             fontFamily: "'Orbitron', monospace", fontSize: 7,
-            letterSpacing: 3, color: '#334',
+            letterSpacing: 4, color: 'rgba(100,110,130,0.4)',
           }}>ESC PARA VOLVER</span>
         </div>
       </div>
-
-      <style>{`
-        @keyframes pauseIn {
-          from { opacity: 0; transform: scale(0.95) translateY(-8px); }
-          to { opacity: 1; transform: scale(1) translateY(0); }
-        }
-      `}</style>
     </div>
   );
 };

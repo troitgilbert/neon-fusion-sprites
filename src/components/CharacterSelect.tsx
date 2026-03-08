@@ -1202,7 +1202,7 @@ const CharacterSelect: React.FC = () => {
                       const ch = item.ch!;
                       const i = item.i;
                       const isP1Selected = engine.p1Choice === i;
-                      const isHovered = hoveredIdx === i;
+                      const isHovered = hoveredIdx === i || isCursor;
                       const isFlashing = selectFlash === i;
                       return (
                         <div

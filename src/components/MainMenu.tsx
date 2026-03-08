@@ -260,62 +260,7 @@ const MainMenu: React.FC = () => {
                   </span>
                 </button>
 
-                {/* Sub menu */}
-                {item.hasSub && openSubMenu === i && (
-                  <div style={{
-                    marginLeft: 20,
-                    padding: '3px 0', margin: '2px 0 2px 20px',
-                    borderLeft: '2px solid rgba(200,50,0,0.2)',
-                    background: 'rgba(0,0,0,0.3)',
-                    animation: 'mk9SubSlide 0.3s ease-out',
-                  }}>
-                    {item.subItems!.map((sub, si) => {
-                      const sa = inSub && subIndex === si;
-                      const isBoss = sub.className === 'boss-rush';
-                      const isMystery = sub.className === 'mystery';
-                      return (
-                        <button key={sub.label}
-                          onClick={() => sub.action()}
-                          onMouseEnter={() => {
-                            setSubIndex(si); setHoveredMode(sub.label);
-                            if (isMystery) setMysteryHover(true);
-                          }}
-                          onMouseLeave={() => {
-                            setHoveredMode('');
-                            if (isMystery) setMysteryHover(false);
-                          }}
-                          style={{
-                            width: '100%',
-                            padding: '5px 14px',
-                            fontSize: 'clamp(9px, 1vw, 12px)',
-                            textAlign: 'left',
-                            fontFamily: "'Orbitron', serif",
-                            fontWeight: sa ? 700 : 400,
-                            letterSpacing: sa ? 3 : 1,
-                            cursor: 'pointer', border: 'none',
-                            background: sa
-                              ? 'linear-gradient(90deg, rgba(180,30,0,0.15), transparent 80%)'
-                              : 'transparent',
-                            color: isBoss
-                              ? (sa ? '#ff4444' : '#8b3030')
-                              : isMystery
-                                ? (sa ? '#444' : '#222')
-                                : (sa ? '#e8d0a0' : 'rgba(160,140,110,0.4)'),
-                            textShadow: sa
-                              ? (isBoss ? '0 0 12px rgba(255,0,0,0.4)' : '0 0 8px rgba(255,100,0,0.25)')
-                              : 'none',
-                            transform: sa ? 'translateX(6px)' : 'none',
-                            transition: 'all 0.15s ease',
-                          }}
-                        >
-                          {isMystery
-                            ? <span style={{ animation: 'mysteryFlicker 2s infinite' }}>{sub.label}</span>
-                            : sub.label}
-                        </button>
-                      );
-                    })}
-                  </div>
-                )}
+                {/* No inline sub menu - handled by overlay */}
               </React.Fragment>
             );
           })}

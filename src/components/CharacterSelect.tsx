@@ -1032,7 +1032,7 @@ const CharacterSelect: React.FC = () => {
           // Confirm selection
           const item = allGridItems[cursorIdx];
           if (item.type === 'char') handleSelect(item.idx);
-          else if (item.type === 'custom') { setShowCustomMenu(true); playConfirmSound(); }
+          else if (item.type === 'custom') { if (!allReadyToFight) { setShowCustomMenu(true); playConfirmSound(); } }
           else if (item.type === 'random') handleRandomSelect();
           return;
         }

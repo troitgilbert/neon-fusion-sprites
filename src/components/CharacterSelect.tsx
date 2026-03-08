@@ -855,9 +855,9 @@ const BgCanvas: React.FC = () => {
           ctx.fillStyle = `rgba(220,240,255,${ta})`;
           ctx.fill();
         }
-        const headG = ctx.createRadialGradient(ss.x, ss.y, 0, ss.x, ss.y, 15);
+      const headG = ctx.createRadialGradient(ss.x, ss.y, 0, ss.x, ss.y, 15);
         headG.addColorStop(0, `rgba(255,255,255,${fade * 0.9})`);
-        headG.addColorStop(0.3, `rgba(150,200,255,${fade * 0.35})`);
+        headG.addColorStop(0.3, `rgba(200,200,220,${fade * 0.35})`);
         headG.addColorStop(1, 'transparent');
         ctx.fillStyle = headG;
         ctx.fillRect(ss.x - 15, ss.y - 15, 30, 30);

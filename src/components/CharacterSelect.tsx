@@ -1519,36 +1519,6 @@ const CharacterSelect: React.FC = () => {
             })()}
           </div>
 
-          {/* Character name below grid - solid golden bar */}
-          <div style={{
-            marginTop: 8, height: 32, textAlign: 'center', position: 'relative', zIndex: 2,
-            minWidth: 250,
-          }}>
-            {hoveredIdx !== null && hoveredIdx >= 0 && hoveredIdx < charRenderData.length ? (
-              <div style={{
-                padding: '6px 30px',
-                background: 'linear-gradient(90deg, rgba(0,0,0,0.3), rgba(10,8,5,0.95) 15%, rgba(10,8,5,0.98) 50%, rgba(10,8,5,0.95) 85%, rgba(0,0,0,0.3))',
-                borderTop: '2px solid rgba(255,204,51,0.5)',
-                borderBottom: '2px solid rgba(255,204,51,0.5)',
-                boxShadow: '0 0 15px rgba(255,204,51,0.1)',
-              }}>
-                <span style={{
-                  color: '#ffdd44', fontFamily: "'Orbitron', monospace",
-                  fontSize: 'clamp(14px, 2vw, 20px)',
-                  letterSpacing: 6, fontWeight: 900,
-                  textShadow: '0 0 20px #ffcc33, 0 0 40px #ff8800aa',
-                  background: 'linear-gradient(180deg, #ffffff, #ffee88, #ffcc33)',
-                  WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text',
-                }}>
-                  {charRenderData[hoveredIdx].name}
-                </span>
-              </div>
-            ) : (
-              <div style={{ color: 'rgba(255,204,51,0.15)', fontFamily: "'Orbitron', monospace", fontSize: 'clamp(9px, 1vw, 11px)', letterSpacing: 4 }}>
-                SELECT A FIGHTER
-              </div>
-            )}
-          </div>
         </div>
         </div>
       </div>

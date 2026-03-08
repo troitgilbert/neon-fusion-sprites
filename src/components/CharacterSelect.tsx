@@ -740,12 +740,12 @@ const BgCanvas: React.FC = () => {
       ctx.strokeStyle = 'rgba(200,200,210,0.18)'; ctx.lineWidth = p4r * 0.15; ctx.stroke();
       ctx.restore();
 
-      // Small orange planet (top area)
+      // Small gray planet (top area)
       const p2x = W * 0.25, p2y = H * 0.18, p2r = W * 0.02;
       const p2grad = ctx.createRadialGradient(p2x - p2r * 0.3, p2y - p2r * 0.3, p2r * 0.05, p2x, p2y, p2r);
-      p2grad.addColorStop(0, 'rgba(255,180,80,0.6)');
-      p2grad.addColorStop(0.5, 'rgba(200,100,30,0.4)');
-      p2grad.addColorStop(1, 'rgba(120,50,10,0.2)');
+      p2grad.addColorStop(0, 'rgba(200,200,210,0.6)');
+      p2grad.addColorStop(0.5, 'rgba(140,140,150,0.4)');
+      p2grad.addColorStop(1, 'rgba(80,80,90,0.2)');
       ctx.beginPath(); ctx.arc(p2x, p2y, p2r, 0, Math.PI * 2); ctx.fillStyle = p2grad; ctx.fill();
 
       // Cosmic dust band

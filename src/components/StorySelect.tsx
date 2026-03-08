@@ -49,20 +49,6 @@ function drawChar(ctx: CanvasRenderingContext2D, cx: number, cy: number, c: Stor
   const R = 30 * s;
   const f = facing;
 
-  // === FEET (small, at bottom) ===
-  ctx.fillStyle = c.shoesColor;
-  ctx.strokeStyle = '#111'; ctx.lineWidth = 1 * s;
-  ctx.beginPath(); ctx.arc(cx - R * 0.25, cy + R * 1.05, R * 0.11, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
-  ctx.beginPath(); ctx.arc(cx + R * 0.25, cy + R * 1.05, R * 0.11, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
-
-  // === PANTS (small legs below the sphere) ===
-  ctx.fillStyle = c.pantsColor;
-  ctx.fillRect(cx - R * 0.35, cy + R * 0.75, R * 0.25, R * 0.32);
-  ctx.fillRect(cx + R * 0.1, cy + R * 0.75, R * 0.25, R * 0.32);
-  ctx.strokeStyle = '#111'; ctx.lineWidth = 0.8 * s;
-  ctx.strokeRect(cx - R * 0.35, cy + R * 0.75, R * 0.25, R * 0.32);
-  ctx.strokeRect(cx + R * 0.1, cy + R * 0.75, R * 0.25, R * 0.32);
-
   // === BIG ROUND HEAD (skin) ===
   ctx.beginPath(); ctx.arc(cx, cy, R, 0, Math.PI * 2);
   ctx.fillStyle = c.skinColor; ctx.fill();
@@ -77,11 +63,11 @@ function drawChar(ctx: CanvasRenderingContext2D, cx: number, cy: number, c: Stor
   ctx.beginPath(); ctx.arc(cx, cy, R * 0.98, 0, Math.PI * 2); ctx.fill();
   ctx.restore();
 
-  // === CLOTHES BAND (across middle-bottom of head) ===
+  // === CLOTHES BAND (across middle of sphere) ===
   ctx.save();
   ctx.beginPath(); ctx.arc(cx, cy, R * 0.99, 0, Math.PI * 2); ctx.clip();
   const clothesY = cy + R * 0.05;
-  const clothesH = R * 0.55;
+  const clothesH = R * 0.45;
   ctx.fillStyle = c.clothesColor;
   ctx.fillRect(cx - R * 1.1, clothesY, R * 2.2, clothesH);
   ctx.strokeStyle = '#111'; ctx.lineWidth = 1 * s;
@@ -93,6 +79,19 @@ function drawChar(ctx: CanvasRenderingContext2D, cx: number, cy: number, c: Stor
   cGrad.addColorStop(1, 'rgba(0,0,0,0.1)');
   ctx.fillStyle = cGrad;
   ctx.fillRect(cx - R * 1.1, clothesY, R * 2.2, clothesH);
+
+  // === PANTS (below clothes, still inside sphere) ===
+  const pantsY = clothesY + clothesH;
+  const pantsH = R * 0.6;
+  ctx.fillStyle = c.pantsColor;
+  ctx.fillRect(cx - R * 1.1, pantsY, R * 2.2, pantsH);
+  ctx.strokeStyle = '#111'; ctx.lineWidth = 0.8 * s;
+  ctx.strokeRect(cx - R * 1.1, pantsY, R * 2.2, pantsH);
+  // Pants seam line
+  ctx.beginPath();
+  ctx.moveTo(cx, pantsY);
+  ctx.lineTo(cx, pantsY + pantsH);
+  ctx.strokeStyle = 'rgba(0,0,0,0.15)'; ctx.lineWidth = 1 * s; ctx.stroke();
   ctx.restore();
 
   // === HAIR (on top of head) ===
@@ -108,21 +107,20 @@ function drawChar(ctx: CanvasRenderingContext2D, cx: number, cy: number, c: Stor
   ctx.fillStyle = 'rgba(255,255,255,0.35)'; ctx.fill();
   ctx.restore();
 
-  // === EYES ===
-  const eyeOffX = f * R * 0.08;
-  const eyeLX = cx + eyeOffX - R * 0.2;
-  const eyeRX = cx + eyeOffX + R * 0.2;
+  // === EYES (centered) ===
+  const eyeLX = cx - R * 0.2;
+  const eyeRX = cx + R * 0.2;
   const eyeY = cy - R * 0.08;
   ctx.fillStyle = c.eyeColor;
   ctx.beginPath(); ctx.arc(eyeLX, eyeY, R * 0.14, 0, Math.PI * 2); ctx.fill();
   ctx.beginPath(); ctx.arc(eyeRX, eyeY, R * 0.14, 0, Math.PI * 2); ctx.fill();
   ctx.save();
   ctx.globalAlpha = 0.4;
-  const glow = ctx.createRadialGradient(cx + eyeOffX, eyeY, 0, cx + eyeOffX, eyeY, R * 0.5);
+  const glow = ctx.createRadialGradient(cx, eyeY, 0, cx, eyeY, R * 0.5);
   glow.addColorStop(0, c.eyeColor);
   glow.addColorStop(1, 'transparent');
   ctx.fillStyle = glow;
-  ctx.fillRect(cx + eyeOffX - R * 0.5, eyeY - R * 0.5, R, R);
+  ctx.fillRect(cx - R * 0.5, eyeY - R * 0.5, R, R);
   ctx.restore();
 }
 

@@ -1780,7 +1780,6 @@ const CharacterSelect: React.FC = () => {
 
       <style>{`
         @keyframes skinPanelSlide { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
-        @keyframes skinCardSlide { from { opacity: 0; transform: translateX(30px); } to { opacity: 1; transform: translateX(0); } }
       `}</style>
 
       {/* === BOTTOM BAR === */}

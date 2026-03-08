@@ -473,7 +473,7 @@ const ArcadeTower: React.FC = () => {
             background: 'linear-gradient(180deg, #fff8e0 0%, #ffcc33 40%, #ff8800 70%, #cc6600 100%)',
             WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text',
             filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.8)) drop-shadow(0 0 10px rgba(255,150,0,0.25))',
-          }}>ARCADE</h1>
+          }}>TORRE ARCADE</h1>
         </div>
         <button onClick={() => setGameState('MENU')} style={{
           padding: '6px 20px', background: 'rgba(255,204,51,0.05)',

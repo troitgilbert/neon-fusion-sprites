@@ -192,7 +192,7 @@ const CharacterPreview: React.FC<{ chars: StoryChar[] | null; color: string; acc
   );
 };
 
-
+const StorySelect: React.FC = () => {
   const { setGameState } = useGame();
   const [selectedIdx, setSelectedIdx] = useState(0);
   const [phase, setPhase] = useState(0);

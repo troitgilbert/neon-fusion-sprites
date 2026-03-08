@@ -957,6 +957,7 @@ const KONAMI_CODE = ['ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown', 'ArrowLeft'
 const CharacterSelect: React.FC = () => {
   const { engine, setGameState } = useGame();
   const [skinSelectFor, setSkinSelectFor] = useState<{ charIdx: number; pNum: number } | null>(null);
+  const [previewSkinId, setPreviewSkinId] = useState<string | null>(null);
   const [hoveredIdx, setHoveredIdx] = useState<number | null>(null);
   const [cursorIdx, setCursorIdx] = useState(0);
   const [showCustomMenu, setShowCustomMenu] = useState(false);

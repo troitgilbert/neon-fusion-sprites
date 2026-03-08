@@ -1214,16 +1214,26 @@ const CharacterSelect: React.FC = () => {
 
 
 
-  // Get current selections
+  // Get current selections — skin preview overrides the portrait
   const p1Char = engine.p1Choice !== null && engine.p1Choice < 100 ? charRenderData[engine.p1Choice] : null;
   const p1Custom = engine.p1Choice !== null && engine.p1Choice >= 100 ? customChars[engine.p1Choice - 100] : null;
   const hoveredChar = hoveredIdx !== null && hoveredIdx < 100 ? charRenderData[hoveredIdx] : null;
 
-  const displayP1 = p1Char || (!isP2Turn ? hoveredChar : null);
-  const displayP2 = isP2Turn ? hoveredChar : null;
+  // If skin selector is open, show the skin-altered character in the portrait
+  const displayP1 = (skinSelectFor && skinSelectFor.pNum === 1 && skinPreviewChar)
+    ? skinPreviewChar
+    : (p1Char || (!isP2Turn ? hoveredChar : null));
+  const displayP2 = (skinSelectFor && skinSelectFor.pNum === 2 && skinPreviewChar)
+    ? skinPreviewChar
+    : (isP2Turn ? hoveredChar : null);
 
-  const p1Name = p1Custom ? p1Custom.name : (displayP1 ? displayP1.name : '???');
-  const p2Name = displayP2 ? displayP2.name : (isP2Turn ? '???' : '---');
+  const skinSelectCharName = skinSelectFor ? CHAR_DATA[skinSelectFor.charIdx].name : null;
+  const p1Name = skinSelectFor && skinSelectFor.pNum === 1
+    ? (skinSelectCharName || '???')
+    : (p1Custom ? p1Custom.name : (displayP1 ? displayP1.name : '???'));
+  const p2Name = skinSelectFor && skinSelectFor.pNum === 2
+    ? (skinSelectCharName || '???')
+    : (displayP2 ? displayP2.name : (isP2Turn ? '???' : '---'));
 
   return (
     <div className="fixed inset-0 z-50 flex flex-col" style={{ overflow: 'hidden', animation: 'fadeIn 0.4s ease-out' }}>

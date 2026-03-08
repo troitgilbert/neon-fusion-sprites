@@ -465,9 +465,9 @@ export class Fighter {
         if (this.hitFlash > 0) { ctx.shadowBlur = 20; ctx.shadowColor = '#ffffff'; }
         if (game.timeStopped && game.timeStopper !== this) ctx.filter = 'grayscale(100%)';
 
-        const spriteH = 55; // target height in game units
-        const scale = spriteH / img.naturalHeight;
-        const spriteW = img.naturalWidth * scale;
+        const spriteH = 70; // target height in game units
+        const aspectRatio = img.naturalWidth / img.naturalHeight;
+        const spriteW = spriteH * aspectRatio;
 
         // Flip based on side
         ctx.translate(this.x, this.y);
@@ -483,21 +483,25 @@ export class Fighter {
           ctx.scale(1, 1 + breath);
         }
 
-        // Draw sprite centered on character position
-        ctx.drawImage(img, -spriteW / 2, -spriteH * 0.6, spriteW, spriteH);
+        // Enable pixelated rendering for crisp pixel art
+        ctx.imageSmoothingEnabled = false;
+
+        // Draw sprite centered on character position, feet at floor
+        ctx.drawImage(img, -spriteW / 2, -spriteH * 0.65, spriteW, spriteH);
         ctx.restore();
 
         // Hand hitbox still needed for combat
         this._drawSpriteHitbox(ctx, game);
-      } else {
-        // Fallback to old drawing if sprite not loaded
-        this._drawFallback(ctx, game);
+        ctx.restore();
+        return; // Skip the rest of draw
       }
-    } else {
-      // Non-sprite characters use original drawing
-      ctx.translate(this.x, this.y);
-      ctx.scale(this.side * this.squashX, this.squashY);
-      ctx.rotate(this.lean * this.side);
+      // If sprite not ready, fall through to normal drawing
+    }
+
+    // Non-sprite / fallback drawing
+    ctx.translate(this.x, this.y);
+    ctx.scale(this.side * this.squashX, this.squashY);
+    ctx.rotate(this.lean * this.side);
 
       // Breathing
       if (Math.abs(this.vx) < 1 && Math.abs(this.vy) < 1) {

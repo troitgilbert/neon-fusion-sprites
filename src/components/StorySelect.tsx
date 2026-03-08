@@ -117,7 +117,7 @@ function drawChar(ctx: CanvasRenderingContext2D, cx: number, cy: number, c: Stor
   // === EYES (centered) ===
   const eyeLX = cx - R * 0.2;
   const eyeRX = cx + R * 0.2;
-  const eyeY = cy - R * 0.08;
+  const eyeY = cy - R * 0.22;
   ctx.fillStyle = c.eyeColor;
   ctx.beginPath(); ctx.arc(eyeLX, eyeY, R * 0.14, 0, Math.PI * 2); ctx.fill();
   ctx.beginPath(); ctx.arc(eyeRX, eyeY, R * 0.14, 0, Math.PI * 2); ctx.fill();

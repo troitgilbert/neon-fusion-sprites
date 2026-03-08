@@ -1261,7 +1261,7 @@ const CharacterSelect: React.FC = () => {
             {isP2Turn ? '⬥ PLAYER SELECT ⬥' : '⬥ CHARACTER SELECT ⬥'}
           </div>
           <div style={{
-            color: 'rgba(255,204,51,0.3)', fontFamily: "'Orbitron', monospace",
+            color: 'rgba(180,180,180,0.3)', fontFamily: "'Orbitron', monospace",
             fontSize: 'clamp(6px, 0.7vw, 8px)', letterSpacing: 6, marginTop: 2,
           }}>CHOOSE YOUR FIGHTER</div>
         </div>

@@ -381,8 +381,57 @@ export class Fighter {
       }
     }
 
+    // === EDOWADO DIRECTIONAL ATTACKS ===
+    if (type === 'hook_down') {
+      // Downward hook - hits grounded opponents hard
+      this.handMode = 'slam'; this.handTimer = 15;
+      this.vx = this.side * 10;
+      if (dist < 65 && Math.abs(this.y - opp.y) < 50) {
+        const dmg = 1.5 * this.damageBoost;
+        opp.takeDamage(dmg, true);
+        game.trackStat('totalDamage', dmg);
+        opp.vx = this.side * 6; opp.vy = 5; // Push down
+        opp.stun = 18;
+        game.texts.push(new FloatingText(opp.x, opp.y - 30, 'GANCHO', '#ff8800'));
+        game.hitStop = 8; game.shake = 15;
+        game.spawnParticles(opp.x, opp.y + 10, '#ff8800', 18, 3);
+        game.spawnShockwave(opp.x, opp.y, '#ff8800');
+        game.particles.push(new PunchCircle(opp.x, opp.y, '#ff8800'));
+        playHitSound();
+      }
+      this.damageBoost = 1;
+      return;
+    }
+
+    if (type === 'uppercut') {
+      // Uppercut - launches enemy into the air
+      this.handMode = 'strike'; this.handTimer = 15;
+      this.vx = this.side * 8;
+      if (dist < 65 && Math.abs(this.y - opp.y) < 50) {
+        const dmg = 1.8 * this.damageBoost;
+        opp.takeDamage(dmg, true);
+        game.trackStat('totalDamage', dmg);
+        opp.vx = this.side * 8; opp.vy = -20; // Launch upward!
+        opp.stun = 20;
+        game.texts.push(new FloatingText(opp.x, opp.y - 40, 'UPPERCUT', '#ffff00'));
+        game.hitStop = 10; game.shake = 20;
+        game.spawnParticles(opp.x, opp.y - 10, '#ffff00', 25, 3);
+        game.spawnShockwave(opp.x, opp.y, '#ffff00');
+        game.particles.push(new PunchCircle(opp.x, opp.y, '#ffff00'));
+        playSuperSound();
+      }
+      this.damageBoost = 1;
+      return;
+    }
+
     if (type === 'hit') {
-      this.handMode = 'together'; this.handTimer = 12;
+      // Alternating hands for Edowado
+      if (this.charIdx === 0 && !this.customData) {
+        this.handMode = this.handOrder > 0 ? 'punch_left' : 'punch_right';
+      } else {
+        this.handMode = 'together';
+      }
+      this.handTimer = 12;
       const comboScale = Math.max(0.35, 1 - (this.comboHits * 0.08));
       const push = 8 + this.comboHits * 2.2;
       this.vx = this.side * 18;

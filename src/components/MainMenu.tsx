@@ -314,7 +314,130 @@ const MainMenu: React.FC = () => {
         </div>
       </div>
 
-      {/* ══════ ROW 3: BOTTOM BAR (fixed height) ══════ */}
+      {/* ══════ SUBMENU OVERLAY ══════ */}
+      {openSubMenu !== null && inSub && (() => {
+        const parentItem = menuItems[openSubMenu];
+        const subs = parentItem?.subItems || [];
+        return (
+          <div style={{
+            position: 'absolute', inset: 0, zIndex: 20,
+            background: 'rgba(0,0,0,0.92)',
+            backdropFilter: 'blur(8px)',
+            display: 'flex', flexDirection: 'column',
+            alignItems: 'center', justifyContent: 'center',
+            animation: 'mk9SubSlide 0.3s ease-out',
+          }}>
+            {/* Submenu title */}
+            <div style={{ marginBottom: 'clamp(16px, 3vh, 30px)', textAlign: 'center' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 12, justifyContent: 'center', marginBottom: 8 }}>
+                <div style={{ width: 40, height: 1, background: 'linear-gradient(90deg, transparent, rgba(200,80,0,0.5))' }} />
+                <span style={{
+                  fontSize: 'clamp(6px, 0.7vw, 8px)', letterSpacing: 5,
+                  color: 'rgba(200,100,30,0.5)', fontFamily: "'Orbitron', monospace",
+                }}>SELECCIONA</span>
+                <div style={{ width: 40, height: 1, background: 'linear-gradient(270deg, transparent, rgba(200,80,0,0.5))' }} />
+              </div>
+              <h2 style={{
+                fontSize: 'clamp(18px, 2.5vw, 32px)', fontWeight: 900,
+                fontFamily: "'Orbitron', serif", letterSpacing: 5,
+                color: '#e8d5a3',
+                textShadow: '0 0 15px rgba(255,80,0,0.5), 0 0 40px rgba(200,30,0,0.2), 0 2px 0 #8b6914',
+              }}>
+                {parentItem.label}
+              </h2>
+              <div style={{ width: 'clamp(60px, 10vw, 120px)', height: 2, margin: '8px auto 0', background: 'linear-gradient(90deg, transparent, #d4a037, transparent)' }} />
+            </div>
+
+            {/* Submenu items */}
+            <div style={{
+              display: 'flex', flexDirection: 'column', alignItems: 'center',
+              maxHeight: '50vh', overflowY: 'auto', scrollbarWidth: 'none',
+              width: 'clamp(280px, 35vw, 440px)',
+            }}>
+              {subs.map((sub, si) => {
+                const sa = subIndex === si;
+                const isBoss = sub.className === 'boss-rush';
+                const isMystery = sub.className === 'mystery';
+                return (
+                  <button key={sub.label}
+                    onClick={() => sub.action()}
+                    onMouseEnter={() => {
+                      setSubIndex(si); setHoveredMode(sub.label);
+                      if (isMystery) setMysteryHover(true);
+                    }}
+                    onMouseLeave={() => {
+                      setHoveredMode('');
+                      if (isMystery) setMysteryHover(false);
+                    }}
+                    style={{
+                      position: 'relative',
+                      width: '100%',
+                      padding: 'clamp(8px, 1vh, 13px) 20px',
+                      margin: '1px 0',
+                      fontSize: 'clamp(11px, 1.3vw, 16px)',
+                      textAlign: 'center',
+                      fontFamily: "'Orbitron', serif",
+                      fontWeight: sa ? 800 : 500,
+                      letterSpacing: sa ? 5 : 2,
+                      cursor: 'pointer', border: 'none', borderRadius: 0,
+                      overflow: 'hidden',
+                      color: isBoss
+                        ? (sa ? '#ff4444' : '#8b3030')
+                        : isMystery
+                          ? (sa ? '#555' : '#222')
+                          : (sa ? '#fff' : 'rgba(180,160,130,0.5)'),
+                      background: sa
+                        ? (isBoss
+                          ? 'linear-gradient(90deg, transparent, rgba(200,0,0,0.2) 20%, rgba(255,0,0,0.1) 50%, rgba(200,0,0,0.2) 80%, transparent)'
+                          : 'linear-gradient(90deg, transparent, rgba(200,40,0,0.25) 20%, rgba(255,120,0,0.15) 50%, rgba(200,40,0,0.25) 80%, transparent)')
+                        : 'transparent',
+                      textShadow: sa
+                        ? (isBoss
+                          ? '0 0 20px rgba(255,0,0,0.6), 0 0 40px rgba(200,0,0,0.3)'
+                          : '0 0 15px rgba(255,100,0,0.6), 0 0 30px rgba(200,30,0,0.25)')
+                        : 'none',
+                      transform: sa ? 'scale(1.06)' : 'scale(1)',
+                      transition: 'all 0.2s cubic-bezier(0.16, 1, 0.3, 1)',
+                    }}
+                  >
+                    {sa && <>
+                      <div style={{ position: 'absolute', top: 0, left: '15%', right: '15%', height: 1, background: `linear-gradient(90deg, transparent, ${isBoss ? 'rgba(255,50,50,0.6)' : 'rgba(255,140,30,0.6)'}, transparent)` }} />
+                      <div style={{ position: 'absolute', bottom: 0, left: '15%', right: '15%', height: 1, background: `linear-gradient(90deg, transparent, ${isBoss ? 'rgba(255,50,50,0.6)' : 'rgba(255,140,30,0.6)'}, transparent)` }} />
+                    </>}
+                    {isMystery
+                      ? <span style={{ animation: 'mysteryFlicker 2s infinite' }}>{sub.label}</span>
+                      : sub.label}
+                  </button>
+                );
+              })}
+            </div>
+
+            {/* Back button */}
+            <div style={{ marginTop: 'clamp(16px, 3vh, 30px)', textAlign: 'center' }}>
+              <button
+                onClick={() => { setInSub(false); setOpenSubMenu(null); }}
+                style={{
+                  padding: '8px 24px',
+                  fontSize: 'clamp(9px, 1vw, 12px)',
+                  fontFamily: "'Orbitron', serif",
+                  fontWeight: 600, letterSpacing: 3,
+                  color: 'rgba(200,150,80,0.5)',
+                  background: 'rgba(180,60,0,0.08)',
+                  border: '1px solid rgba(180,60,0,0.2)',
+                  cursor: 'pointer',
+                  transition: 'all 0.2s',
+                }}
+                onMouseEnter={e => { e.currentTarget.style.color = '#d4a037'; e.currentTarget.style.borderColor = 'rgba(200,80,0,0.4)'; }}
+                onMouseLeave={e => { e.currentTarget.style.color = 'rgba(200,150,80,0.5)'; e.currentTarget.style.borderColor = 'rgba(180,60,0,0.2)'; }}
+              >
+                ◀ VOLVER
+              </button>
+            </div>
+          </div>
+        );
+      })()}
+
+
       <div style={{
         flexShrink: 0, height: 'clamp(30px, 4vh, 44px)',
         display: 'flex', alignItems: 'center', justifyContent: 'center',

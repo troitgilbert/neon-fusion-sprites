@@ -14,9 +14,9 @@ const MOVE_LIST = [
   ]},
   { category: 'ATAQUES', moves: [
     { name: 'Golpe', p1: 'F', p2: '[' },
-    { name: 'Gancho Derecho (↓+Golpe)', p1: 'S+F', p2: '↓+[' },
+    { name: 'Daño Vital (↓+Golpe)', p1: 'S+F', p2: '↓+[' },
     { name: 'Uppercut (↑+Golpe)', p1: 'W+F', p2: '↑+[' },
-    { name: 'Gancho Izquierdo (→+Golpe)', p1: 'D+F', p2: '→+[' },
+    { name: 'Gancho (→+Golpe)', p1: 'D+F', p2: '→+[' },
     { name: 'Especial', p1: 'G', p2: ']' },
     { name: 'Super', p1: 'H', p2: '\\' },
     { name: 'Ultra', p1: 'E', p2: 'Enter' },

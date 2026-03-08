@@ -568,15 +568,28 @@ const BigPortrait: React.FC<{
       ctx.fill();
       ctx.restore();
     } else {
-      // Empty silhouette with pulsing ? 
-      ctx.globalAlpha = 0.06;
-      ctx.beginPath(); ctx.arc(W / 2, H * 0.42, Math.min(W, H) * 0.22, 0, Math.PI * 2);
-      ctx.fillStyle = color; ctx.fill();
-      ctx.globalAlpha = 0.2 + Math.sin(t * 0.04) * 0.1;
-      ctx.font = `bold ${Math.min(W, H) * 0.3}px Orbitron, monospace`;
+      // Empty silhouette with intense pulsing ?
+      ctx.globalAlpha = 0.15;
+      ctx.beginPath(); ctx.arc(W / 2, H * 0.42, Math.min(W, H) * 0.25, 0, Math.PI * 2);
+      const emptyGlow = ctx.createRadialGradient(W / 2, H * 0.42, 0, W / 2, H * 0.42, Math.min(W, H) * 0.25);
+      emptyGlow.addColorStop(0, color);
+      emptyGlow.addColorStop(1, 'transparent');
+      ctx.fillStyle = emptyGlow; ctx.fill();
+
+      // Pulsing ring
+      ctx.globalAlpha = 0.25 + Math.sin(t * 0.05) * 0.15;
+      ctx.beginPath(); ctx.arc(W / 2, H * 0.42, Math.min(W, H) * 0.2, 0, Math.PI * 2);
+      ctx.strokeStyle = color; ctx.lineWidth = 2; ctx.stroke();
+
+      // Big bright ?
+      ctx.globalAlpha = 0.5 + Math.sin(t * 0.04) * 0.25;
+      ctx.font = `bold ${Math.min(W, H) * 0.35}px Orbitron, monospace`;
       ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
       ctx.fillStyle = color;
+      ctx.shadowColor = color;
+      ctx.shadowBlur = 30;
       ctx.fillText('?', W / 2, H * 0.42);
+      ctx.shadowBlur = 0;
     }
 
     animRef.current = requestAnimationFrame(draw);

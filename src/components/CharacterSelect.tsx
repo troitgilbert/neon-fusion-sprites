@@ -1032,7 +1032,7 @@ const CharacterSelect: React.FC = () => {
           // Confirm selection
           const item = allGridItems[cursorIdx];
           if (item.type === 'char') handleSelect(item.idx);
-          else if (item.type === 'custom') { setShowCustomMenu(true); playConfirmSound(); }
+          else if (item.type === 'custom') { if (!allReadyToFight) { setShowCustomMenu(true); playConfirmSound(); } }
           else if (item.type === 'random') handleRandomSelect();
           return;
         }
@@ -1100,7 +1100,15 @@ const CharacterSelect: React.FC = () => {
 
   const isP2Turn = engine.p1Choice !== null && (engine.mode === 'versus' || engine.mode === 'vs_cpu') && engine.p2Choice === null;
 
+  const allReadyToFight = (() => {
+    const needsP2 = engine.mode === 'versus' || engine.mode === 'vs_cpu';
+    return needsP2
+      ? (engine.p1Choice !== null && engine.p2Choice !== null)
+      : (engine.p1Choice !== null);
+  })();
+
   const handleSelect = (idx: number) => {
+    if (allReadyToFight) return;
     playConfirmSound();
     setSelectFlash(idx);
     setTimeout(() => setSelectFlash(null), 300);
@@ -1108,6 +1116,7 @@ const CharacterSelect: React.FC = () => {
   };
 
   const handleCustomSelect = (customIdx: number) => {
+    if (allReadyToFight) return;
     const ch = customChars[customIdx];
     if (!ch) return;
     playConfirmSound();
@@ -1116,6 +1125,7 @@ const CharacterSelect: React.FC = () => {
   };
 
   const handleRandomSelect = () => {
+    if (allReadyToFight) return;
     const allOptions: number[] = [...CHAR_DATA.map((_, i) => i)];
     customChars.forEach((ch, i) => { if (ch) allOptions.push(100 + i); });
     const pick = allOptions[Math.floor(Math.random() * allOptions.length)];
@@ -1604,8 +1614,11 @@ const CharacterSelect: React.FC = () => {
           <div style={{
             display: 'flex', flexDirection: 'column',
             alignItems: 'center', justifyContent: 'center',
-            padding: '8px 16px', pointerEvents: 'auto',
+            padding: '8px 16px', pointerEvents: allReadyToFight ? 'none' : 'auto',
             position: 'relative',
+            opacity: allReadyToFight ? 0.4 : 1,
+            transition: 'opacity 0.4s ease',
+            filter: allReadyToFight ? 'grayscale(0.5)' : 'none',
           }}>
 
           {/* Honeycomb hex grid - proper beehive layout */}

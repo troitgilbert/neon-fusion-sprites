@@ -1255,13 +1255,18 @@ const CharacterSelect: React.FC = () => {
                           key="custom"
                           onClick={() => { setShowCustomMenu(true); playConfirmSound(); }}
                           onMouseEnter={() => setHoveredIdx(null)}
-                          style={{
+                           style={{
                             width: hexW, height: hexH,
                             clipPath: 'polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%)',
                             cursor: 'pointer',
-                            background: 'linear-gradient(135deg, rgba(20,18,35,0.95), rgba(12,10,25,0.98))',
+                            background: isCursor
+                              ? 'linear-gradient(135deg, rgba(40,35,20,0.95), rgba(30,25,15,0.9))'
+                              : 'linear-gradient(135deg, rgba(20,18,35,0.95), rgba(12,10,25,0.98))',
                             display: 'flex', alignItems: 'center', justifyContent: 'center',
                             transition: 'all 0.2s',
+                            transform: isCursor ? 'scale(1.15)' : 'scale(1)',
+                            zIndex: isCursor ? 10 : 1,
+                            filter: isCursor ? 'drop-shadow(0 0 10px #ffcc3350)' : 'none',
                           }}
                         >
                           <span style={{ color: '#ffcc33', fontSize: hexW * 0.3, fontWeight: 900, fontFamily: "'Orbitron', monospace", textShadow: '0 0 10px #ffcc3340' }}>?</span>

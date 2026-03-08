@@ -916,11 +916,11 @@ const BgCanvas: React.FC = () => {
       ctx.fillStyle = vig;
       ctx.fillRect(0, 0, W, H);
 
-      // Warm lens glow
+      // Cool lens glow
       const la = 0.02 + Math.sin(time * 0.006) * 0.01;
       const lens = ctx.createRadialGradient(W * 0.1, H * 0.12, 0, W * 0.1, H * 0.12, W * 0.35);
-      lens.addColorStop(0, `rgba(255,180,80,${la})`);
-      lens.addColorStop(0.5, `rgba(255,80,30,${la * 0.25})`);
+      lens.addColorStop(0, `rgba(180,180,200,${la})`);
+      lens.addColorStop(0.5, `rgba(120,120,140,${la * 0.25})`);
       lens.addColorStop(1, 'transparent');
       ctx.fillStyle = lens;
       ctx.fillRect(0, 0, W, H);

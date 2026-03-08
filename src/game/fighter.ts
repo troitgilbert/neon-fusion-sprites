@@ -195,7 +195,7 @@ export class Fighter {
     if (keys[c.right]) { this.vx = currentSpeed; this.side = 1; }
 
     // Crouch
-    this.isCrouching = keys[c.down] && this.isGrounded && !this.isFlying;
+    this.isCrouching = keys[c.down] && this.isGrounded && !this.isFlying && this.handTimer === 0;
 
     if (this.isFlying) {
       if (keys[c.up]) this.vy = -currentSpeed;

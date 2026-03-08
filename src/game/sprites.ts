@@ -1,7 +1,7 @@
 // Image-based sprite system for Edowado
 // Uses high-quality anime-style sprites
 
-import idleImg from '@/assets/edowado-idle.png';
+import idleSheetImg from '@/assets/edowado-idle-sheet.png';
 import walk1Img from '@/assets/edowado-walk1.png';
 import walk2Img from '@/assets/edowado-walk2.png';
 import walk3Img from '@/assets/edowado-walk3.png';
@@ -22,21 +22,27 @@ export type SpriteState = 'idle' | 'walk' | 'attack' | 'jump' | 'fly' | 'block' 
 const imageCache: Map<string, HTMLImageElement> = new Map();
 let imagesLoaded = false;
 
-const SPRITE_SOURCES: Record<string, string> = {
-  idle: idleImg,
-  walk1: walk1Img,
-  walk2: walk2Img,
-  walk3: walk3Img,
-  walk4: walk4Img,
-  walk5: walk5Img,
-  walk6: walk6Img,
-  walk7: walk7Img,
-  walk8: walk8Img,
-  attack: attackImg,
-  jump: jumpImg,
-  fly: flyImg,
-  block: blockImg,
-  hurt: hurtImg,
+// Sprite sheet config: key -> { src, columns } for sheets, or just src for single frames
+interface SpriteSheetInfo {
+  src: string;
+  columns: number; // 1 = single frame image
+}
+
+const SPRITE_SOURCES: Record<string, SpriteSheetInfo> = {
+  idleSheet: { src: idleSheetImg, columns: 4 },
+  walk1: { src: walk1Img, columns: 1 },
+  walk2: { src: walk2Img, columns: 1 },
+  walk3: { src: walk3Img, columns: 1 },
+  walk4: { src: walk4Img, columns: 1 },
+  walk5: { src: walk5Img, columns: 1 },
+  walk6: { src: walk6Img, columns: 1 },
+  walk7: { src: walk7Img, columns: 1 },
+  walk8: { src: walk8Img, columns: 1 },
+  attack: { src: attackImg, columns: 1 },
+  jump: { src: jumpImg, columns: 1 },
+  fly: { src: flyImg, columns: 1 },
+  block: { src: blockImg, columns: 1 },
+  hurt: { src: hurtImg, columns: 1 },
 };
 
 function loadImage(key: string, src: string): Promise<void> {
@@ -52,22 +58,36 @@ function loadImage(key: string, src: string): Promise<void> {
 }
 
 const loadPromise = Promise.all(
-  Object.entries(SPRITE_SOURCES).map(([key, src]) => loadImage(key, src))
+  Object.entries(SPRITE_SOURCES).map(([key, info]) => loadImage(key, info.src))
 ).then(() => { imagesLoaded = true; });
 
 export function preloadSprites(): Promise<void> {
   return loadPromise;
 }
 
-// Animation config
-const SPRITE_FRAMES: Record<SpriteState, { keys: string[]; speed: number }> = {
-  idle:   { keys: ['idle'], speed: 0.03 },
-  walk:   { keys: ['walk1', 'walk2', 'walk3', 'walk4', 'walk5', 'walk6', 'walk7', 'walk8'], speed: 0.15 },
-  attack: { keys: ['attack'],  speed: 0.2 },
-  jump:   { keys: ['jump'],    speed: 0.1 },
-  fly:    { keys: ['fly'],     speed: 0.08 },
-  block:  { keys: ['block'],   speed: 0.08 },
-  hurt:   { keys: ['hurt'],    speed: 0.15 },
+// Animation config - for sprite sheets, use { sheet, columns, frames, speed }
+interface SheetAnim {
+  type: 'sheet';
+  sheetKey: string;
+  columns: number;
+  frames: number;
+  speed: number;
+}
+interface KeysAnim {
+  type: 'keys';
+  keys: string[];
+  speed: number;
+}
+type AnimConfig = SheetAnim | KeysAnim;
+
+const SPRITE_FRAMES: Record<SpriteState, AnimConfig> = {
+  idle:   { type: 'sheet', sheetKey: 'idleSheet', columns: 4, frames: 4, speed: 0.06 },
+  walk:   { type: 'keys', keys: ['walk1', 'walk2', 'walk3', 'walk4', 'walk5', 'walk6', 'walk7', 'walk8'], speed: 0.15 },
+  attack: { type: 'keys', keys: ['attack'],  speed: 0.2 },
+  jump:   { type: 'keys', keys: ['jump'],    speed: 0.1 },
+  fly:    { type: 'keys', keys: ['fly'],     speed: 0.08 },
+  block:  { type: 'keys', keys: ['block'],   speed: 0.08 },
+  hurt:   { type: 'keys', keys: ['hurt'],    speed: 0.15 },
 };
 
 /**
@@ -84,39 +104,84 @@ export function drawEdowadoSprite(
   const data = SPRITE_FRAMES[state];
   if (!data) return;
 
-  const { keys, speed } = data;
-  const frameIdx = Math.floor(frame * speed) % keys.length;
-  const img = imageCache.get(keys[frameIdx]);
-
-  if (!img) {
-    ctx.save();
-    ctx.fillStyle = '#c02020';
-    ctx.fillRect(x - 15 * scale, y - 40 * scale, 30 * scale, 45 * scale);
-    ctx.restore();
-    return;
-  }
-
-  // Target sprite height in game units
   const targetHeight = 85 * scale;
-  const aspect = img.width / img.height;
-  const targetWidth = targetHeight * aspect;
 
   ctx.save();
-  ctx.imageSmoothingEnabled = true;
-  ctx.imageSmoothingQuality = 'high';
+  ctx.imageSmoothingEnabled = false; // pixel art looks better without smoothing
   ctx.translate(x, y);
   ctx.scale(side, 1);
 
-  // Draw centered at feet position, shifted down
-  ctx.drawImage(
-    img,
-    -targetWidth / 2,
-    -targetHeight + 15,
-    targetWidth,
-    targetHeight
-  );
+  if (data.type === 'sheet') {
+    const img = imageCache.get(data.sheetKey);
+    if (!img) {
+      ctx.fillStyle = '#c02020';
+      ctx.fillRect(-15 * scale, -40 * scale, 30 * scale, 45 * scale);
+      ctx.restore();
+      return;
+    }
+
+    const frameIdx = Math.floor(frame * data.speed) % data.frames;
+    const frameW = img.width / data.columns;
+    const frameH = img.height;
+    const aspect = frameW / frameH;
+    const targetWidth = targetHeight * aspect;
+
+    // Source rect from sprite sheet
+    const sx = frameIdx * frameW;
+
+    ctx.drawImage(
+      img,
+      sx, 0, frameW, frameH,
+      -targetWidth / 2,
+      -targetHeight + 15,
+      targetWidth,
+      targetHeight
+    );
+  } else {
+    const frameIdx = Math.floor(frame * data.speed) % data.keys.length;
+    const img = imageCache.get(data.keys[frameIdx]);
+
+    if (!img) {
+      ctx.fillStyle = '#c02020';
+      ctx.fillRect(-15 * scale, -40 * scale, 30 * scale, 45 * scale);
+      ctx.restore();
+      return;
+    }
+
+    const aspect = img.width / img.height;
+    const targetWidth = targetHeight * aspect;
+
+    ctx.drawImage(
+      img,
+      -targetWidth / 2,
+      -targetHeight + 15,
+      targetWidth,
+      targetHeight
+    );
+  }
 
   ctx.restore();
+}
+
+/**
+ * Get the idle sprite image for menus (first frame of idle sheet)
+ */
+export function getIdleSpriteImage(): HTMLImageElement | null {
+  return imageCache.get('idleSheet') || null;
+}
+
+/**
+ * Draw idle sprite for menu use (single frame from sheet)
+ */
+export function drawIdleMenuSprite(
+  ctx: CanvasRenderingContext2D,
+  x: number, y: number,
+  width: number, height: number
+) {
+  const img = imageCache.get('idleSheet');
+  if (!img) return;
+  const frameW = img.width / 4;
+  ctx.drawImage(img, 0, 0, frameW, img.height, x, y, width, height);
 }
 
 /**

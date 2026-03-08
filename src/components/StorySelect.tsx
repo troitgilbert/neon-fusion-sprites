@@ -12,8 +12,8 @@ const CHAR_EDOWADO: StoryChar = {
   pantsColor: '#1a1a2e', shoesColor: '#333', handsColor: '#f5deb3', eyeColor: '#00ffff',
 };
 const CHAR_KAITO: StoryChar = {
-  skinColor: '#fff', hairColor: '#fff', clothesColor: '#222',
-  pantsColor: '#111', shoesColor: '#444', handsColor: '#fff', eyeColor: '#ffff00',
+  skinColor: '#f5deb3', hairColor: '#fff', clothesColor: '#222',
+  pantsColor: '#111', shoesColor: '#444', handsColor: '#f5deb3', eyeColor: '#ffff00',
 };
 
 const STORIES = [
@@ -117,7 +117,7 @@ function drawChar(ctx: CanvasRenderingContext2D, cx: number, cy: number, c: Stor
   // === EYES (centered) ===
   const eyeLX = cx - R * 0.2;
   const eyeRX = cx + R * 0.2;
-  const eyeY = cy - R * 0.08;
+  const eyeY = cy - R * 0.22;
   ctx.fillStyle = c.eyeColor;
   ctx.beginPath(); ctx.arc(eyeLX, eyeY, R * 0.14, 0, Math.PI * 2); ctx.fill();
   ctx.beginPath(); ctx.arc(eyeRX, eyeY, R * 0.14, 0, Math.PI * 2); ctx.fill();

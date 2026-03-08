@@ -1506,10 +1506,10 @@ const CharacterSelect: React.FC = () => {
           }}>
             {hoveredIdx !== null && hoveredIdx >= 0 && hoveredIdx < charRenderData.length ? (
               <div style={{
-                padding: '4px 20px',
-                background: 'linear-gradient(90deg, transparent, rgba(255,204,51,0.08) 20%, rgba(255,204,51,0.12) 50%, rgba(255,204,51,0.08) 80%, transparent)',
-                borderTop: '1px solid rgba(255,204,51,0.2)',
-                borderBottom: '1px solid rgba(255,204,51,0.2)',
+                padding: '5px 25px',
+                background: 'linear-gradient(90deg, transparent, rgba(10,8,20,0.85) 15%, rgba(10,8,20,0.9) 50%, rgba(10,8,20,0.85) 85%, transparent)',
+                borderTop: '2px solid rgba(255,204,51,0.35)',
+                borderBottom: '2px solid rgba(255,204,51,0.35)',
               }}>
                 <span style={{
                   color: '#ffcc33', fontFamily: "'Orbitron', monospace",

@@ -1138,23 +1138,17 @@ const CharacterSelect: React.FC = () => {
     setPreviewSkinId(null);
   };
 
-  // Enter to confirm and start battle
+  // Keyboard controls for skin menu (NO Enter — only button confirms)
   React.useEffect(() => {
     if (!skinSelectFor) return;
     const handler = (e: KeyboardEvent) => {
-      if (e.code === 'Enter' || e.code === 'KeyF') {
-        e.preventDefault();
-        playConfirmSound();
-        engine.confirmSkinChoice(skinSelectFor.charIdx, previewSkinId, skinSelectFor.pNum);
-        setSkinSelectFor(null);
-        setPreviewSkinId(null);
-      } else if (e.code === 'Escape' || e.code === 'Backspace') {
+      if (e.code === 'Escape' || e.code === 'Backspace') {
         handleSkinCancel();
       }
     };
     window.addEventListener('keydown', handler);
     return () => window.removeEventListener('keydown', handler);
-  }, [skinSelectFor, previewSkinId]);
+  }, [skinSelectFor]);
 
   const availableSkins = (charIdx: number) => {
     const charName = CHAR_DATA[charIdx].name;
@@ -1290,16 +1284,6 @@ const CharacterSelect: React.FC = () => {
             fontFamily: "'Orbitron', monospace",
             fontSize: 11, letterSpacing: 4, color: '#3a6a9a', marginTop: 6,
           }}>PLAYER {skinSelectFor.pNum}</div>
-          {previewSkinId !== null && (
-            <div style={{
-              marginTop: 10, fontFamily: "'Orbitron', monospace",
-              fontSize: 10, letterSpacing: 3, color: '#5a9ae0',
-              padding: '4px 14px', border: '1px solid rgba(80,150,255,0.2)',
-              background: 'rgba(20,50,100,0.2)', borderRadius: 12,
-            }}>
-              {skins.find(s => s.id === previewSkinId)?.name || 'Original'}
-            </div>
-          )}
         </div>
 
         {/* RIGHT: Skin selection panel */}

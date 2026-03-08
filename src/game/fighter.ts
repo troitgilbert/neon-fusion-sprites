@@ -455,7 +455,11 @@ export class Fighter {
 
     // Edowado uses pixel-art sprite rendering
     if (this.charIdx === 0 && !this.customData && !this.isBigBang) {
-      const state: SpriteState = 'idle'; // Force single idle sprite
+      const state: SpriteState = getSpriteState(
+        this.hitFlash, this.stun, this.isBlocking,
+        this.handMode, this.isGrounded, this.vx,
+        this.isFlying, this.isDashing
+      );
       
       if (this.hitFlash > 0) { ctx.shadowBlur = 20; ctx.shadowColor = '#ffffff'; }
       if (game.timeStopped && game.timeStopper !== this) ctx.filter = 'grayscale(100%)';

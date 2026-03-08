@@ -606,12 +606,12 @@ const BgCanvas: React.FC = () => {
     type Star = { x: number; y: number; size: number; brightness: number; twinkleSpeed: number; twinkleOffset: number; color: string; layer: number };
     const stars: Star[] = [];
     const starColors = ['#ffffff', '#ffe8cc', '#cce0ff', '#ffffcc', '#ffd4e8', '#d4e8ff', '#fff5cc'];
-    for (let i = 0; i < 600; i++) {
+    for (let i = 0; i < 1000; i++) {
       const layer = Math.random() < 0.5 ? 0 : Math.random() < 0.6 ? 1 : 2;
       stars.push({
         x: Math.random(), y: Math.random(),
-        size: layer === 0 ? Math.random() * 1.2 + 0.5 : layer === 1 ? Math.random() * 2 + 1 : Math.random() * 3 + 1.5,
-        brightness: Math.random() * 0.4 + 0.6,
+        size: layer === 0 ? Math.random() * 1.6 + 0.8 : layer === 1 ? Math.random() * 2.4 + 1.4 : Math.random() * 3.6 + 2,
+        brightness: Math.random() * 0.25 + 0.75,
         twinkleSpeed: Math.random() * 0.03 + 0.005,
         twinkleOffset: Math.random() * Math.PI * 2,
         color: starColors[Math.floor(Math.random() * starColors.length)],
@@ -680,7 +680,7 @@ const BgCanvas: React.FC = () => {
         if (d.x < -0.2) d.x = 1.2;
         if (d.x > 1.2) d.x = -0.2;
         ctx.save();
-        ctx.globalAlpha = 0.15;
+        ctx.globalAlpha = 0.05;
         const dg = ctx.createRadialGradient(d.x * W, d.y * H, 0, d.x * W, d.y * H, d.r);
         dg.addColorStop(0, d.color);
         dg.addColorStop(0.6, d.color + '60');
@@ -746,8 +746,8 @@ const BgCanvas: React.FC = () => {
       // Stars with twinkling
       stars.forEach(s => {
         const sx = s.x * W, sy = s.y * H;
-        const twinkle = 0.7 + 0.3 * Math.sin(frame * s.twinkleSpeed + s.twinkleOffset);
-        const alpha = Math.min(1, s.brightness * twinkle * 1.5);
+        const twinkle = 0.82 + 0.18 * Math.sin(frame * s.twinkleSpeed + s.twinkleOffset);
+        const alpha = Math.min(1, s.brightness * twinkle * 1.9);
         ctx.save();
         ctx.globalAlpha = alpha;
 
@@ -764,10 +764,10 @@ const BgCanvas: React.FC = () => {
 
         // Star glow
         if (s.size > 1) {
-          const sg = ctx.createRadialGradient(sx, sy, 0, sx, sy, s.size * 3);
-          sg.addColorStop(0, s.color + '60');
+          const sg = ctx.createRadialGradient(sx, sy, 0, sx, sy, s.size * 4.5);
+          sg.addColorStop(0, s.color + '90');
           sg.addColorStop(1, 'transparent');
-          ctx.globalAlpha = alpha * 0.4;
+          ctx.globalAlpha = alpha * 0.9;
           ctx.fillStyle = sg;
           ctx.fillRect(sx - s.size * 3, sy - s.size * 3, s.size * 6, s.size * 6);
           ctx.globalAlpha = alpha;
@@ -775,7 +775,7 @@ const BgCanvas: React.FC = () => {
 
         // Star core
         ctx.beginPath();
-        ctx.arc(sx, sy, s.size * dpr * 0.5, 0, Math.PI * 2);
+        ctx.arc(sx, sy, s.size * 0.95, 0, Math.PI * 2);
         ctx.fillStyle = s.color;
         ctx.fill();
         ctx.restore();

@@ -1517,7 +1517,7 @@ const CharacterSelect: React.FC = () => {
                             cursor: 'pointer',
                             background: isCursor
                               ? 'linear-gradient(135deg, rgba(40,35,20,0.95), rgba(30,25,15,0.9))'
-                              : 'linear-gradient(135deg, rgba(15,14,30,0.95), rgba(10,8,22,0.98))',
+                              : 'linear-gradient(135deg, rgba(15,14,30,0.55), rgba(10,8,22,0.6))',
                             display: 'flex', alignItems: 'center', justifyContent: 'center',
                             transition: 'all 0.2s',
                             transform: isCursor ? 'scale(1.18)' : 'scale(1)',

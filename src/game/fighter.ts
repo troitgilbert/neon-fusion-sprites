@@ -29,6 +29,10 @@ export class Fighter {
   _lastHitFrame: number;
   _hookCombo: number;
   _pendingTemblor: boolean;
+  _invocationActive: boolean;
+  _invocationX: number;
+  _invocationTimer: number;
+  _pendingImpactoCristalico: boolean;
   constructor(id: number, charIdx: number, x: number, side: number, controls: Controls, isAI = false, skinId: string | null = null, customData: CustomCharData | null = null) {
     this.id = id; this.charIdx = charIdx;
     this.customData = customData;

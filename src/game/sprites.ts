@@ -2,6 +2,8 @@
 // Uses high-quality anime-style sprites
 
 import idleImg from '@/assets/edowado-idle.png';
+import idleT1Img from '@/assets/edowado-idle-t1.png';
+import idleT2Img from '@/assets/edowado-idle-t2.png';
 import idle2Img from '@/assets/edowado-idle2.png';
 import walk1Img from '@/assets/edowado-walk1.png';
 import walk2Img from '@/assets/edowado-walk2.png';

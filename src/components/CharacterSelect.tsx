@@ -1321,13 +1321,6 @@ const CharacterSelect: React.FC = () => {
 
           {/* P2 Portrait with decorative frame */}
           <div style={{ width: 'clamp(220px, 32vw, 420px)', height: 'clamp(220px, 32vw, 420px)', position: 'relative' }}>
-            <div style={{ position: 'absolute', top: -2, right: -2, width: 20, height: 20, borderTop: '2px solid #ff8c0040', borderRight: '2px solid #ff8c0040', zIndex: 2 }} />
-            <div style={{ position: 'absolute', bottom: -2, left: -2, width: 20, height: 20, borderBottom: '2px solid #ff8c0040', borderLeft: '2px solid #ff8c0040', zIndex: 2 }} />
-            <div style={{
-              position: 'absolute', inset: 0,
-              background: 'radial-gradient(circle at center, rgba(255,140,0,0.06) 0%, transparent 70%)',
-              border: '1px solid rgba(255,140,0,0.08)',
-            }} />
             <BigPortrait char={displayP2 || null} customChar={null} color="#ff8c00" facing={-1} label="P2" />
             <div style={{
               position: 'absolute', bottom: 8, left: '10%', right: '10%', textAlign: 'center',

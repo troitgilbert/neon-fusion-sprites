@@ -1594,11 +1594,11 @@ const CharacterSelect: React.FC = () => {
         </div>
       </div>
 
-      {/* Silver bottom border */}
+      {/* Golden bottom border */}
       <div style={{
         position: 'relative', zIndex: 3, height: 3,
-        background: 'linear-gradient(90deg, transparent 2%, #999999 15%, #bbbbbb 35%, #dddddd 50%, #bbbbbb 65%, #999999 85%, transparent 98%)',
-        boxShadow: '0 -2px 20px rgba(180,180,180,0.3), 0 0 40px rgba(150,150,150,0.1)',
+        background: 'linear-gradient(90deg, transparent 2%, #ffcc33 15%, #ff8800 35%, #ffee88 50%, #ff8800 65%, #ffcc33 85%, transparent 98%)',
+        boxShadow: '0 -2px 20px #ffcc3360, 0 0 40px #ff880020',
       }} />
 
       <style>{`

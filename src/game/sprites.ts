@@ -3,6 +3,12 @@
 
 import idleImg from '@/assets/edowado-idle.png';
 import idle2Img from '@/assets/edowado-idle2.png';
+import idle3Img from '@/assets/edowado-idle3.png';
+import idle4Img from '@/assets/edowado-idle4.png';
+import idle5Img from '@/assets/edowado-idle5.png';
+import idle6Img from '@/assets/edowado-idle6.png';
+import idle7Img from '@/assets/edowado-idle7.png';
+import idle8Img from '@/assets/edowado-idle8.png';
 import walk1Img from '@/assets/edowado-walk1.png';
 import walk2Img from '@/assets/edowado-walk2.png';
 import walk3Img from '@/assets/edowado-walk3.png';

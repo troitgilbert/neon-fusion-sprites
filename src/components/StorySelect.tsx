@@ -46,27 +46,22 @@ const STORIES = [
 // Draw a fighter character on canvas — facing direction: 1=right, -1=left
 function drawChar(ctx: CanvasRenderingContext2D, cx: number, cy: number, c: StoryChar, scale: number, time: number, facing: number = 1) {
   const s = scale;
-  const R = 30 * s; // big head radius
+  const R = 30 * s;
   const f = facing;
-  const handSwing = Math.sin(time * 0.03) * 3 * s;
 
   // === FEET (small, at bottom) ===
   ctx.fillStyle = c.shoesColor;
   ctx.strokeStyle = '#111'; ctx.lineWidth = 1 * s;
-  ctx.beginPath(); ctx.arc(cx - R * 0.3, cy + R * 0.95, R * 0.12, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
-  ctx.beginPath(); ctx.arc(cx + R * 0.3, cy + R * 0.95, R * 0.12, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+  ctx.beginPath(); ctx.arc(cx - R * 0.25, cy + R * 1.05, R * 0.11, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+  ctx.beginPath(); ctx.arc(cx + R * 0.25, cy + R * 1.05, R * 0.11, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
 
-  // === HANDS (round, on sides) ===
-  ctx.fillStyle = c.handsColor;
-  ctx.strokeStyle = '#111'; ctx.lineWidth = 1.2 * s;
-  const handY = cy + R * 0.15;
-  ctx.beginPath(); ctx.arc(cx - R * 1.15, handY + handSwing, R * 0.17, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
-  ctx.beginPath(); ctx.arc(cx + R * 1.15, handY - handSwing, R * 0.17, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
-  // Hand shading
-  ctx.save(); ctx.globalAlpha = 0.15; ctx.fillStyle = '#000';
-  ctx.beginPath(); ctx.arc(cx - R * 1.15 + 1 * s, handY + handSwing + 2 * s, R * 0.11, 0, Math.PI * 2); ctx.fill();
-  ctx.beginPath(); ctx.arc(cx + R * 1.15 + 1 * s, handY - handSwing + 2 * s, R * 0.11, 0, Math.PI * 2); ctx.fill();
-  ctx.restore();
+  // === PANTS (small legs below the sphere) ===
+  ctx.fillStyle = c.pantsColor;
+  ctx.fillRect(cx - R * 0.35, cy + R * 0.75, R * 0.25, R * 0.32);
+  ctx.fillRect(cx + R * 0.1, cy + R * 0.75, R * 0.25, R * 0.32);
+  ctx.strokeStyle = '#111'; ctx.lineWidth = 0.8 * s;
+  ctx.strokeRect(cx - R * 0.35, cy + R * 0.75, R * 0.25, R * 0.32);
+  ctx.strokeRect(cx + R * 0.1, cy + R * 0.75, R * 0.25, R * 0.32);
 
   // === BIG ROUND HEAD (skin) ===
   ctx.beginPath(); ctx.arc(cx, cy, R, 0, Math.PI * 2);
@@ -84,16 +79,13 @@ function drawChar(ctx: CanvasRenderingContext2D, cx: number, cy: number, c: Stor
 
   // === CLOTHES BAND (across middle-bottom of head) ===
   ctx.save();
-  ctx.beginPath();
-  ctx.arc(cx, cy, R * 0.99, 0, Math.PI * 2);
-  ctx.clip();
+  ctx.beginPath(); ctx.arc(cx, cy, R * 0.99, 0, Math.PI * 2); ctx.clip();
   const clothesY = cy + R * 0.05;
   const clothesH = R * 0.55;
   ctx.fillStyle = c.clothesColor;
   ctx.fillRect(cx - R * 1.1, clothesY, R * 2.2, clothesH);
   ctx.strokeStyle = '#111'; ctx.lineWidth = 1 * s;
   ctx.strokeRect(cx - R * 1.1, clothesY, R * 2.2, clothesH);
-  // Clothes shading
   const cGrad = ctx.createLinearGradient(cx - R, 0, cx + R, 0);
   cGrad.addColorStop(0, 'rgba(0,0,0,0.12)');
   cGrad.addColorStop(0.4, 'transparent');
@@ -101,12 +93,6 @@ function drawChar(ctx: CanvasRenderingContext2D, cx: number, cy: number, c: Stor
   cGrad.addColorStop(1, 'rgba(0,0,0,0.1)');
   ctx.fillStyle = cGrad;
   ctx.fillRect(cx - R * 1.1, clothesY, R * 2.2, clothesH);
-  // Collar line
-  ctx.beginPath();
-  ctx.moveTo(cx - R * 0.2, clothesY);
-  ctx.lineTo(cx, clothesY + R * 0.15);
-  ctx.lineTo(cx + R * 0.2, clothesY);
-  ctx.strokeStyle = 'rgba(255,255,255,0.12)'; ctx.lineWidth = 1.5 * s; ctx.stroke();
   ctx.restore();
 
   // === HAIR (on top of head) ===
@@ -117,27 +103,19 @@ function drawChar(ctx: CanvasRenderingContext2D, cx: number, cy: number, c: Stor
   ctx.beginPath(); ctx.arc(0, 0, R * 0.8, Math.PI, 0);
   ctx.fillStyle = c.hairColor; ctx.fill();
   ctx.strokeStyle = '#111'; ctx.lineWidth = 1 * s; ctx.stroke();
-  // Hair highlight
   ctx.globalAlpha = 0.2;
   ctx.beginPath(); ctx.arc(f * R * 0.15, -R * 0.05, R * 0.4, Math.PI, 0);
   ctx.fillStyle = 'rgba(255,255,255,0.35)'; ctx.fill();
   ctx.restore();
-  // Side hair spikes
-  ctx.fillStyle = c.hairColor;
-  ctx.beginPath();
-  ctx.ellipse(cx + f * R * 0.7, cy - R * 0.5, R * 0.15, R * 0.35, f * 0.4, 0, Math.PI * 2);
-  ctx.fill(); ctx.strokeStyle = '#111'; ctx.lineWidth = 0.8 * s; ctx.stroke();
 
   // === EYES ===
   const eyeOffX = f * R * 0.08;
   const eyeLX = cx + eyeOffX - R * 0.2;
   const eyeRX = cx + eyeOffX + R * 0.2;
   const eyeY = cy - R * 0.08;
-  // Eye circles (colored, like the screenshots)
   ctx.fillStyle = c.eyeColor;
   ctx.beginPath(); ctx.arc(eyeLX, eyeY, R * 0.14, 0, Math.PI * 2); ctx.fill();
   ctx.beginPath(); ctx.arc(eyeRX, eyeY, R * 0.14, 0, Math.PI * 2); ctx.fill();
-  // Eye glow
   ctx.save();
   ctx.globalAlpha = 0.4;
   const glow = ctx.createRadialGradient(cx + eyeOffX, eyeY, 0, cx + eyeOffX, eyeY, R * 0.5);

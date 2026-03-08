@@ -1695,7 +1695,7 @@ const CharacterSelect: React.FC = () => {
                         transition: 'all 0.3s cubic-bezier(0.16,1,0.3,1)',
                         textAlign: 'left', width: '100%', borderRadius: 3,
                         boxShadow: isActive ? '0 0 20px rgba(60,140,255,0.15)' : 'none',
-                        animation: `skinCardSlide 0.3s cubic-bezier(0.16,1,0.3,1) ${idx * 0.06}s both`,
+                        
                       }}
                       onMouseEnter={e => {
                         if (!isActive) {

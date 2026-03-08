@@ -274,8 +274,7 @@ function drawGameSprite(
   side: number, time: number, scale: number
 ) {
   if (charIdx === 0 && !customChar) {
-    const previewState = Math.abs(Math.sin(time * 0.06)) > 0.7 ? 'walk' : 'idle';
-    drawEdowadoSprite(ctx, x, y + 10 * scale, previewState, time, side, Math.max(0.9, scale * 1.5));
+    drawEdowadoSprite(ctx, x, y + 10 * scale, 'idle', time, side, Math.max(0.9, scale * 1.5));
     return;
   }
 

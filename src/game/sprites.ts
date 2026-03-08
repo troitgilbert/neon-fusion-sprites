@@ -121,7 +121,7 @@ export function drawEdowadoSprite(
  * Get the idle sprite image for menus (first frame)
  */
 export function getIdleSpriteImage(): HTMLImageElement | null {
-  return imageCache.get('idle1') || null;
+  return imageCache.get('idle') || null;
 }
 
 /**

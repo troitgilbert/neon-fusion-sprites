@@ -140,3 +140,32 @@
   from { transform: translateY(0); }
   to { transform: translateY(-200px); }
 }
+
+/* MK9 Style Animations */
+@keyframes mk9TitlePulse {
+  0%, 100% {
+    text-shadow: 0 0 20px rgba(255,80,0,0.6), 0 0 60px rgba(200,30,0,0.3), 0 0 120px rgba(150,0,0,0.15), 0 2px 0 #8b6914, 0 4px 0 #6b4f10, 0 6px 8px rgba(0,0,0,0.8);
+    filter: brightness(1);
+  }
+  50% {
+    text-shadow: 0 0 30px rgba(255,120,0,0.8), 0 0 80px rgba(220,40,0,0.4), 0 0 140px rgba(180,0,0,0.2), 0 2px 0 #a07818, 0 4px 0 #8b6914, 0 6px 12px rgba(0,0,0,0.9);
+    filter: brightness(1.1);
+  }
+}
+
+@keyframes mk9Ember {
+  0% { transform: translateY(0) translateX(0); opacity: 0; }
+  10% { opacity: 0.8; }
+  50% { opacity: 0.6; }
+  100% { transform: translateY(-100vh) translateX(40px); opacity: 0; }
+}
+
+@keyframes mk9FireGlow {
+  0%, 100% { opacity: 0.6; }
+  50% { opacity: 1; }
+}
+
+@keyframes mk9SubSlide {
+  from { opacity: 0; max-height: 0; transform: scaleY(0.8); }
+  to { opacity: 1; max-height: 500px; transform: scaleY(1); }
+}

@@ -94,7 +94,11 @@ const GameApp: React.FC = () => {
         </div>
       )}
 
-      {showMenu && <MainMenu />}
+      {showMenu && (
+        <ScreenTransition transitionKey="menu" type="zoom" duration={400}>
+          <MainMenu />
+        </ScreenTransition>
+      )}
 
       {inFight && (
         <>
@@ -106,35 +110,129 @@ const GameApp: React.FC = () => {
 
       {(gameState === 'SELECT' || gameState === 'SKIN_SELECT' || gameState === 'STAGE_SELECT' || gameState === 'VERSUS_TYPE' || gameState === 'SHOP' || gameState === 'CONFIG') && <GameCanvas />}
 
-      {gameState === 'SELECT' && <CharacterSelect />}
-      {gameState === 'SKIN_SELECT' && <CharacterSelect />}
-      {gameState === 'STAGE_SELECT' && <StageSelect />}
-      {gameState === 'PAUSED' && <PauseMenu />}
-      {gameState === 'VERSUS_TYPE' && <VersusTypeMenu />}
-      {gameState === 'SHOP' && <ShopMenu />}
-      {gameState === 'CONFIG' && <ConfigMenu />}
-      {gameState === 'CREATOR' && <CharacterCreator />}
-      {gameState === 'ACHIEVEMENTS' && <AchievementsMenu />}
-      {gameState === 'STORY_SELECT' && <StorySelect />}
-      {gameState === 'ARCADE_TOWER' && <ArcadeTower />}
-      {gameState === 'ADVENTURE_SELECT' && <AdventureSelect />}
-      {gameState === 'ADVENTURE_CHAR_SELECT' && <AdventureCharSelect />}
-      {gameState === 'MISSIONS' && <MissionsMenu />}
-      {gameState === 'EVENTS' && <EventsMenu />}
-      {gameState === 'BOSS_RUSH' && <BossRushMenu />}
-      {gameState === 'BOSS_SELECT' && <BossSelectMenu />}
-      {gameState === 'MIND_GAMES' && <MindGamesMenu />}
-      {gameState === 'DATING' && <DatingMenu />}
-      {gameState === 'DOCUMENTS' && <DocumentsMenu />}
-      {gameState === 'MINIGAMES' && <MinigamesMenu />}
-      {gameState === 'DIFFICULTY_SELECT' && (
-        <DifficultySelect 
-          onSelect={(d) => { engine.selectedDifficulty = d as any; setGameState('SELECT', 'vs_cpu'); }} 
-          onBack={() => setGameState('MENU')} 
-        />
+      {gameState === 'SELECT' && (
+        <ScreenTransition transitionKey="select" type="glitch" duration={300}>
+          <CharacterSelect />
+        </ScreenTransition>
       )}
-      {gameState === 'ADVENTURE_PLAY' && <AdventurePlay />}
-      {gameState === 'ONLINE' && <OnlineMenu />}
+      {gameState === 'SKIN_SELECT' && (
+        <ScreenTransition transitionKey="skin_select" type="fade" duration={250}>
+          <CharacterSelect />
+        </ScreenTransition>
+      )}
+      {gameState === 'STAGE_SELECT' && (
+        <ScreenTransition transitionKey="stage_select" type="slide-up" duration={350}>
+          <StageSelect />
+        </ScreenTransition>
+      )}
+      {gameState === 'PAUSED' && (
+        <ScreenTransition transitionKey="paused" type="fade" duration={200}>
+          <PauseMenu />
+        </ScreenTransition>
+      )}
+      {gameState === 'VERSUS_TYPE' && (
+        <ScreenTransition transitionKey="versus_type" type="slide-left" duration={300}>
+          <VersusTypeMenu />
+        </ScreenTransition>
+      )}
+      {gameState === 'SHOP' && (
+        <ScreenTransition transitionKey="shop" type="zoom" duration={350}>
+          <ShopMenu />
+        </ScreenTransition>
+      )}
+      {gameState === 'CONFIG' && (
+        <ScreenTransition transitionKey="config" type="slide-left" duration={300}>
+          <ConfigMenu />
+        </ScreenTransition>
+      )}
+      {gameState === 'CREATOR' && (
+        <ScreenTransition transitionKey="creator" type="zoom" duration={400}>
+          <CharacterCreator />
+        </ScreenTransition>
+      )}
+      {gameState === 'ACHIEVEMENTS' && (
+        <ScreenTransition transitionKey="achievements" type="slide-up" duration={350}>
+          <AchievementsMenu />
+        </ScreenTransition>
+      )}
+      {gameState === 'STORY_SELECT' && (
+        <ScreenTransition transitionKey="story" type="glitch" duration={300}>
+          <StorySelect />
+        </ScreenTransition>
+      )}
+      {gameState === 'ARCADE_TOWER' && (
+        <ScreenTransition transitionKey="arcade" type="slide-up" duration={400}>
+          <ArcadeTower />
+        </ScreenTransition>
+      )}
+      {gameState === 'ADVENTURE_SELECT' && (
+        <ScreenTransition transitionKey="adventure" type="zoom" duration={350}>
+          <AdventureSelect />
+        </ScreenTransition>
+      )}
+      {gameState === 'ADVENTURE_CHAR_SELECT' && (
+        <ScreenTransition transitionKey="adventure_char" type="glitch" duration={300}>
+          <AdventureCharSelect />
+        </ScreenTransition>
+      )}
+      {gameState === 'MISSIONS' && (
+        <ScreenTransition transitionKey="missions" type="slide-left" duration={300}>
+          <MissionsMenu />
+        </ScreenTransition>
+      )}
+      {gameState === 'EVENTS' && (
+        <ScreenTransition transitionKey="events" type="fade" duration={350}>
+          <EventsMenu />
+        </ScreenTransition>
+      )}
+      {gameState === 'BOSS_RUSH' && (
+        <ScreenTransition transitionKey="boss_rush" type="glitch" duration={350}>
+          <BossRushMenu />
+        </ScreenTransition>
+      )}
+      {gameState === 'BOSS_SELECT' && (
+        <ScreenTransition transitionKey="boss_select" type="zoom" duration={300}>
+          <BossSelectMenu />
+        </ScreenTransition>
+      )}
+      {gameState === 'MIND_GAMES' && (
+        <ScreenTransition transitionKey="mind_games" type="fade" duration={300}>
+          <MindGamesMenu />
+        </ScreenTransition>
+      )}
+      {gameState === 'DATING' && (
+        <ScreenTransition transitionKey="dating" type="slide-up" duration={350}>
+          <DatingMenu />
+        </ScreenTransition>
+      )}
+      {gameState === 'DOCUMENTS' && (
+        <ScreenTransition transitionKey="documents" type="slide-left" duration={300}>
+          <DocumentsMenu />
+        </ScreenTransition>
+      )}
+      {gameState === 'MINIGAMES' && (
+        <ScreenTransition transitionKey="minigames" type="zoom" duration={300}>
+          <MinigamesMenu />
+        </ScreenTransition>
+      )}
+      {gameState === 'DIFFICULTY_SELECT' && (
+        <ScreenTransition transitionKey="difficulty" type="fade" duration={300}>
+          <DifficultySelect 
+            onSelect={(d) => { engine.selectedDifficulty = d as any; setGameState('SELECT', 'vs_cpu'); }} 
+            onBack={() => setGameState('MENU')} 
+          />
+        </ScreenTransition>
+      )}
+      {gameState === 'ADVENTURE_PLAY' && (
+        <ScreenTransition transitionKey="adventure_play" type="glitch" duration={400}>
+          <AdventurePlay />
+        </ScreenTransition>
+      )}
+      {gameState === 'ONLINE' && (
+        <ScreenTransition transitionKey="online" type="slide-left" duration={300}>
+          <OnlineMenu />
+        </ScreenTransition>
+      )}
 
       {/* Cheat code notification */}
       {cheatNotification && (

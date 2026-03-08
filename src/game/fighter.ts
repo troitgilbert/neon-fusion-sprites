@@ -183,7 +183,16 @@ export class Fighter {
       }
     }
 
-    if (justPressed[c.hit]) this.attack('hit', game);
+    // Directional hits for Edowado
+    if (justPressed[c.hit]) {
+      if (this.charIdx === 0 && !this.customData && keys[c.down]) {
+        this.attack('hook_down', game);
+      } else if (this.charIdx === 0 && !this.customData && keys[c.up]) {
+        this.attack('uppercut', game);
+      } else {
+        this.attack('hit', game);
+      }
+    }
     if (justPressed[c.spec]) this.attack('special', game);
     if (justPressed[c.super]) this.attack('super', game);
     if (justPressed[c.ultra]) this.attack('ultra', game);
@@ -372,8 +381,57 @@ export class Fighter {
       }
     }
 
+    // === EDOWADO DIRECTIONAL ATTACKS ===
+    if (type === 'hook_down') {
+      // Downward hook - hits grounded opponents hard
+      this.handMode = 'slam'; this.handTimer = 15;
+      this.vx = this.side * 10;
+      if (dist < 65 && Math.abs(this.y - opp.y) < 50) {
+        const dmg = 1.5 * this.damageBoost;
+        opp.takeDamage(dmg, true);
+        game.trackStat('totalDamage', dmg);
+        opp.vx = this.side * 6; opp.vy = 5; // Push down
+        opp.stun = 18;
+        game.texts.push(new FloatingText(opp.x, opp.y - 30, 'GANCHO', '#ff8800'));
+        game.hitStop = 8; game.shake = 15;
+        game.spawnParticles(opp.x, opp.y + 10, '#ff8800', 18, 3);
+        game.spawnShockwave(opp.x, opp.y, '#ff8800');
+        game.particles.push(new PunchCircle(opp.x, opp.y, '#ff8800'));
+        playHitSound();
+      }
+      this.damageBoost = 1;
+      return;
+    }
+
+    if (type === 'uppercut') {
+      // Uppercut - launches enemy into the air
+      this.handMode = 'strike'; this.handTimer = 15;
+      this.vx = this.side * 8;
+      if (dist < 65 && Math.abs(this.y - opp.y) < 50) {
+        const dmg = 1.8 * this.damageBoost;
+        opp.takeDamage(dmg, true);
+        game.trackStat('totalDamage', dmg);
+        opp.vx = this.side * 8; opp.vy = -20; // Launch upward!
+        opp.stun = 20;
+        game.texts.push(new FloatingText(opp.x, opp.y - 40, 'UPPERCUT', '#ffff00'));
+        game.hitStop = 10; game.shake = 20;
+        game.spawnParticles(opp.x, opp.y - 10, '#ffff00', 25, 3);
+        game.spawnShockwave(opp.x, opp.y, '#ffff00');
+        game.particles.push(new PunchCircle(opp.x, opp.y, '#ffff00'));
+        playSuperSound();
+      }
+      this.damageBoost = 1;
+      return;
+    }
+
     if (type === 'hit') {
-      this.handMode = 'together'; this.handTimer = 12;
+      // Alternating hands for Edowado
+      if (this.charIdx === 0 && !this.customData) {
+        this.handMode = this.handOrder > 0 ? 'punch_left' : 'punch_right';
+      } else {
+        this.handMode = 'together';
+      }
+      this.handTimer = 12;
       const comboScale = Math.max(0.35, 1 - (this.comboHits * 0.08));
       const push = 8 + this.comboHits * 2.2;
       this.vx = this.side * 18;
@@ -577,7 +635,6 @@ export class Fighter {
 
   _drawEmote(ctx: CanvasRenderingContext2D) {
     ctx.save();
-    const progress = this.emoteTimer / 90;
     const fadeIn = Math.min(1, (90 - this.emoteTimer) / 15);
     const fadeOut = Math.min(1, this.emoteTimer / 15);
     ctx.globalAlpha = fadeIn * fadeOut;
@@ -601,13 +658,18 @@ export class Fighter {
     ctx.lineTo(ex, ey + 20);
     ctx.fill();
 
-    // Emote content
+    // Emote content - character specific
     ctx.font = "bold 14px sans-serif";
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
-    const emotes = ['😤', '💪', '🔥', '⭐'];
+    let emotes: string[];
+    if (this.charIdx === 0 && !this.customData) {
+      emotes = ['👨‍🍳', '👊', '🍖', '🩺']; // Chef, Puño, Comida, Doctor
+    } else {
+      emotes = ['😤', '💪', '🔥', '⭐'];
+    }
     ctx.fillStyle = '#000';
-    ctx.fillText(emotes[this.emoteType] || '😤', ex, ey);
+    ctx.fillText(emotes[this.emoteType] || emotes[0], ex, ey);
 
     ctx.restore();
   }
@@ -746,26 +808,66 @@ export class Fighter {
   _drawHands(ctx: CanvasRenderingContext2D, game: any) {
     let lx = this.x + 18, rx = this.x + 30;
     let ly = this.y + 8, ry = this.y + 8;
+    const isEdowado = this.charIdx === 0 && !this.customData;
+    const moving = Math.abs(this.vx) >= 2;
+    const running = this.isDashing;
 
     if (this.handMode === 'normal') {
-      // Edowado boxing idle stance
-      if (this.charIdx === 0 && !this.customData && Math.abs(this.vx) < 2 && this.isGrounded) {
-        // Boxing guard position - fists up near face, slight bob
-        const bob = Math.sin(this.handPhase * 0.8) * 2;
-        lx = this.x + 14; ly = this.y - 8 + bob;
-        rx = this.x + 28; ry = this.y - 4 - bob * 0.5;
+      if (isEdowado) {
+        if (this.isFlying) {
+          // Flying boxing guard - fists forward, slight float bob
+          const bob = Math.sin(this.handPhase * 0.6) * 3;
+          lx = this.x + 16; ly = this.y - 6 + bob;
+          rx = this.x + 30; ry = this.y - 2 - bob * 0.7;
+        } else if (running) {
+          // Running - arms pumping forward and back like a boxer
+          const pump = Math.sin(this.handPhase * 2) * 12;
+          lx = this.x + 20 + pump; ly = this.y - 2;
+          rx = this.x + 20 - pump; ry = this.y + 2;
+        } else if (moving) {
+          // Walking boxing stance - guard up, slight weave
+          const weave = Math.sin(this.handPhase * 1.2) * 3;
+          const stepBob = Math.sin(this.handPhase * 1.8) * 2;
+          lx = this.x + 14 + weave; ly = this.y - 7 + stepBob;
+          rx = this.x + 28 - weave; ry = this.y - 3 - stepBob;
+        } else {
+          // Idle boxing guard
+          const bob = Math.sin(this.handPhase * 0.8) * 2;
+          lx = this.x + 14; ly = this.y - 8 + bob;
+          rx = this.x + 28; ry = this.y - 4 - bob * 0.5;
+        }
       } else {
         const swing = Math.sin(this.handPhase) * 6;
         lx += swing; rx -= swing;
         ly += Math.cos(this.handPhase * 1.3) * 3;
         ry += Math.sin(this.handPhase * 1.1) * 3;
       }
+    } else if (this.handMode === 'punch_left') {
+      // Left hand punches forward, right stays in guard
+      lx = this.x + 36; ly = this.y - 2;
+      rx = this.x + 22; ry = this.y - 6;
+    } else if (this.handMode === 'punch_right') {
+      // Right hand punches forward, left stays in guard
+      lx = this.x + 16; ly = this.y - 6;
+      rx = this.x + 38; ry = this.y;
     } else if (this.handMode === 'together') {
       lx = this.x + 22; rx = this.x + 28; ly = this.y + 2; ry = this.y + 10;
     } else if (this.handMode === 'strike') {
-      rx += this.side * 18; ry += 6;
+      // For uppercut: one hand goes up
+      if (isEdowado) {
+        rx = this.x + 26; ry = this.y - 22; // Fist goes UP
+        lx = this.x + 16; ly = this.y - 4;
+      } else {
+        rx += this.side * 18; ry += 6;
+      }
     } else if (this.handMode === 'slam') {
-      ly = ry = this.y + 30;
+      // For hook_down: fist slams down
+      if (isEdowado) {
+        rx = this.x + 28; ry = this.y + 18; // Fist goes DOWN
+        lx = this.x + 16; ly = this.y - 4;
+      } else {
+        ly = ry = this.y + 30;
+      }
     } else if (this.handMode === 'block') {
       lx = this.x + 34; rx = this.x + 40; ly = this.y - 4; ry = this.y + 8;
     }

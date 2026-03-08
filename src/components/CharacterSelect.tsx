@@ -538,7 +538,7 @@ const BigPortrait: React.FC<{
       const sc = Math.min(W, H) / 55;
 
       ctx.save();
-      ctx.translate(W / 2 + sway, H * 0.5);
+      ctx.translate(W / 2 + sway, H * 0.43);
       ctx.scale(breathe, breathe);
 
       drawCharOnCanvas(ctx, 0, 0, skinC, hairC, clothC, pantsC, eyeC, handC, sc, t, facing);

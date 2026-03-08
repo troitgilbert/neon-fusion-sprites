@@ -1413,7 +1413,7 @@ const CharacterSelect: React.FC = () => {
                             clipPath: 'polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%)',
                             cursor: 'pointer', position: 'relative',
                             background: isFlashing
-                              ? `linear-gradient(135deg, #ffcc3370, #ffcc3330)`
+                              ? `linear-gradient(135deg, rgba(200,200,200,0.4), rgba(180,180,180,0.2))`
                               : isP1Selected
                                 ? 'linear-gradient(135deg, rgba(200,200,200,0.25), rgba(150,150,150,0.15))'
                                 : isHovered

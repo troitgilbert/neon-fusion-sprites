@@ -203,10 +203,10 @@ const MainMenu: React.FC = () => {
                     background: 'transparent',
                     display: 'flex', alignItems: 'center',
                     gap: 0,
-                    transform: active ? 'translateX(6px) scale(1.03)' : 'translateX(0) scale(1)',
-                    transition: 'all 0.2s cubic-bezier(0.16, 1, 0.3, 1)',
-                    animation: `mk9ItemIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) ${0.06 * i}s both`,
-                    filter: active ? 'brightness(1.2)' : 'brightness(0.7)',
+                    transform: active ? 'translateX(10px) scale(1.05)' : 'translateX(0) scale(1)',
+                    transition: 'all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1)',
+                    animation: `mk9ItemIn 0.55s cubic-bezier(0.16, 1, 0.3, 1) ${0.08 * i}s both`,
+                    filter: active ? 'brightness(1.3) drop-shadow(0 0 8px rgba(255,140,0,0.3))' : 'brightness(0.65)',
                   }}
                 >
                   {/* Number badge */}
@@ -227,7 +227,8 @@ const MainMenu: React.FC = () => {
                     boxShadow: active
                       ? '0 0 15px rgba(255,140,0,0.4), inset 0 1px 0 rgba(255,255,200,0.3), inset 0 -1px 0 rgba(0,0,0,0.3)'
                       : 'inset 0 1px 0 rgba(255,255,255,0.1), inset 0 -1px 0 rgba(0,0,0,0.3)',
-                    transition: 'all 0.2s',
+                    transition: 'all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1)',
+                    animation: active ? 'mk9NumberGlow 1.5s ease-in-out infinite' : 'none',
                   }}>
                     {num}
                   </div>
@@ -251,7 +252,8 @@ const MainMenu: React.FC = () => {
                       : 'inset 0 1px 0 rgba(255,255,255,0.03), inset 0 -1px 0 rgba(0,0,0,0.3)',
                     position: 'relative',
                     overflow: 'hidden',
-                    transition: 'all 0.2s',
+                    transition: 'all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1)',
+                    animation: active ? 'mk9ActivePulse 2s ease-in-out infinite' : 'none',
                   }}>
                     {/* Metallic sheen overlay */}
                     <div style={{
@@ -281,9 +283,9 @@ const MainMenu: React.FC = () => {
 
                     {/* Sweep animation on active */}
                     {active && <div style={{
-                      position: 'absolute', inset: 0,
-                      background: 'linear-gradient(90deg, transparent 20%, rgba(255,220,150,0.08) 45%, transparent 80%)',
-                      animation: 'sweepRight 2s ease-in-out infinite',
+                      position: 'absolute', top: 0, bottom: 0, width: '40%',
+                      background: 'linear-gradient(90deg, transparent, rgba(255,220,150,0.15), rgba(255,255,255,0.05), transparent)',
+                      animation: 'mk9SweepShine 2.5s ease-in-out infinite',
                       pointerEvents: 'none',
                     }} />}
 

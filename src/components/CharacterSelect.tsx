@@ -1079,27 +1079,27 @@ const CharacterSelect: React.FC = () => {
       {/* === MAIN AREA: Everything layered in one space === */}
       <div style={{ flex: 1, position: 'relative', zIndex: 2, minHeight: 0, overflow: 'hidden' }}>
 
-        {/* LAYER 1 (behind): Big portraits P1 left, P2 right - centered at bottom */}
+        {/* LAYER 1 (behind): Big portraits P1 left side, P2 right side */}
         <div style={{
-          position: 'absolute', bottom: 0, left: 0, right: 0, height: '55%', display: 'flex', zIndex: 1,
-          pointerEvents: 'none', justifyContent: 'center', alignItems: 'flex-end',
+          position: 'absolute', inset: 0, display: 'flex', justifyContent: 'space-between', zIndex: 1,
+          pointerEvents: 'none',
         }}>
-          <div style={{ width: 'clamp(120px, 18vw, 200px)', height: '100%', position: 'relative', marginRight: 'clamp(30px, 8vw, 120px)' }}>
+          <div style={{ width: 'clamp(140px, 22vw, 280px)', height: '100%', position: 'relative' }}>
             <BigPortrait char={displayP1 || null} customChar={p1Custom} color="#00ffff" facing={1} label="P1" />
-            <div style={{ position: 'absolute', bottom: 6, left: 0, right: 0, textAlign: 'center' }}>
+            <div style={{ position: 'absolute', bottom: 10, left: 0, right: 0, textAlign: 'center' }}>
               <div style={{
                 color: '#ffcc33', fontFamily: "'Orbitron', monospace",
-                fontSize: 'clamp(9px, 1.4vw, 14px)', fontWeight: 900,
+                fontSize: 'clamp(10px, 1.6vw, 16px)', fontWeight: 900,
                 letterSpacing: 2, textShadow: '0 0 15px #ffcc3360, 0 2px 8px rgba(0,0,0,0.8)',
               }}>{p1Name}</div>
             </div>
           </div>
-          <div style={{ width: 'clamp(120px, 18vw, 200px)', height: '100%', position: 'relative', marginLeft: 'clamp(30px, 8vw, 120px)' }}>
+          <div style={{ width: 'clamp(140px, 22vw, 280px)', height: '100%', position: 'relative' }}>
             <BigPortrait char={displayP2 || null} customChar={null} color="#ff8c00" facing={-1} label="P2" />
-            <div style={{ position: 'absolute', bottom: 6, left: 0, right: 0, textAlign: 'center' }}>
+            <div style={{ position: 'absolute', bottom: 10, left: 0, right: 0, textAlign: 'center' }}>
               <div style={{
                 color: '#ffcc33', fontFamily: "'Orbitron', monospace",
-                fontSize: 'clamp(9px, 1.4vw, 14px)', fontWeight: 900,
+                fontSize: 'clamp(10px, 1.6vw, 16px)', fontWeight: 900,
                 letterSpacing: 2, textShadow: '0 0 15px #ffcc3360, 0 2px 8px rgba(0,0,0,0.8)',
               }}>{p2Name}</div>
             </div>

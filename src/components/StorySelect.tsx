@@ -1,27 +1,45 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useGame } from '../game/GameContext';
 import { playSelectSound, playConfirmSound } from '../game/audio';
+
+interface StoryChar {
+  skinColor: string; hairColor: string; clothesColor: string;
+  pantsColor: string; shoesColor: string; handsColor: string; eyeColor: string;
+}
+
+const CHAR_EDOWADO: StoryChar = {
+  skinColor: '#f5deb3', hairColor: '#8B4513', clothesColor: '#b00000',
+  pantsColor: '#1a1a2e', shoesColor: '#333', handsColor: '#f5deb3', eyeColor: '#00ffff',
+};
+const CHAR_KAITO: StoryChar = {
+  skinColor: '#fff', hairColor: '#fff', clothesColor: '#222',
+  pantsColor: '#111', shoesColor: '#444', handsColor: '#fff', eyeColor: '#ffff00',
+};
 
 const STORIES = [
   {
     id: 'complete', name: 'HISTORIA COMPLETA', color: '#ffcc33', accent: '#ff8800',
     description: 'Vive la historia completa del universo. Todos los capítulos, todos los personajes, todos los secretos revelados en un épico viaje sin interrupciones.',
     icon: '⚔️', chapters: 24, difficulty: 'ÉPICA',
+    chars: [CHAR_EDOWADO, CHAR_KAITO],
   },
   {
     id: 'edowado', name: 'EDOWADO', color: '#00ddff', accent: '#0088cc',
     description: 'La historia de un guerrero que busca proteger lo que queda del universo. Su poder interior despierta ante las amenazas del vacío.',
-    icon: '🔥', chapters: 8, difficulty: 'DIFÍCIL', skinColor: '#8B4513', eyeColor: '#00ddff',
+    icon: '🔥', chapters: 8, difficulty: 'DIFÍCIL',
+    chars: [CHAR_EDOWADO],
   },
   {
     id: 'kaito', name: 'KAITO', color: '#ffee44', accent: '#ccaa00',
     description: 'Un luchador veloz con un pasado oscuro. Su camino lo lleva a confrontar la verdad sobre su propia existencia.',
-    icon: '⚡', chapters: 8, difficulty: 'NORMAL', skinColor: '#ffffff', eyeColor: '#ffee44',
+    icon: '⚡', chapters: 8, difficulty: 'NORMAL',
+    chars: [CHAR_KAITO],
   },
   {
     id: 'custom', name: 'PERSONALIZADO', color: '#dd44ff', accent: '#9900cc',
     description: 'Crea tu propia historia. Elige tu personaje personalizado y forja un camino único a través del universo.',
     icon: '✦', chapters: 6, difficulty: 'VARIABLE',
+    chars: null,
   },
 ];
 

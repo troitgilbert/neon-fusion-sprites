@@ -169,3 +169,23 @@
   from { opacity: 0; max-height: 0; transform: scaleY(0.8); }
   to { opacity: 1; max-height: 500px; transform: scaleY(1); }
 }
+
+@keyframes mk9OverlayIn {
+  0% { opacity: 0; }
+  100% { opacity: 1; }
+}
+
+@keyframes mk9BgFade {
+  0% { opacity: 0; backdrop-filter: blur(0px); }
+  100% { opacity: 1; backdrop-filter: blur(12px); }
+}
+
+@keyframes mk9TitleSlide {
+  0% { opacity: 0; transform: translateY(-20px) scale(0.92); }
+  100% { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@keyframes mk9ItemIn {
+  0% { opacity: 0; transform: translateY(12px); }
+  100% { opacity: 1; transform: translateY(0); }
+}

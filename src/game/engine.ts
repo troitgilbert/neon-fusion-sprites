@@ -221,10 +221,10 @@ export class GameEngine {
     this.selectedStage = bossId === 'lucifer' ? 'infierno' : bossId === 'dios_antiguo' ? 'cielo' : 'nada';
     
     this.round = 1;
-    this.p1 = new Fighter(1, playerCharIdx, 150, 1, CONTROLS.p1, false, this.selectedSkins.p1, playerCharIdx >= 100 ? this.getCustomChar(playerCharIdx) : null);
+    this.p1 = new Fighter(1, playerCharIdx, 200, 1, CONTROLS.p1, false, this.selectedSkins.p1, playerCharIdx >= 100 ? this.getCustomChar(playerCharIdx) : null);
     
     // Create boss fighter
-    this.p2 = new Fighter(2, 1, 490, -1, CONTROLS.p2, true, null, null);
+    this.p2 = new Fighter(2, 1, 760, -1, CONTROLS.p2, true, null, null);
     this.p2.data = { name: bossId.toUpperCase().replace('_', ' '), color: '#ffffff', eyes: '#ffff00', speed: 7, weight: 1 };
     
     if (bossId === 'big_bang') {
@@ -275,10 +275,10 @@ export class GameEngine {
 
   startMatch(c1: number, c2: number) {
     this.round = 1;
-    this.p1 = new Fighter(1, c1, 150, 1, CONTROLS.p1, false, this.selectedSkins.p1, c1 >= 100 ? this.getCustomChar(c1) : null);
+    this.p1 = new Fighter(1, c1, 200, 1, CONTROLS.p1, false, this.selectedSkins.p1, c1 >= 100 ? this.getCustomChar(c1) : null);
     const isAI = this.mode !== 'versus';
     if (this.mode === 'survival') { this.p1.rounds = 0; c2 = Math.random() > 0.5 ? 0 : 1; }
-    this.p2 = new Fighter(2, c2, 490, -1, CONTROLS.p2, isAI, this.selectedSkins.p2, c2 >= 100 ? this.getCustomChar(c2) : null);
+    this.p2 = new Fighter(2, c2, 760, -1, CONTROLS.p2, isAI, this.selectedSkins.p2, c2 >= 100 ? this.getCustomChar(c2) : null);
     
     // Apply difficulty
     const diff = DIFFICULTIES.find(d => d.id === this.selectedDifficulty) || DIFFICULTIES[1];
@@ -302,8 +302,8 @@ export class GameEngine {
 
   resetRound() {
     if (!this.p1 || !this.p2) return;
-    this.p1.x = 150; this.p1.y = 400; this.p1.vx = 0; this.p1.vy = 0;
-    this.p2.x = 490; this.p2.y = 400; this.p2.vx = 0; this.p2.vy = 0;
+    this.p1.x = 200; this.p1.y = 400; this.p1.vx = 0; this.p1.vy = 0;
+    this.p2.x = 760; this.p2.y = 400; this.p2.vx = 0; this.p2.vy = 0;
 
     if (this.mode === 'survival') {
       if (this.round > 1) this.p1.hp = Math.min(100, this.p1.hp + 20);

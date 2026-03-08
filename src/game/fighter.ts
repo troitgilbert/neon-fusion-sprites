@@ -57,6 +57,7 @@ export class Fighter {
     this.emoteTimer = 0; this.emoteType = 0;
     this._lastHitFrame = 0;
     this._hookCombo = 0;
+    this._pendingTemblor = false;
   }
 
   reset(x: number, side: number) {

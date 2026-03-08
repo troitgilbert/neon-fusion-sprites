@@ -1238,11 +1238,11 @@ const CharacterSelect: React.FC = () => {
         {/* Center title */}
         <div style={{ textAlign: 'center' }}>
           <div style={{
-            color: '#cccccc', fontFamily: "'Orbitron', monospace",
+            color: '#ffcc33', fontFamily: "'Orbitron', monospace",
             fontSize: 'clamp(14px, 2.5vw, 28px)', fontWeight: 900,
-            textShadow: '0 0 20px rgba(200,200,200,0.3), 0 0 40px rgba(150,150,150,0.1), 0 2px 4px rgba(0,0,0,0.8)',
+            textShadow: '0 0 20px #ffcc3350, 0 0 40px #ff880020, 0 2px 4px rgba(0,0,0,0.8)',
             letterSpacing: 8,
-            background: 'linear-gradient(180deg, #eeeeee 0%, #cccccc 40%, #888888 100%)',
+            background: 'linear-gradient(180deg, #ffee88 0%, #ffcc33 40%, #ff8800 100%)',
             WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text',
           }}>
             {isP2Turn ? '⬥ PLAYER SELECT ⬥' : '⬥ CHARACTER SELECT ⬥'}

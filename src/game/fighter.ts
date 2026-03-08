@@ -443,7 +443,7 @@ export class Fighter {
     if (this.isKaitoDemonio() && this.isIntangible) ctx.globalAlpha = 0.55;
 
     ctx.translate(this.x, this.y);
-    ctx.scale(this.side * this.squashX, this.squashY);
+    ctx.scale(this.side * this.squashX * 0.4, this.squashY * 0.4);
     ctx.rotate(this.lean * this.side);
 
     // Breathing

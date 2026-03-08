@@ -1191,25 +1191,8 @@ const CharacterSelect: React.FC = () => {
     );
   }
 
-  // Skin color overrides for preview
-  const SKIN_COLOR_MAP: Record<string, Record<string, Partial<CharRenderData>>> = {
-    'KAITO': {
-      'demonioBlanco': { skinColor: '#000000', clothesColor: '#1a1a1a', handsColor: '#000000' },
-      'demonioBlanco2': { clothesColor: '#1a1a1a', handsColor: '#444444' },
-    },
-    'EDOWADO': {},
-  };
 
-  // Skin selector is now inline — computed for portrait display
-  const skinPreviewChar = React.useMemo(() => {
-    if (!skinSelectFor) return null;
-    const renderCh = charRenderData[skinSelectFor.charIdx];
-    if (!previewSkinId) return renderCh;
-    const ch = CHAR_DATA[skinSelectFor.charIdx];
-    const overrides = SKIN_COLOR_MAP[ch.name]?.[previewSkinId];
-    if (!overrides) return renderCh;
-    return { ...renderCh, ...overrides };
-  }, [skinSelectFor, previewSkinId, charRenderData]);
+
 
   // Get current selections
   const p1Char = engine.p1Choice !== null && engine.p1Choice < 100 ? charRenderData[engine.p1Choice] : null;

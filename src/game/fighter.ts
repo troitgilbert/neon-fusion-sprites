@@ -41,7 +41,7 @@ export class Fighter {
     this.isBlocking = false; this.blockCooldown = 0;
     this.isDodging = false; this.dodgeCooldown = 0;
     this.side = side; this.controls = controls; this.isAI = isAI;
-    this.hp = 100; this.energy = 0; this.rounds = 0;
+    this.hp = 70; this.energy = 0; this.rounds = 0;
     this.isFlying = false; this.isGrounded = true;
     this.stun = 0; this.isDashing = false; this.comboTimer = 0;
     this.squashX = 1; this.squashY = 1; this.lean = 0; this.animTimer = 0;

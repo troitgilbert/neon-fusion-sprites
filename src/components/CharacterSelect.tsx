@@ -1533,11 +1533,11 @@ const CharacterSelect: React.FC = () => {
                 boxShadow: '0 0 15px rgba(255,204,51,0.1)',
               }}>
                 <span style={{
-                  color: '#ffcc33', fontFamily: "'Orbitron', monospace",
-                  fontSize: 'clamp(13px, 1.8vw, 18px)',
+                  color: '#ffdd44', fontFamily: "'Orbitron', monospace",
+                  fontSize: 'clamp(14px, 2vw, 20px)',
                   letterSpacing: 6, fontWeight: 900,
-                  textShadow: '0 0 15px #ffcc3360, 0 0 30px #ff880030',
-                  background: 'linear-gradient(180deg, #ffee88, #ffcc33, #ff8800)',
+                  textShadow: '0 0 20px #ffcc33, 0 0 40px #ff8800aa',
+                  background: 'linear-gradient(180deg, #ffffff, #ffee88, #ffcc33)',
                   WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text',
                 }}>
                   {charRenderData[hoveredIdx].name}

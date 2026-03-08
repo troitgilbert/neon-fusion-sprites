@@ -73,18 +73,15 @@ const PauseMenu: React.FC = () => {
   const p1Char = engine.p1Choice !== null && engine.p1Choice < CHAR_DATA.length ? CHAR_DATA[engine.p1Choice] : null;
   const p2Char = engine.p2Choice !== null && engine.p2Choice < CHAR_DATA.length ? CHAR_DATA[engine.p2Choice] : null;
 
+  const findAbility = (abilities: typeof SPECIAL_ABILITIES, name: string) =>
+    abilities.find(a => a.source.toLowerCase() === name.toLowerCase() || a.source.toLowerCase().includes(name.slice(0,4).toLowerCase()));
+
   const charMoves = [];
   if (p1Char) {
-    const spec = SPECIAL_ABILITIES.find(a => a.source === p1Char.name || a.source.includes(p1Char.name.slice(0,4)));
-    const sup = SUPER_ABILITIES.find(a => a.source === p1Char.name || a.source.includes(p1Char.name.slice(0,4)));
-    const ultra = ULTRA_ABILITIES.find(a => a.source === p1Char.name || a.source.includes(p1Char.name.slice(0,4)));
-    charMoves.push({ char: p1Char.name, spec, sup, ultra, eyeColor: p1Char.eyes });
+    charMoves.push({ char: p1Char.name, spec: findAbility(SPECIAL_ABILITIES, p1Char.name), sup: findAbility(SUPER_ABILITIES, p1Char.name), ultra: findAbility(ULTRA_ABILITIES, p1Char.name), eyeColor: p1Char.eyes });
   }
   if (p2Char && p2Char.name !== p1Char?.name) {
-    const spec = SPECIAL_ABILITIES.find(a => a.source === p2Char.name || a.source.includes(p2Char.name.slice(0,4)));
-    const sup = SUPER_ABILITIES.find(a => a.source === p2Char.name || a.source.includes(p2Char.name.slice(0,4)));
-    const ultra = ULTRA_ABILITIES.find(a => a.source === p2Char.name || a.source.includes(p2Char.name.slice(0,4)));
-    charMoves.push({ char: p2Char.name, spec, sup, ultra, eyeColor: p2Char.eyes });
+    charMoves.push({ char: p2Char.name, spec: findAbility(SPECIAL_ABILITIES, p2Char.name), sup: findAbility(SUPER_ABILITIES, p2Char.name), ultra: findAbility(ULTRA_ABILITIES, p2Char.name), eyeColor: p2Char.eyes });
   }
 
   if (showMoves) {

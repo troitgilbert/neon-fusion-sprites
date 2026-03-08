@@ -437,13 +437,13 @@ export class Fighter {
     // Block shield
     if (this.isBlocking) {
       ctx.strokeStyle = '#ffffff'; ctx.lineWidth = 3;
-      ctx.beginPath(); ctx.arc(this.x, this.y, 32, 0, Math.PI * 2); ctx.stroke();
+      ctx.beginPath(); ctx.arc(this.x, this.y, 32 * CHAR_SCALE, 0, Math.PI * 2); ctx.stroke();
     }
     if (this.isDodging) ctx.globalAlpha = 0.5;
     if (this.isKaitoDemonio() && this.isIntangible) ctx.globalAlpha = 0.55;
 
     ctx.translate(this.x, this.y);
-    ctx.scale(this.side * this.squashX, this.squashY);
+    ctx.scale(this.side * this.squashX * CHAR_SCALE, this.squashY * CHAR_SCALE);
     ctx.rotate(this.lean * this.side);
 
     // Breathing

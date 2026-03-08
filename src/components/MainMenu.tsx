@@ -217,12 +217,13 @@ const MainMenu: React.FC = () => {
 
       {/* ══════ CENTERED MENU ══════ */}
       <div style={{
-        position: 'absolute', left: '50%', top: '50%',
-        transform: 'translate(-50%, -45%)',
+        position: 'absolute', left: '50%', top: 'clamp(140px, 22vh, 220px)', bottom: 'clamp(50px, 8vh, 80px)',
+        transform: 'translateX(-50%)',
         display: 'flex', flexDirection: 'column', alignItems: 'center',
+        justifyContent: 'flex-start',
+        overflowY: 'auto', scrollbarWidth: 'none',
         opacity: phase >= 2 ? 1 : 0,
         transition: 'opacity 0.8s ease 0.2s',
-        marginTop: 'clamp(20px, 4vh, 50px)',
       }}>
         {menuItems.map((item, i) => {
           const active = isActive(i);

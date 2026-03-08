@@ -1235,21 +1235,28 @@ const CharacterSelect: React.FC = () => {
           }}>PLAYER 1</span>
         </div>
 
-        {/* Center title */}
-        <div style={{ textAlign: 'center' }}>
+        {/* Center title - HD golden */}
+        <div style={{ textAlign: 'center', position: 'relative' }}>
           <div style={{
-            color: '#ffcc33', fontFamily: "'Orbitron', monospace",
-            fontSize: 'clamp(14px, 2.5vw, 28px)', fontWeight: 900,
-            textShadow: '0 0 20px #ffcc3350, 0 0 40px #ff880020, 0 2px 4px rgba(0,0,0,0.8)',
-            letterSpacing: 8,
-            background: 'linear-gradient(180deg, #ffee88 0%, #ffcc33 40%, #ff8800 100%)',
+            fontFamily: "'Orbitron', monospace",
+            fontSize: 'clamp(16px, 3vw, 34px)', fontWeight: 900,
+            letterSpacing: 10,
+            background: 'linear-gradient(180deg, #fff8e0 0%, #ffee88 15%, #ffcc33 35%, #ff9900 55%, #cc7700 75%, #ffcc33 90%, #ffee88 100%)',
             WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text',
+            textShadow: 'none',
+            filter: 'drop-shadow(0 0 8px rgba(255,204,51,0.4)) drop-shadow(0 2px 0 rgba(0,0,0,0.9)) drop-shadow(0 4px 8px rgba(0,0,0,0.6))',
           }}>
-            {isP2Turn ? '⬥ PLAYER SELECT ⬥' : '⬥ CHARACTER SELECT ⬥'}
+            {isP2Turn ? 'PLAYER SELECT' : 'CHARACTER SELECT'}
           </div>
+          {/* Metallic underline accent */}
           <div style={{
-            color: 'rgba(255,204,51,0.3)', fontFamily: "'Orbitron', monospace",
-            fontSize: 'clamp(6px, 0.7vw, 8px)', letterSpacing: 6, marginTop: 2,
+            margin: '4px auto 0', width: 'clamp(120px, 20vw, 250px)', height: 2,
+            background: 'linear-gradient(90deg, transparent, #ffcc33 20%, #ffee88 50%, #ffcc33 80%, transparent)',
+            boxShadow: '0 0 8px rgba(255,204,51,0.3)',
+          }} />
+          <div style={{
+            color: 'rgba(255,204,51,0.25)', fontFamily: "'Orbitron', monospace",
+            fontSize: 'clamp(6px, 0.7vw, 8px)', letterSpacing: 6, marginTop: 3,
           }}>CHOOSE YOUR FIGHTER</div>
         </div>
 

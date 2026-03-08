@@ -1294,15 +1294,6 @@ const CharacterSelect: React.FC = () => {
         }}>
           {/* P1 Portrait with decorative frame */}
           <div style={{ width: 'clamp(220px, 32vw, 420px)', height: 'clamp(220px, 32vw, 420px)', position: 'relative' }}>
-            {/* Decorative corner accents */}
-            <div style={{ position: 'absolute', top: -2, left: -2, width: 20, height: 20, borderTop: '2px solid #00ffff40', borderLeft: '2px solid #00ffff40', zIndex: 2 }} />
-            <div style={{ position: 'absolute', bottom: -2, right: -2, width: 20, height: 20, borderBottom: '2px solid #00ffff40', borderRight: '2px solid #00ffff40', zIndex: 2 }} />
-            {/* Portrait bg glow */}
-            <div style={{
-              position: 'absolute', inset: 0,
-              background: 'radial-gradient(circle at center, rgba(0,200,255,0.06) 0%, transparent 70%)',
-              border: '1px solid rgba(0,255,255,0.08)',
-            }} />
             <BigPortrait char={displayP1 || null} customChar={p1Custom} color="#00ffff" facing={1} label="P1" />
             {/* Name plate */}
             <div style={{
@@ -1330,13 +1321,6 @@ const CharacterSelect: React.FC = () => {
 
           {/* P2 Portrait with decorative frame */}
           <div style={{ width: 'clamp(220px, 32vw, 420px)', height: 'clamp(220px, 32vw, 420px)', position: 'relative' }}>
-            <div style={{ position: 'absolute', top: -2, right: -2, width: 20, height: 20, borderTop: '2px solid #ff8c0040', borderRight: '2px solid #ff8c0040', zIndex: 2 }} />
-            <div style={{ position: 'absolute', bottom: -2, left: -2, width: 20, height: 20, borderBottom: '2px solid #ff8c0040', borderLeft: '2px solid #ff8c0040', zIndex: 2 }} />
-            <div style={{
-              position: 'absolute', inset: 0,
-              background: 'radial-gradient(circle at center, rgba(255,140,0,0.06) 0%, transparent 70%)',
-              border: '1px solid rgba(255,140,0,0.08)',
-            }} />
             <BigPortrait char={displayP2 || null} customChar={null} color="#ff8c00" facing={-1} label="P2" />
             <div style={{
               position: 'absolute', bottom: 8, left: '10%', right: '10%', textAlign: 'center',
@@ -1433,8 +1417,8 @@ const CharacterSelect: React.FC = () => {
                               : isP1Selected
                                 ? 'linear-gradient(135deg, rgba(255,204,51,0.25), rgba(255,136,0,0.15))'
                                 : isHovered
-                                  ? `linear-gradient(135deg, rgba(40,35,20,0.95), rgba(30,25,15,0.9))`
-                                  : 'linear-gradient(135deg, rgba(15,14,30,0.55), rgba(10,8,22,0.6))',
+                                  ? `linear-gradient(135deg, rgba(50,42,15,0.95), rgba(35,30,10,0.92))`
+                                  : 'linear-gradient(135deg, rgba(10,10,25,0.92), rgba(8,6,18,0.95))',
                             display: 'flex', alignItems: 'center', justifyContent: 'center',
                             transition: 'all 0.2s ease-out',
                             transform: isHovered ? 'scale(1.18)' : 'scale(1)',
@@ -1474,8 +1458,8 @@ const CharacterSelect: React.FC = () => {
                             clipPath: 'polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%)',
                             cursor: 'pointer',
                             background: isCursor
-                              ? 'linear-gradient(135deg, rgba(40,35,20,0.95), rgba(30,25,15,0.9))'
-                              : 'linear-gradient(135deg, rgba(15,14,30,0.55), rgba(10,8,22,0.6))',
+                              ? 'linear-gradient(135deg, rgba(50,42,15,0.95), rgba(35,30,10,0.92))'
+                              : 'linear-gradient(135deg, rgba(10,10,25,0.92), rgba(8,6,18,0.95))',
                             display: 'flex', alignItems: 'center', justifyContent: 'center',
                             transition: 'all 0.2s',
                             transform: isCursor ? 'scale(1.18)' : 'scale(1)',
@@ -1497,8 +1481,8 @@ const CharacterSelect: React.FC = () => {
                           clipPath: 'polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%)',
                           cursor: 'pointer',
                           background: isCursor
-                            ? 'linear-gradient(135deg, rgba(40,35,20,0.95), rgba(30,25,15,0.9))'
-                            : 'linear-gradient(135deg, rgba(15,14,30,0.55), rgba(10,8,22,0.6))',
+                            ? 'linear-gradient(135deg, rgba(50,42,15,0.95), rgba(35,30,10,0.92))'
+                            : 'linear-gradient(135deg, rgba(10,10,25,0.92), rgba(8,6,18,0.95))',
                           display: 'flex', alignItems: 'center', justifyContent: 'center',
                           transition: 'all 0.2s',
                           transform: isCursor ? 'scale(1.18)' : 'scale(1)',
@@ -1522,10 +1506,10 @@ const CharacterSelect: React.FC = () => {
           }}>
             {hoveredIdx !== null && hoveredIdx >= 0 && hoveredIdx < charRenderData.length ? (
               <div style={{
-                padding: '4px 20px',
-                background: 'linear-gradient(90deg, transparent, rgba(255,204,51,0.08) 20%, rgba(255,204,51,0.12) 50%, rgba(255,204,51,0.08) 80%, transparent)',
-                borderTop: '1px solid rgba(255,204,51,0.2)',
-                borderBottom: '1px solid rgba(255,204,51,0.2)',
+                padding: '5px 25px',
+                background: 'linear-gradient(90deg, transparent, rgba(10,8,20,0.85) 15%, rgba(10,8,20,0.9) 50%, rgba(10,8,20,0.85) 85%, transparent)',
+                borderTop: '2px solid rgba(255,204,51,0.35)',
+                borderBottom: '2px solid rgba(255,204,51,0.35)',
               }}>
                 <span style={{
                   color: '#ffcc33', fontFamily: "'Orbitron', monospace",

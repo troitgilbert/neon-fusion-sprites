@@ -1255,7 +1255,7 @@ const CharacterSelect: React.FC = () => {
             boxShadow: '0 0 8px rgba(255,204,51,0.3)',
           }} />
           <div style={{
-            color: 'rgba(255,204,51,0.25)', fontFamily: "'Orbitron', monospace",
+            color: 'rgba(255,204,51,0.6)', fontFamily: "'Orbitron', monospace",
             fontSize: 'clamp(6px, 0.7vw, 8px)', letterSpacing: 6, marginTop: 3,
           }}>CHOOSE YOUR FIGHTER</div>
         </div>

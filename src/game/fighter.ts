@@ -808,26 +808,66 @@ export class Fighter {
   _drawHands(ctx: CanvasRenderingContext2D, game: any) {
     let lx = this.x + 18, rx = this.x + 30;
     let ly = this.y + 8, ry = this.y + 8;
+    const isEdowado = this.charIdx === 0 && !this.customData;
+    const moving = Math.abs(this.vx) >= 2;
+    const running = this.isDashing;
 
     if (this.handMode === 'normal') {
-      // Edowado boxing idle stance
-      if (this.charIdx === 0 && !this.customData && Math.abs(this.vx) < 2 && this.isGrounded) {
-        // Boxing guard position - fists up near face, slight bob
-        const bob = Math.sin(this.handPhase * 0.8) * 2;
-        lx = this.x + 14; ly = this.y - 8 + bob;
-        rx = this.x + 28; ry = this.y - 4 - bob * 0.5;
+      if (isEdowado) {
+        if (this.isFlying) {
+          // Flying boxing guard - fists forward, slight float bob
+          const bob = Math.sin(this.handPhase * 0.6) * 3;
+          lx = this.x + 16; ly = this.y - 6 + bob;
+          rx = this.x + 30; ry = this.y - 2 - bob * 0.7;
+        } else if (running) {
+          // Running - arms pumping forward and back like a boxer
+          const pump = Math.sin(this.handPhase * 2) * 12;
+          lx = this.x + 20 + pump; ly = this.y - 2;
+          rx = this.x + 20 - pump; ry = this.y + 2;
+        } else if (moving) {
+          // Walking boxing stance - guard up, slight weave
+          const weave = Math.sin(this.handPhase * 1.2) * 3;
+          const stepBob = Math.sin(this.handPhase * 1.8) * 2;
+          lx = this.x + 14 + weave; ly = this.y - 7 + stepBob;
+          rx = this.x + 28 - weave; ry = this.y - 3 - stepBob;
+        } else {
+          // Idle boxing guard
+          const bob = Math.sin(this.handPhase * 0.8) * 2;
+          lx = this.x + 14; ly = this.y - 8 + bob;
+          rx = this.x + 28; ry = this.y - 4 - bob * 0.5;
+        }
       } else {
         const swing = Math.sin(this.handPhase) * 6;
         lx += swing; rx -= swing;
         ly += Math.cos(this.handPhase * 1.3) * 3;
         ry += Math.sin(this.handPhase * 1.1) * 3;
       }
+    } else if (this.handMode === 'punch_left') {
+      // Left hand punches forward, right stays in guard
+      lx = this.x + 36; ly = this.y - 2;
+      rx = this.x + 22; ry = this.y - 6;
+    } else if (this.handMode === 'punch_right') {
+      // Right hand punches forward, left stays in guard
+      lx = this.x + 16; ly = this.y - 6;
+      rx = this.x + 38; ry = this.y;
     } else if (this.handMode === 'together') {
       lx = this.x + 22; rx = this.x + 28; ly = this.y + 2; ry = this.y + 10;
     } else if (this.handMode === 'strike') {
-      rx += this.side * 18; ry += 6;
+      // For uppercut: one hand goes up
+      if (isEdowado) {
+        rx = this.x + 26; ry = this.y - 22; // Fist goes UP
+        lx = this.x + 16; ly = this.y - 4;
+      } else {
+        rx += this.side * 18; ry += 6;
+      }
     } else if (this.handMode === 'slam') {
-      ly = ry = this.y + 30;
+      // For hook_down: fist slams down
+      if (isEdowado) {
+        rx = this.x + 28; ry = this.y + 18; // Fist goes DOWN
+        lx = this.x + 16; ly = this.y - 4;
+      } else {
+        ly = ry = this.y + 30;
+      }
     } else if (this.handMode === 'block') {
       lx = this.x + 34; rx = this.x + 40; ly = this.y - 4; ry = this.y + 8;
     }

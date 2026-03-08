@@ -321,43 +321,83 @@ const MainMenu: React.FC = () => {
         return (
           <div style={{
             position: 'absolute', inset: 0, zIndex: 20,
-            background: 'rgba(0,0,0,0.92)',
-            backdropFilter: 'blur(8px)',
             display: 'flex', flexDirection: 'column',
             alignItems: 'center', justifyContent: 'center',
-            animation: 'mk9SubSlide 0.3s ease-out',
+            animation: 'mk9OverlayIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards',
           }}>
+            {/* Dark backdrop with radial fire glow */}
+            <div style={{
+              position: 'absolute', inset: 0,
+              background: 'radial-gradient(ellipse at center 70%, rgba(80,15,0,0.15) 0%, rgba(0,0,0,0.95) 60%, rgba(0,0,0,0.98) 100%)',
+              backdropFilter: 'blur(12px)',
+              animation: 'mk9BgFade 0.4s ease-out forwards',
+            }} />
+
+            {/* Decorative vertical lines */}
+            <div style={{
+              position: 'absolute', left: 'clamp(30px, 8vw, 100px)', top: '10%', bottom: '10%',
+              width: 1, background: 'linear-gradient(180deg, transparent, rgba(200,80,0,0.15), rgba(255,140,0,0.08), transparent)',
+            }} />
+            <div style={{
+              position: 'absolute', right: 'clamp(30px, 8vw, 100px)', top: '10%', bottom: '10%',
+              width: 1, background: 'linear-gradient(180deg, transparent, rgba(200,80,0,0.15), rgba(255,140,0,0.08), transparent)',
+            }} />
+
+            {/* Horizontal accent lines */}
+            <div style={{
+              position: 'absolute', top: 'clamp(40px, 8vh, 80px)', left: '15%', right: '15%',
+              height: 1, background: 'linear-gradient(90deg, transparent, rgba(200,80,0,0.2), rgba(255,180,50,0.1), rgba(200,80,0,0.2), transparent)',
+            }} />
+            <div style={{
+              position: 'absolute', bottom: 'clamp(40px, 8vh, 80px)', left: '15%', right: '15%',
+              height: 1, background: 'linear-gradient(90deg, transparent, rgba(200,80,0,0.2), rgba(255,180,50,0.1), rgba(200,80,0,0.2), transparent)',
+            }} />
+
             {/* Submenu title */}
-            <div style={{ marginBottom: 'clamp(16px, 3vh, 30px)', textAlign: 'center' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 12, justifyContent: 'center', marginBottom: 8 }}>
-                <div style={{ width: 40, height: 1, background: 'linear-gradient(90deg, transparent, rgba(200,80,0,0.5))' }} />
+            <div style={{
+              position: 'relative', zIndex: 1,
+              marginBottom: 'clamp(20px, 4vh, 40px)', textAlign: 'center',
+              animation: 'mk9TitleSlide 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.1s both',
+            }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 14, justifyContent: 'center', marginBottom: 10 }}>
+                <div style={{ width: 'clamp(30px, 6vw, 60px)', height: 1, background: 'linear-gradient(90deg, transparent, rgba(255,180,50,0.5))' }} />
+                <div style={{ width: 6, height: 6, border: '1px solid rgba(255,180,50,0.3)', transform: 'rotate(45deg)' }} />
                 <span style={{
-                  fontSize: 'clamp(6px, 0.7vw, 8px)', letterSpacing: 5,
-                  color: 'rgba(200,100,30,0.5)', fontFamily: "'Orbitron', monospace",
+                  fontSize: 'clamp(7px, 0.8vw, 9px)', letterSpacing: 6,
+                  color: 'rgba(200,130,50,0.5)', fontFamily: "'Orbitron', monospace",
                 }}>SELECCIONA</span>
-                <div style={{ width: 40, height: 1, background: 'linear-gradient(270deg, transparent, rgba(200,80,0,0.5))' }} />
+                <div style={{ width: 6, height: 6, border: '1px solid rgba(255,180,50,0.3)', transform: 'rotate(45deg)' }} />
+                <div style={{ width: 'clamp(30px, 6vw, 60px)', height: 1, background: 'linear-gradient(270deg, transparent, rgba(255,180,50,0.5))' }} />
               </div>
               <h2 style={{
-                fontSize: 'clamp(18px, 2.5vw, 32px)', fontWeight: 900,
-                fontFamily: "'Orbitron', serif", letterSpacing: 5,
+                fontSize: 'clamp(22px, 3.5vw, 44px)', fontWeight: 900,
+                fontFamily: "'Orbitron', serif", letterSpacing: 'clamp(4px, 0.8vw, 10px)',
                 color: '#e8d5a3',
-                textShadow: '0 0 15px rgba(255,80,0,0.5), 0 0 40px rgba(200,30,0,0.2), 0 2px 0 #8b6914',
+                textShadow: '0 0 20px rgba(255,80,0,0.6), 0 0 50px rgba(200,30,0,0.25), 0 2px 0 #8b6914, 0 4px 6px rgba(0,0,0,0.7)',
               }}>
                 {parentItem.label}
               </h2>
-              <div style={{ width: 'clamp(60px, 10vw, 120px)', height: 2, margin: '8px auto 0', background: 'linear-gradient(90deg, transparent, #d4a037, transparent)' }} />
+              <div style={{
+                width: 'clamp(80px, 14vw, 160px)', height: 2, margin: '10px auto 0',
+                background: 'linear-gradient(90deg, transparent, #d4a037 30%, #ff8800 50%, #d4a037 70%, transparent)',
+                boxShadow: '0 0 10px rgba(255,140,0,0.2)',
+              }} />
             </div>
 
             {/* Submenu items */}
             <div style={{
+              position: 'relative', zIndex: 1,
               display: 'flex', flexDirection: 'column', alignItems: 'center',
-              maxHeight: '50vh', overflowY: 'auto', scrollbarWidth: 'none',
-              width: 'clamp(280px, 35vw, 440px)',
+              maxHeight: '48vh', overflowY: 'auto', scrollbarWidth: 'none',
+              width: 'clamp(300px, 38vw, 480px)',
+              padding: '8px 0',
             }}>
               {subs.map((sub, si) => {
                 const sa = subIndex === si;
                 const isBoss = sub.className === 'boss-rush';
                 const isMystery = sub.className === 'mystery';
+                const accentColor = isBoss ? [255, 50, 50] : [255, 140, 30];
+                const delay = si * 0.04;
                 return (
                   <button key={sub.label}
                     onClick={() => sub.action()}
@@ -372,9 +412,9 @@ const MainMenu: React.FC = () => {
                     style={{
                       position: 'relative',
                       width: '100%',
-                      padding: 'clamp(8px, 1vh, 13px) 20px',
-                      margin: '1px 0',
-                      fontSize: 'clamp(11px, 1.3vw, 16px)',
+                      padding: 'clamp(9px, 1.2vh, 14px) 24px',
+                      margin: '2px 0',
+                      fontSize: 'clamp(12px, 1.3vw, 16px)',
                       textAlign: 'center',
                       fontFamily: "'Orbitron', serif",
                       fontWeight: sa ? 800 : 500,
@@ -382,27 +422,51 @@ const MainMenu: React.FC = () => {
                       cursor: 'pointer', border: 'none', borderRadius: 0,
                       overflow: 'hidden',
                       color: isBoss
-                        ? (sa ? '#ff4444' : '#8b3030')
+                        ? (sa ? '#ff5555' : 'rgba(180,60,60,0.5)')
                         : isMystery
-                          ? (sa ? '#555' : '#222')
-                          : (sa ? '#fff' : 'rgba(180,160,130,0.5)'),
+                          ? (sa ? '#555' : '#1a1a1a')
+                          : (sa ? '#fff' : 'rgba(180,160,130,0.45)'),
                       background: sa
-                        ? (isBoss
-                          ? 'linear-gradient(90deg, transparent, rgba(200,0,0,0.2) 20%, rgba(255,0,0,0.1) 50%, rgba(200,0,0,0.2) 80%, transparent)'
-                          : 'linear-gradient(90deg, transparent, rgba(200,40,0,0.25) 20%, rgba(255,120,0,0.15) 50%, rgba(200,40,0,0.25) 80%, transparent)')
+                        ? `linear-gradient(90deg, transparent 5%, rgba(${accentColor.join(',')},0.12) 25%, rgba(${accentColor.join(',')},0.18) 50%, rgba(${accentColor.join(',')},0.12) 75%, transparent 95%)`
                         : 'transparent',
                       textShadow: sa
-                        ? (isBoss
-                          ? '0 0 20px rgba(255,0,0,0.6), 0 0 40px rgba(200,0,0,0.3)'
-                          : '0 0 15px rgba(255,100,0,0.6), 0 0 30px rgba(200,30,0,0.25)')
-                        : 'none',
+                        ? `0 0 18px rgba(${accentColor.join(',')},0.65), 0 0 35px rgba(${accentColor.join(',')},0.2), 0 1px 2px rgba(0,0,0,0.6)`
+                        : '0 1px 2px rgba(0,0,0,0.3)',
                       transform: sa ? 'scale(1.06)' : 'scale(1)',
                       transition: 'all 0.2s cubic-bezier(0.16, 1, 0.3, 1)',
+                      animation: `mk9ItemIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) ${0.15 + delay}s both`,
                     }}
                   >
+                    {/* Active decorations */}
                     {sa && <>
-                      <div style={{ position: 'absolute', top: 0, left: '15%', right: '15%', height: 1, background: `linear-gradient(90deg, transparent, ${isBoss ? 'rgba(255,50,50,0.6)' : 'rgba(255,140,30,0.6)'}, transparent)` }} />
-                      <div style={{ position: 'absolute', bottom: 0, left: '15%', right: '15%', height: 1, background: `linear-gradient(90deg, transparent, ${isBoss ? 'rgba(255,50,50,0.6)' : 'rgba(255,140,30,0.6)'}, transparent)` }} />
+                      <div style={{
+                        position: 'absolute', top: 0, left: '8%', right: '8%', height: 1,
+                        background: `linear-gradient(90deg, transparent, rgba(${accentColor.join(',')},0.7), transparent)`,
+                        boxShadow: `0 0 6px rgba(${accentColor.join(',')},0.3)`,
+                      }} />
+                      <div style={{
+                        position: 'absolute', bottom: 0, left: '8%', right: '8%', height: 1,
+                        background: `linear-gradient(90deg, transparent, rgba(${accentColor.join(',')},0.7), transparent)`,
+                        boxShadow: `0 0 6px rgba(${accentColor.join(',')},0.3)`,
+                      }} />
+                      {/* Left/right diamonds */}
+                      <div style={{
+                        position: 'absolute', left: 'clamp(8px, 2vw, 20px)', top: '50%', transform: 'translateY(-50%) rotate(45deg)',
+                        width: 5, height: 5, background: `rgba(${accentColor.join(',')},0.6)`,
+                        boxShadow: `0 0 8px rgba(${accentColor.join(',')},0.4)`,
+                      }} />
+                      <div style={{
+                        position: 'absolute', right: 'clamp(8px, 2vw, 20px)', top: '50%', transform: 'translateY(-50%) rotate(45deg)',
+                        width: 5, height: 5, background: `rgba(${accentColor.join(',')},0.6)`,
+                        boxShadow: `0 0 8px rgba(${accentColor.join(',')},0.4)`,
+                      }} />
+                      {/* Sweep */}
+                      <div style={{
+                        position: 'absolute', inset: 0,
+                        background: 'linear-gradient(90deg, transparent 30%, rgba(255,220,150,0.04) 50%, transparent 70%)',
+                        animation: 'sweepRight 2s ease-in-out infinite',
+                        pointerEvents: 'none',
+                      }} />
                     </>}
                     {isMystery
                       ? <span style={{ animation: 'mysteryFlicker 2s infinite' }}>{sub.label}</span>
@@ -412,23 +476,56 @@ const MainMenu: React.FC = () => {
               })}
             </div>
 
+            {/* Description in submenu */}
+            <div style={{
+              position: 'relative', zIndex: 1,
+              marginTop: 'clamp(12px, 2vh, 24px)',
+              width: 'clamp(240px, 30vw, 380px)',
+              textAlign: 'center',
+              animation: 'mk9ItemIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) 0.4s both',
+            }}>
+              <div style={{ width: '60%', height: 1, margin: '0 auto 10px', background: 'linear-gradient(90deg, transparent, rgba(200,80,0,0.2), transparent)' }} />
+              <p style={{
+                fontSize: 'clamp(8px, 0.85vw, 11px)', lineHeight: 1.7,
+                color: 'rgba(200,180,150,0.45)', fontFamily: "'Orbitron', sans-serif", fontWeight: 400,
+                transition: 'all 0.3s',
+              }}>
+                {infoText}
+              </p>
+            </div>
+
             {/* Back button */}
-            <div style={{ marginTop: 'clamp(16px, 3vh, 30px)', textAlign: 'center' }}>
+            <div style={{
+              position: 'relative', zIndex: 1,
+              marginTop: 'clamp(14px, 2.5vh, 28px)',
+              animation: 'mk9ItemIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) 0.5s both',
+            }}>
               <button
                 onClick={() => { setInSub(false); setOpenSubMenu(null); }}
                 style={{
-                  padding: '8px 24px',
-                  fontSize: 'clamp(9px, 1vw, 12px)',
+                  padding: '10px 32px',
+                  fontSize: 'clamp(10px, 1.1vw, 13px)',
                   fontFamily: "'Orbitron', serif",
-                  fontWeight: 600, letterSpacing: 3,
+                  fontWeight: 700, letterSpacing: 4,
                   color: 'rgba(200,150,80,0.5)',
-                  background: 'rgba(180,60,0,0.08)',
+                  background: 'linear-gradient(180deg, rgba(180,60,0,0.06), rgba(100,30,0,0.1))',
                   border: '1px solid rgba(180,60,0,0.2)',
+                  borderBottom: '2px solid rgba(200,80,0,0.25)',
                   cursor: 'pointer',
-                  transition: 'all 0.2s',
+                  transition: 'all 0.25s ease',
                 }}
-                onMouseEnter={e => { e.currentTarget.style.color = '#d4a037'; e.currentTarget.style.borderColor = 'rgba(200,80,0,0.4)'; }}
-                onMouseLeave={e => { e.currentTarget.style.color = 'rgba(200,150,80,0.5)'; e.currentTarget.style.borderColor = 'rgba(180,60,0,0.2)'; }}
+                onMouseEnter={e => {
+                  e.currentTarget.style.color = '#e8d5a3';
+                  e.currentTarget.style.borderColor = 'rgba(255,140,0,0.4)';
+                  e.currentTarget.style.background = 'linear-gradient(180deg, rgba(200,60,0,0.12), rgba(120,30,0,0.15))';
+                  e.currentTarget.style.textShadow = '0 0 10px rgba(255,140,0,0.3)';
+                }}
+                onMouseLeave={e => {
+                  e.currentTarget.style.color = 'rgba(200,150,80,0.5)';
+                  e.currentTarget.style.borderColor = 'rgba(180,60,0,0.2)';
+                  e.currentTarget.style.background = 'linear-gradient(180deg, rgba(180,60,0,0.06), rgba(100,30,0,0.1))';
+                  e.currentTarget.style.textShadow = 'none';
+                }}
               >
                 ◀ VOLVER
               </button>

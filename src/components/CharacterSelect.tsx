@@ -1438,10 +1438,10 @@ const CharacterSelect: React.FC = () => {
                             facing={1}
                           />
                           {isP1Selected && (
-                            <div style={{
+                             <div style={{
                               position: 'absolute', bottom: '10%',
-                              color: '#ffcc33', fontSize: 7, fontFamily: "'Orbitron', monospace",
-                              fontWeight: 900, textShadow: '0 0 8px #ffcc33', letterSpacing: 2,
+                              color: '#cccccc', fontSize: 7, fontFamily: "'Orbitron', monospace",
+                              fontWeight: 900, textShadow: '0 0 8px #cccccc', letterSpacing: 2,
                             }}>P1</div>
                           )}
                         </div>

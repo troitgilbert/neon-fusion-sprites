@@ -37,7 +37,7 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const cheatBufferRef = useRef('');
 
   useEffect(() => {
-    const engine = engineRef.current;
+    const engine = engineRef.current!;
     engine.onStateChange = (s) => setGameStateLocal(s);
     engine.onCoinsChange = (c) => setCoins(c);
     engine.onAnnouncerText = (t) => setAnnouncerText(t);

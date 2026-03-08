@@ -214,7 +214,6 @@ export class GameEngine {
       this.setState('STAGE_SELECT');
     }
   }
-  }
 
   startBossFight(playerCharIdx: number) {
     const bossId = this.selectedBoss || 'big_bang';

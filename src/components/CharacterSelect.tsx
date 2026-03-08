@@ -3,6 +3,7 @@ import { useGame } from '../game/GameContext';
 import { CHAR_DATA, SHOP_CATALOG } from '../game/constants';
 import type { CustomCharData } from '../game/types';
 import { playSelectSound, playConfirmSound } from '../game/audio';
+import { drawEdowadoSprite } from '../game/sprites';
 
 // ===== Color helpers =====
 function lightenColor(hex: string, amount: number): string {

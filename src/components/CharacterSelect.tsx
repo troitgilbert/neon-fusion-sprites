@@ -605,7 +605,7 @@ const BgCanvas: React.FC = () => {
     // Stars - many layers for depth
     type Star = { x: number; y: number; size: number; brightness: number; twinkleSpeed: number; twinkleOffset: number; color: string; layer: number };
     const stars: Star[] = [];
-    const starColors = ['#ffffff', '#ffe8cc', '#cce0ff', '#ffffcc', '#ffd4e8', '#d4e8ff', '#fff5cc'];
+    const starColors = ['#ffffff'];
     for (let i = 0; i < 1000; i++) {
       const layer = Math.random() < 0.5 ? 0 : Math.random() < 0.6 ? 1 : 2;
       stars.push({

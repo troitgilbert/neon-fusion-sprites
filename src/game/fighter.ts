@@ -167,6 +167,53 @@ export class Fighter {
       }
     }
 
+    // Agarre bouncing movement
+    if (this._agarreActive) {
+      this.vx = this._agarreVx;
+      this.vy = this._agarreVy;
+      game.spawnParticles(this.x, this.y, '#ff4400', 2, 2);
+      // Bounce off walls
+      if (this.x < 40 || this.x > CANVAS_W - 40) {
+        this._agarreVx *= -1;
+        this._agarreBounces++;
+        game.spawnParticles(this.x, this.y, '#ff0000', 10, 3);
+      }
+      // Bounce off top and ground
+      if (this.y < 60 || this.y > GROUND_Y - 20) {
+        this._agarreVy *= -1;
+        this._agarreBounces++;
+        game.spawnParticles(this.x, this.y, '#ff0000', 10, 3);
+      }
+      // Check collision with opponent
+      const agDist = Math.hypot(this.x - opp.x, this.y - opp.y);
+      if (agDist < 60) {
+        // Grab success!
+        this._agarreActive = false;
+        game.texts.push(new FloatingText(this.x, this.y - 60, 'AGARRE', '#ff0000'));
+        const dmg = 10 * this.damageBoost;
+        opp.takeDamage(dmg, true);
+        game.trackStat('totalDamage', dmg);
+        opp.stun = 40;
+        opp.vx = this.side * 20;
+        opp.vy = -15;
+        game.flashScreen();
+        game.shake = 30;
+        game.hitStop = 15;
+        game.spawnExplosion(opp.x, opp.y, '#ff0000');
+        game.spawnShockwave(opp.x, opp.y, '#ff0000');
+        game.spawnParticles(opp.x, opp.y, '#ff4400', 40, 4);
+        playHitSound();
+        this.comboHits++;
+        game.trackStat('comboMax', this.comboHits);
+      }
+      // Stop after 5 bounces
+      if (this._agarreBounces >= 5) {
+        this._agarreActive = false;
+        this.vx = 0;
+        this.vy = 0;
+      }
+    }
+
     // Physics
     if (!this.isFlying) {
       this.vy += 0.6; this.vx *= this.isDashing ? 0.95 : 0.8;

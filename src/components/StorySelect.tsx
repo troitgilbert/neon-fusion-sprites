@@ -155,10 +155,10 @@ const CharacterPreview: React.FC<{ chars: StoryChar[] | null; color: string; acc
 
     if (chars && chars.length > 0) {
       if (chars.length === 1) {
-        drawChar(ctx, w / 2, h / 2 + 10, chars[0], 2.2, t, 1);
+        drawChar(ctx, w / 2, h / 2, chars[0], 2.2, t, 1);
       } else {
-        drawChar(ctx, w / 2 - 35, h / 2 + 10, chars[0], 1.6, t, 1);    // left char faces right (center)
-        drawChar(ctx, w / 2 + 35, h / 2 + 10, chars[1], 1.6, t + 50, -1); // right char faces left (center)
+        drawChar(ctx, w / 2 - 35, h / 2, chars[0], 1.6, t, 1);
+        drawChar(ctx, w / 2 + 35, h / 2, chars[1], 1.6, t + 50, -1);
       }
     } else {
       // Custom: question mark

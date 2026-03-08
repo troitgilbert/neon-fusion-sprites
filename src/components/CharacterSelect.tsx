@@ -1569,11 +1569,11 @@ const CharacterSelect: React.FC = () => {
           <span style={{ color: 'rgba(0,255,255,0.4)' }}>◆</span> 1P: WASD + F/G/H
         </div>
         <button onClick={() => setGameState('MENU')} style={{
-          padding: '7px 30px', background: 'linear-gradient(180deg, rgba(255,204,51,0.08), rgba(255,204,51,0.03))',
-          border: '1px solid rgba(255,204,51,0.25)', color: '#ffcc33',
+          padding: '7px 30px', background: 'linear-gradient(180deg, rgba(255,204,51,0.15), rgba(255,204,51,0.06))',
+          border: '2px solid rgba(255,204,51,0.5)', color: '#ffdd44',
           cursor: 'pointer', fontFamily: "'Orbitron', monospace",
-          fontSize: 'clamp(8px, 1.1vw, 11px)', letterSpacing: 5,
-          transition: 'all 0.3s', textShadow: '0 0 8px #ffcc3330',
+          fontSize: 'clamp(9px, 1.2vw, 13px)', letterSpacing: 5, fontWeight: 700,
+          transition: 'all 0.3s', textShadow: '0 0 12px #ffcc3380',
           position: 'relative', overflow: 'hidden',
         }}
         onMouseEnter={e => { e.currentTarget.style.borderColor = '#ffcc33'; e.currentTarget.style.boxShadow = '0 0 20px #ffcc3330, inset 0 0 20px #ffcc3310'; e.currentTarget.style.background = 'linear-gradient(180deg, rgba(255,204,51,0.15), rgba(255,204,51,0.05))'; }}

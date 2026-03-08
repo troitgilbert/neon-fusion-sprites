@@ -871,7 +871,7 @@ const BgCanvas: React.FC = () => {
       // Faint hex grid
       ctx.save();
       ctx.globalAlpha = 0.012;
-      ctx.strokeStyle = '#ffcc33';
+      ctx.strokeStyle = '#999999';
       ctx.lineWidth = 0.3;
       const hexSize = 45;
       const hexH = hexSize * Math.sqrt(3);

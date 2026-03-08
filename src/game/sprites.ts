@@ -2,8 +2,6 @@
 // Uses high-quality anime-style sprites
 
 import idleImg from '@/assets/edowado-idle.png';
-import idleT1Img from '@/assets/edowado-idle-t1.png';
-import idleT2Img from '@/assets/edowado-idle-t2.png';
 import idle2Img from '@/assets/edowado-idle2.png';
 import walk1Img from '@/assets/edowado-walk1.png';
 import walk2Img from '@/assets/edowado-walk2.png';
@@ -27,8 +25,6 @@ let imagesLoaded = false;
 
 const SPRITE_SOURCES: Record<string, string> = {
   idle1: idleImg,
-  idleT1: idleT1Img,
-  idleT2: idleT2Img,
   idle2: idle2Img,
   walk1: walk1Img,
   walk2: walk2Img,
@@ -67,7 +63,7 @@ export function preloadSprites(): Promise<void> {
 
 // Animation config
 const SPRITE_FRAMES: Record<SpriteState, { keys: string[]; speed: number }> = {
-  idle:   { keys: ['idle1', 'idleT1', 'idle2', 'idleT2'], speed: 0.035 },
+  idle:   { keys: ['idle1', 'idle2'], speed: 0.025 },
   walk:   { keys: ['walk1', 'walk2', 'walk3', 'walk4', 'walk5', 'walk6', 'walk7', 'walk8'], speed: 0.15 },
   attack: { keys: ['attack'],  speed: 0.2 },
   jump:   { keys: ['jump'],    speed: 0.1 },

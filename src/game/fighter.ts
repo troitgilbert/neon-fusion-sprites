@@ -1,5 +1,5 @@
 import { CHAR_DATA, GROUND_Y, CANVAS_W } from './constants';
-import { FloatingText, PunchCircle } from './effects';
+import { FloatingText, PunchCircle, EnergyTrail, GiantFist } from './effects';
 import { playHitSound, playSpecialSound, playBlockSound, playSuperSound } from './audio';
 import type { Controls, CustomCharData } from './types';
 

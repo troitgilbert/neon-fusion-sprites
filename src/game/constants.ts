@@ -1,10 +1,10 @@
 import { CharData, Controls, SkinCatalogItem } from './types';
 
-export const CANVAS_W = 1200;
+export const CANVAS_W = 960;
 export const CANVAS_H = 480;
 export const GROUND_Y = 400;
 export const FLOOR_Y = 425;
-export const CHAR_SCALE = 0.7;
+export const CHAR_SCALE = 0.55;
 export const RENDER_SCALE = 2;
 
 export const CHAR_DATA: CharData[] = [

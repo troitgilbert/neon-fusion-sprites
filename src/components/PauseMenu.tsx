@@ -12,10 +12,10 @@ const MOVE_LIST = [
     { name: 'Esquivar', p1: 'T', p2: ';' },
   ]},
   { category: 'ATAQUES', moves: [
-    { name: 'Golpe', p1: 'F', p2: '[', type: 'hit' },
-    { name: 'Especial', p1: 'G', p2: ']', type: 'spec' },
-    { name: 'Super', p1: 'H', p2: '\\', type: 'super' },
-    { name: 'Ultra', p1: 'E', p2: 'Enter', type: 'ultra' },
+    { name: 'Golpe', p1: 'F', p2: '[' },
+    { name: 'Especial', p1: 'G', p2: ']' },
+    { name: 'Super', p1: 'H', p2: '\\' },
+    { name: 'Ultra', p1: 'E', p2: 'Enter' },
   ]},
   { category: 'DEFENSA', moves: [
     { name: 'Bloquear', p1: 'R', p2: "'" },
@@ -138,38 +138,7 @@ const PauseMenu: React.FC = () => {
                 <div style={{ color: '#555', fontFamily: "'Orbitron', monospace", fontSize: 7, letterSpacing: 2, textAlign: 'center' }}>P2</div>
               </div>
 
-              {cat.moves.map((move, mi) => {
-                // Get ability names for attack moves
-                const moveType = (move as any).type;
-                let p1AbilityName = '';
-                let p2AbilityName = '';
-                if (moveType === 'spec' && p1Char) {
-                  const a = SPECIAL_ABILITIES.find(a => a.source === p1Char.name || a.source.includes(p1Char.name.slice(0,4)));
-                  if (a) p1AbilityName = a.name;
-                }
-                if (moveType === 'super' && p1Char) {
-                  const a = SUPER_ABILITIES.find(a => a.source === p1Char.name || a.source.includes(p1Char.name.slice(0,4)));
-                  if (a) p1AbilityName = a.name;
-                }
-                if (moveType === 'ultra' && p1Char) {
-                  const a = ULTRA_ABILITIES.find(a => a.source === p1Char.name || a.source.includes(p1Char.name.slice(0,4)));
-                  if (a) p1AbilityName = a.name;
-                }
-                if (moveType === 'spec' && p2Char) {
-                  const a = SPECIAL_ABILITIES.find(a => a.source === p2Char.name || a.source.includes(p2Char.name.slice(0,4)));
-                  if (a) p2AbilityName = a.name;
-                }
-                if (moveType === 'super' && p2Char) {
-                  const a = SUPER_ABILITIES.find(a => a.source === p2Char.name || a.source.includes(p2Char.name.slice(0,4)));
-                  if (a) p2AbilityName = a.name;
-                }
-                if (moveType === 'ultra' && p2Char) {
-                  const a = ULTRA_ABILITIES.find(a => a.source === p2Char.name || a.source.includes(p2Char.name.slice(0,4)));
-                  if (a) p2AbilityName = a.name;
-                }
-                const abilityColor = moveType === 'spec' ? '#00ff66' : moveType === 'super' ? '#ffcc33' : moveType === 'ultra' ? '#ff4444' : '';
-
-                return (
+              {cat.moves.map((move, mi) => (
                 <div key={mi} style={{
                   display: 'grid',
                   gridTemplateColumns: '1fr 60px 60px',
@@ -178,46 +147,12 @@ const PauseMenu: React.FC = () => {
                   borderBottom: '1px solid rgba(255,255,255,0.03)',
                   animation: `itemCascade 0.3s cubic-bezier(0.16,1,0.3,1) ${(ci * 5 + mi) * 0.04}s both`,
                 }}>
-                  <div>
-                    <div style={{
-                      color: '#ccdde8',
-                      fontFamily: "'Orbitron', monospace",
-                      fontSize: 10,
-                      letterSpacing: 1,
-                    }}>{move.name}</div>
-                    {p1AbilityName && (
-                      <div style={{ display: 'flex', gap: 6, marginTop: 2 }}>
-                        <span style={{
-                          color: abilityColor,
-                          fontFamily: "'Orbitron', monospace",
-                          fontSize: 7,
-                          letterSpacing: 1,
-                          opacity: 0.9,
-                        }}>P1: {p1AbilityName}</span>
-                        {p2AbilityName && p2AbilityName !== p1AbilityName && (
-                          <span style={{
-                            color: '#ff6666',
-                            fontFamily: "'Orbitron', monospace",
-                            fontSize: 7,
-                            letterSpacing: 1,
-                            opacity: 0.9,
-                          }}>P2: {p2AbilityName}</span>
-                        )}
-                        {p2AbilityName && p2AbilityName === p1AbilityName && null}
-                      </div>
-                    )}
-                    {!p1AbilityName && p2AbilityName && (
-                      <div style={{ marginTop: 2 }}>
-                        <span style={{
-                          color: '#ff6666',
-                          fontFamily: "'Orbitron', monospace",
-                          fontSize: 7,
-                          letterSpacing: 1,
-                          opacity: 0.9,
-                        }}>P2: {p2AbilityName}</span>
-                      </div>
-                    )}
-                  </div>
+                  <div style={{
+                    color: '#ccdde8',
+                    fontFamily: "'Orbitron', monospace",
+                    fontSize: 10,
+                    letterSpacing: 1,
+                  }}>{move.name}</div>
                   <div style={{
                     textAlign: 'center',
                     background: 'rgba(0,255,255,0.08)',
@@ -228,7 +163,6 @@ const PauseMenu: React.FC = () => {
                     fontSize: 10,
                     fontWeight: 900,
                     padding: '2px 4px',
-                    alignSelf: 'start',
                   }}>{move.p1}</div>
                   <div style={{
                     textAlign: 'center',
@@ -240,11 +174,9 @@ const PauseMenu: React.FC = () => {
                     fontSize: 10,
                     fontWeight: 900,
                     padding: '2px 4px',
-                    alignSelf: 'start',
                   }}>{move.p2}</div>
                 </div>
-                );
-              })}
+              ))}
             </div>
           ))}
 

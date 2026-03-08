@@ -727,20 +727,7 @@ const BgCanvas: React.FC = () => {
       }
       ctx.restore();
 
-      // Ringed planet (center-right)
-      const p4x = W * 0.72, p4y = H * 0.65, p4r = W * 0.04;
-      const p4bod = ctx.createRadialGradient(p4x - p4r * 0.25, p4y - p4r * 0.25, p4r * 0.05, p4x, p4y, p4r);
-      p4bod.addColorStop(0, 'rgba(200,200,210,0.45)');
-      p4bod.addColorStop(0.6, 'rgba(140,140,150,0.3)');
-      p4bod.addColorStop(1, 'rgba(70,70,80,0.12)');
-      ctx.beginPath(); ctx.arc(p4x, p4y, p4r, 0, Math.PI * 2); ctx.fillStyle = p4bod; ctx.fill();
-      ctx.save();
-      ctx.translate(p4x, p4y); ctx.scale(1, 0.3);
-      ctx.beginPath(); ctx.arc(0, 0, p4r * 1.8, 0, Math.PI * 2);
-      ctx.strokeStyle = 'rgba(200,200,210,0.18)'; ctx.lineWidth = p4r * 0.15; ctx.stroke();
-      ctx.restore();
-
-      // Small gray planet (top area)
+      // Small gray planet (top area only - removed ringed planet near P2)
       const p2x = W * 0.25, p2y = H * 0.18, p2r = W * 0.02;
       const p2grad = ctx.createRadialGradient(p2x - p2r * 0.3, p2y - p2r * 0.3, p2r * 0.05, p2x, p2y, p2r);
       p2grad.addColorStop(0, 'rgba(200,200,210,0.6)');

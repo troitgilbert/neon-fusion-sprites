@@ -123,11 +123,36 @@ export class Fighter {
     if (!this.isFlying) {
       this.vy += 0.6; this.vx *= this.isDashing ? 0.95 : 0.8;
       if (this.y >= GROUND_Y) {
-        if (!this.isGrounded) {
-          this.squashX = 1.3; this.squashY = 0.7;
-          game.spawnParticles(this.x, 425, '#888', 5, 2);
-        }
-        this.y = GROUND_Y; this.vy = 0; this.isGrounded = true;
+         if (!this.isGrounded) {
+           this.squashX = 1.3; this.squashY = 0.7;
+           game.spawnParticles(this.x, 425, '#888', 5, 2);
+           // Temblor landing effect
+           if (this._pendingTemblor) {
+             this._pendingTemblor = false;
+             const opp2 = (this.id === 1) ? game.p2 : game.p1;
+             game.shake = 25;
+             game.hitStop = 10;
+             game.spawnShockwave(this.x, GROUND_Y, '#4488ff');
+             game.spawnShockwave(this.x, GROUND_Y, '#00aaff');
+             game.spawnParticles(this.x, GROUND_Y, '#4488ff', 30, 4);
+             game.texts.push(new FloatingText(this.x, this.y - 50, 'TEMBLOR', '#4488ff'));
+             playHitSound();
+             // AoE damage - anyone within range
+             const distToOpp = Math.abs(this.x - opp2.x);
+             if (distToOpp < 160) {
+               const dmg = 2.5 * this.damageBoost;
+               opp2.takeDamage(dmg, true);
+               game.trackStat('totalDamage', dmg);
+               opp2.vy = -10;
+               opp2.vx = (opp2.x > this.x ? 1 : -1) * 12;
+               opp2.stun = 15;
+               this.comboHits++;
+               game.trackStat('comboMax', this.comboHits);
+             }
+             this.damageBoost = 1;
+           }
+         }
+         this.y = GROUND_Y; this.vy = 0; this.isGrounded = true;
       }
     } else {
       this.vx *= 0.92; this.vy *= 0.92;

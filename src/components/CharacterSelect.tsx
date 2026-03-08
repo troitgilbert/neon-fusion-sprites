@@ -1344,45 +1344,94 @@ const CharacterSelect: React.FC = () => {
             <StageCanvas p1Char={displayP1 || null} p2Char={displayP2 || null} p1Custom={p1Custom} />
           </div>
 
-          {/* Roster grid with frame */}
+          {/* Roster grid with frame - diamond distribution like classic fighters */}
           <div style={{
             display: 'flex', flexDirection: 'column',
             alignItems: 'center', justifyContent: 'center',
-            padding: '12px 20px', pointerEvents: 'auto',
+            padding: '8px 16px', pointerEvents: 'auto',
             position: 'relative',
           }}>
-            {/* Subtle roster backdrop */}
+            {/* Solid roster backdrop */}
             <div style={{
-              position: 'absolute', inset: '-8px -16px',
-              background: 'radial-gradient(ellipse at center, rgba(0,0,0,0.1) 0%, transparent 70%)',
-              borderRadius: 8, pointerEvents: 'none',
+              position: 'absolute', inset: '-10px -20px',
+              background: 'rgba(0,0,0,0.6)',
+              border: '2px solid rgba(255,204,51,0.3)',
+              boxShadow: '0 0 30px rgba(0,0,0,0.5), inset 0 0 20px rgba(0,0,0,0.4)',
+              pointerEvents: 'none',
             }} />
 
-          {/* Hex grid */}
-          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 0, position: 'relative', zIndex: 2 }}>
+          {/* Diamond hex grid */}
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2, position: 'relative', zIndex: 2 }}>
             {(() => {
               const allItems = [
                 ...charRenderData.map((ch, i) => ({ type: 'char' as const, ch, i })),
                 { type: 'custom' as const, ch: null as any, i: -1 },
                 { type: 'random' as const, ch: null as any, i: -2 },
               ];
-              const cols = Math.min(allItems.length, 4);
-              const hexW = Math.min(window.innerWidth * 0.085, 80);
+              const hexW = Math.min(window.innerWidth * 0.07, 68);
               const hexH = hexW * 1.155;
-              const rows: (typeof allItems[number])[][] = [];
-              for (let r = 0; r < Math.ceil(allItems.length / cols); r++) {
-                rows.push(allItems.slice(r * cols, r * cols + cols));
+              
+              // Diamond distribution: build rows with increasing then decreasing count
+              // e.g. for 8 items: [2, 3, 2, 1] or [1, 2, 3, 2]
+              const totalItems = allItems.length;
+              // Create a diamond pattern: center rows have most items
+              const maxCols = Math.min(totalItems, 5);
+              const diamondRows: number[] = [];
+              
+              // Build diamond: 2, 3, 4, 3, 2 pattern (or similar based on count)
+              if (totalItems <= 3) {
+                diamondRows.push(totalItems);
+              } else if (totalItems <= 5) {
+                diamondRows.push(2, totalItems - 2 > 0 ? Math.min(3, totalItems - 2) : 1);
+                const rem = totalItems - diamondRows.reduce((a, b) => a + b, 0);
+                if (rem > 0) diamondRows.push(rem);
+              } else {
+                // Classic diamond: build up then down
+                let remaining = totalItems;
+                const half: number[] = [];
+                let cols = 2;
+                while (remaining > 0 && cols <= maxCols) {
+                  const take = Math.min(cols, remaining);
+                  half.push(take);
+                  remaining -= take;
+                  cols++;
+                }
+                // Add middle and mirror
+                if (remaining > 0) {
+                  half.push(Math.min(maxCols, remaining));
+                  remaining -= Math.min(maxCols, remaining);
+                }
+                while (remaining > 0) {
+                  const take = Math.min(maxCols - 1, remaining);
+                  half.push(take > 0 ? take : 1);
+                  remaining -= (take > 0 ? take : 1);
+                }
+                half.forEach(r => diamondRows.push(r));
               }
+              
+              let itemIdx = 0;
               let flatIdx = 0;
-              return rows.map((row, rIdx) => (
+              return diamondRows.map((rowCount, rIdx) => {
+                const rowItems = allItems.slice(itemIdx, itemIdx + rowCount);
+                itemIdx += rowCount;
+                return (
                 <div key={rIdx} style={{
-                  display: 'flex', gap: 3, justifyContent: 'center',
-                  marginTop: rIdx > 0 ? -hexH * 0.12 : 0,
-                  marginLeft: rIdx % 2 !== 0 ? hexW * 0.52 : 0,
+                  display: 'flex', gap: 2, justifyContent: 'center',
+                  marginTop: rIdx > 0 ? -hexH * 0.08 : 0,
                 }}>
-                  {row.map((item) => {
+                  {rowItems.map((item) => {
                     const myFlatIdx = flatIdx++;
                     const isCursor = cursorIdx === myFlatIdx;
+                    
+                    // Common hex cell style
+                    const baseStyle = {
+                      width: hexW, height: hexH,
+                      clipPath: 'polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%)',
+                      display: 'flex', alignItems: 'center', justifyContent: 'center',
+                      transition: 'all 0.15s ease-out',
+                      cursor: 'pointer',
+                    };
+                    
                     if (item.type === 'char') {
                       const ch = item.ch!;
                       const i = item.i;
@@ -1396,30 +1445,27 @@ const CharacterSelect: React.FC = () => {
                           onMouseEnter={() => { setHoveredIdx(i); playSelectSound(); }}
                           onMouseLeave={() => setHoveredIdx(null)}
                           style={{
-                            width: hexW, height: hexH,
-                            clipPath: 'polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%)',
-                            cursor: 'pointer', position: 'relative',
+                            ...baseStyle,
+                            position: 'relative',
                             background: isFlashing
-                              ? `linear-gradient(135deg, rgba(200,200,200,0.4), rgba(180,180,180,0.2))`
+                              ? 'linear-gradient(135deg, rgba(255,204,51,0.5), rgba(255,136,0,0.3))'
                               : isP1Selected
-                                ? 'linear-gradient(135deg, rgba(200,200,200,0.25), rgba(150,150,150,0.15))'
+                                ? 'linear-gradient(135deg, rgba(255,204,51,0.25), rgba(255,136,0,0.15))'
                                 : isHovered
-                                  ? `linear-gradient(135deg, rgba(45,45,50,0.95), rgba(30,30,35,0.92))`
-                                  : 'linear-gradient(135deg, rgba(10,10,25,0.92), rgba(8,6,18,0.95))',
-                            display: 'flex', alignItems: 'center', justifyContent: 'center',
-                            transition: 'all 0.2s ease-out',
-                            transform: isHovered ? 'scale(1.18)' : 'scale(1)',
+                                  ? 'linear-gradient(135deg, rgba(40,35,20,0.98), rgba(30,25,12,0.98))'
+                                  : 'linear-gradient(135deg, rgba(15,15,25,0.98), rgba(10,10,20,0.98))',
+                            transform: isHovered ? 'scale(1.15)' : 'scale(1)',
                             zIndex: isHovered ? 10 : 1,
                             filter: isP1Selected
-                              ? 'drop-shadow(0 0 12px rgba(200,200,200,0.35))'
+                              ? 'drop-shadow(0 0 10px rgba(255,204,51,0.4))'
                               : isHovered
-                                ? `drop-shadow(0 0 14px ${ch.eyeColor}60)`
-                                : 'drop-shadow(0 0 2px rgba(180,180,180,0.1))',
+                                ? `drop-shadow(0 0 12px ${ch.eyeColor}50)`
+                                : 'drop-shadow(0 0 3px rgba(255,204,51,0.08))',
                           }}
                         >
                           <CanvasPortrait
                             char={ch}
-                            size={Math.min(hexW * 0.5, 45)}
+                            size={Math.min(hexW * 0.5, 42)}
                             isSelected={isP1Selected}
                             isHovered={isHovered}
                             facing={1}
@@ -1427,8 +1473,8 @@ const CharacterSelect: React.FC = () => {
                           {isP1Selected && (
                              <div style={{
                               position: 'absolute', bottom: '10%',
-                              color: '#cccccc', fontSize: 7, fontFamily: "'Orbitron', monospace",
-                              fontWeight: 900, textShadow: '0 0 8px #cccccc', letterSpacing: 2,
+                              color: '#ffcc33', fontSize: 7, fontFamily: "'Orbitron', monospace",
+                              fontWeight: 900, textShadow: '0 0 8px #ffcc33', letterSpacing: 2,
                             }}>P1</div>
                           )}
                         </div>
@@ -1440,21 +1486,17 @@ const CharacterSelect: React.FC = () => {
                           key="custom"
                           onClick={() => { setShowCustomMenu(true); playConfirmSound(); }}
                           onMouseEnter={() => setHoveredIdx(null)}
-                           style={{
-                            width: hexW, height: hexH,
-                            clipPath: 'polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%)',
-                            cursor: 'pointer',
+                          style={{
+                            ...baseStyle,
                             background: isCursor
-                              ? 'linear-gradient(135deg, rgba(45,45,50,0.95), rgba(30,30,35,0.92))'
-                              : 'linear-gradient(135deg, rgba(10,10,25,0.92), rgba(8,6,18,0.95))',
-                            display: 'flex', alignItems: 'center', justifyContent: 'center',
-                            transition: 'all 0.2s',
-                            transform: isCursor ? 'scale(1.18)' : 'scale(1)',
+                              ? 'linear-gradient(135deg, rgba(40,35,20,0.98), rgba(30,25,12,0.98))'
+                              : 'linear-gradient(135deg, rgba(15,15,25,0.98), rgba(10,10,20,0.98))',
+                            transform: isCursor ? 'scale(1.15)' : 'scale(1)',
                             zIndex: isCursor ? 10 : 1,
-                            filter: isCursor ? 'drop-shadow(0 0 14px rgba(200,200,200,0.35))' : 'drop-shadow(0 0 2px rgba(180,180,180,0.1))',
+                            filter: isCursor ? 'drop-shadow(0 0 10px rgba(255,204,51,0.3))' : 'drop-shadow(0 0 3px rgba(255,204,51,0.08))',
                           }}
                         >
-                          <span style={{ color: '#cccccc', fontSize: hexW * 0.3, fontWeight: 900, fontFamily: "'Orbitron', monospace", textShadow: '0 0 12px rgba(200,200,200,0.3)' }}>?</span>
+                          <span style={{ color: '#ffcc33', fontSize: hexW * 0.3, fontWeight: 900, fontFamily: "'Orbitron', monospace", textShadow: '0 0 12px #ffcc3350' }}>?</span>
                         </div>
                       );
                     }
@@ -1463,18 +1505,14 @@ const CharacterSelect: React.FC = () => {
                         key="random"
                         onClick={handleRandomSelect}
                         onMouseEnter={() => setHoveredIdx(null)}
-                         style={{
-                          width: hexW, height: hexH,
-                          clipPath: 'polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%)',
-                          cursor: 'pointer',
+                        style={{
+                          ...baseStyle,
                           background: isCursor
-                            ? 'linear-gradient(135deg, rgba(45,45,50,0.95), rgba(30,30,35,0.92))'
-                            : 'linear-gradient(135deg, rgba(10,10,25,0.92), rgba(8,6,18,0.95))',
-                          display: 'flex', alignItems: 'center', justifyContent: 'center',
-                          transition: 'all 0.2s',
-                          transform: isCursor ? 'scale(1.18)' : 'scale(1)',
+                            ? 'linear-gradient(135deg, rgba(40,35,20,0.98), rgba(30,25,12,0.98))'
+                            : 'linear-gradient(135deg, rgba(15,15,25,0.98), rgba(10,10,20,0.98))',
+                          transform: isCursor ? 'scale(1.15)' : 'scale(1)',
                           zIndex: isCursor ? 10 : 1,
-                          filter: isCursor ? 'drop-shadow(0 0 14px rgba(200,200,200,0.35))' : 'drop-shadow(0 0 2px rgba(180,180,180,0.1))',
+                          filter: isCursor ? 'drop-shadow(0 0 10px rgba(255,204,51,0.3))' : 'drop-shadow(0 0 3px rgba(255,204,51,0.08))',
                         }}
                       >
                         <span style={{ fontSize: hexW * 0.25 }}>🎲</span>
@@ -1482,7 +1520,8 @@ const CharacterSelect: React.FC = () => {
                     );
                   })}
                 </div>
-              ));
+              );
+              });
             })()}
           </div>
 

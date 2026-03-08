@@ -478,10 +478,10 @@ const MainMenu: React.FC = () => {
               textAlign: 'center',
               animation: 'mk9ItemIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) 0.4s both',
             }}>
-              <div style={{ width: '60%', height: 1, margin: '0 auto 10px', background: 'linear-gradient(90deg, transparent, rgba(200,80,0,0.2), transparent)' }} />
+              <div style={{ width: '60%', height: 1, margin: '0 auto 10px', background: 'linear-gradient(90deg, transparent, rgba(0,120,255,0.2), transparent)' }} />
               <p style={{
                 fontSize: 'clamp(8px, 0.85vw, 11px)', lineHeight: 1.7,
-                color: 'rgba(200,180,150,0.45)', fontFamily: "'Orbitron', sans-serif", fontWeight: 400,
+                color: 'rgba(140,180,220,0.45)', fontFamily: "'Orbitron', sans-serif", fontWeight: 400,
                 transition: 'all 0.3s',
               }}>
                 {infoText}
@@ -501,23 +501,23 @@ const MainMenu: React.FC = () => {
                   fontSize: 'clamp(10px, 1.1vw, 13px)',
                   fontFamily: "'Orbitron', serif",
                   fontWeight: 700, letterSpacing: 4,
-                  color: 'rgba(200,150,80,0.5)',
-                  background: 'linear-gradient(180deg, rgba(180,60,0,0.06), rgba(100,30,0,0.1))',
-                  border: '1px solid rgba(180,60,0,0.2)',
-                  borderBottom: '2px solid rgba(200,80,0,0.25)',
-                  cursor: 'pointer',
+                  color: 'rgba(100,170,230,0.5)',
+                  background: 'linear-gradient(180deg, rgba(0,40,100,0.1), rgba(0,20,60,0.15))',
+                  border: '1px solid rgba(0,100,200,0.2)',
+                  borderBottom: '2px solid rgba(0,120,255,0.25)',
+                  cursor: 'pointer', borderRadius: 20,
                   transition: 'all 0.25s ease',
                 }}
                 onMouseEnter={e => {
-                  e.currentTarget.style.color = '#e8d5a3';
-                  e.currentTarget.style.borderColor = 'rgba(255,140,0,0.4)';
-                  e.currentTarget.style.background = 'linear-gradient(180deg, rgba(200,60,0,0.12), rgba(120,30,0,0.15))';
-                  e.currentTarget.style.textShadow = '0 0 10px rgba(255,140,0,0.3)';
+                  e.currentTarget.style.color = '#a0d4ff';
+                  e.currentTarget.style.borderColor = 'rgba(0,150,255,0.4)';
+                  e.currentTarget.style.background = 'linear-gradient(180deg, rgba(0,60,140,0.15), rgba(0,30,80,0.2))';
+                  e.currentTarget.style.textShadow = '0 0 10px rgba(0,150,255,0.3)';
                 }}
                 onMouseLeave={e => {
-                  e.currentTarget.style.color = 'rgba(200,150,80,0.5)';
-                  e.currentTarget.style.borderColor = 'rgba(180,60,0,0.2)';
-                  e.currentTarget.style.background = 'linear-gradient(180deg, rgba(180,60,0,0.06), rgba(100,30,0,0.1))';
+                  e.currentTarget.style.color = 'rgba(100,170,230,0.5)';
+                  e.currentTarget.style.borderColor = 'rgba(0,100,200,0.2)';
+                  e.currentTarget.style.background = 'linear-gradient(180deg, rgba(0,40,100,0.1), rgba(0,20,60,0.15))';
                   e.currentTarget.style.textShadow = 'none';
                 }}
               >

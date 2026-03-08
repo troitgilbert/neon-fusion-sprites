@@ -96,9 +96,9 @@ const NebulaBackground: React.FC = () => {
       ctx.rotate(0.35 + Math.sin(time * 0.0001) * 0.04);
       const dustGrad = ctx.createLinearGradient(-w, 0, w, 0);
       dustGrad.addColorStop(0, 'transparent');
-      dustGrad.addColorStop(0.25, 'rgba(120,60,20,1)');
-      dustGrad.addColorStop(0.5, 'rgba(100,40,10,1)');
-      dustGrad.addColorStop(0.75, 'rgba(90,35,8,1)');
+      dustGrad.addColorStop(0.25, 'rgba(200,110,30,1)');
+      dustGrad.addColorStop(0.5, 'rgba(180,90,20,1)');
+      dustGrad.addColorStop(0.75, 'rgba(160,75,15,1)');
       dustGrad.addColorStop(1, 'transparent');
       ctx.fillStyle = dustGrad;
       ctx.fillRect(-w, -h * 0.12, w * 2, h * 0.24);

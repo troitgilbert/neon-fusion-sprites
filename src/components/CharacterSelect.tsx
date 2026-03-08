@@ -680,7 +680,7 @@ const BgCanvas: React.FC = () => {
         if (d.x < -0.2) d.x = 1.2;
         if (d.x > 1.2) d.x = -0.2;
         ctx.save();
-        ctx.globalAlpha = 0.15;
+        ctx.globalAlpha = 0.05;
         const dg = ctx.createRadialGradient(d.x * W, d.y * H, 0, d.x * W, d.y * H, d.r);
         dg.addColorStop(0, d.color);
         dg.addColorStop(0.6, d.color + '60');

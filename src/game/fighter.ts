@@ -2,7 +2,7 @@ import { CHAR_DATA, GROUND_Y, CANVAS_W } from './constants';
 import { FloatingText, PunchCircle } from './effects';
 import { playHitSound, playSpecialSound, playBlockSound, playSuperSound } from './audio';
 import type { Controls, CustomCharData } from './types';
-import { getEdowadoSprites, isSpriteReady, type SpriteState } from './sprites';
+import { drawEdowadoSprite, type SpriteState } from './sprites';
 
 const SPEED_MAP: Record<string, number> = { lento: 3.5, normal: 5, rapido: 7, velocista: 9.5 };
 const SIZE_MAP: Record<string, number> = { 'pequeño': 0.75, normal: 1, grande: 1.3 };
@@ -452,65 +452,35 @@ export class Fighter {
     if (this.isDodging) ctx.globalAlpha = 0.5;
     if (this.isKaitoDemonio() && this.isIntangible) ctx.globalAlpha = 0.55;
 
-    // Edowado uses sprite rendering
+    // Edowado uses pixel-art sprite rendering
     if (this.charIdx === 0 && !this.customData && !this.isBigBang) {
-      const sprites = getEdowadoSprites();
       const state = this._getSpriteState();
-      const frames = sprites[state];
-      if (frames && frames.length > 0) {
-        const frameIdx = Math.floor(this.animTimer * 0.15) % frames.length;
-        const img = frames[frameIdx];
+      
+      if (this.hitFlash > 0) { ctx.shadowBlur = 20; ctx.shadowColor = '#ffffff'; }
+      if (game.timeStopped && game.timeStopper !== this) ctx.filter = 'grayscale(100%)';
 
-        // Log once to debug
-        if (this.animTimer === 1) {
-          console.log('[SPRITE DEBUG]', {
-            charIdx: this.charIdx,
-            state,
-            imgSrc: img.src?.substring(0, 60),
-            complete: img.complete,
-            naturalW: img.naturalWidth,
-            naturalH: img.naturalHeight,
-          });
-        }
+      // Breathing effect for idle
+      const breath = (state === 'idle' && Math.abs(this.vx) < 1) ? Math.sin(this.animTimer * 0.1) * 0.02 : 0;
+      
+      ctx.translate(this.x, this.y);
+      ctx.scale(this.squashX, this.squashY + breath);
+      ctx.rotate(this.lean * this.side);
+      ctx.translate(-this.x, -this.y);
+      
+      drawEdowadoSprite(ctx, this.x, this.y, state, this.animTimer, this.side, 1.8);
 
-        if (img.complete && img.naturalWidth > 0) {
-          if (this.hitFlash > 0) { ctx.shadowBlur = 20; ctx.shadowColor = '#ffffff'; }
-          if (game.timeStopped && game.timeStopper !== this) ctx.filter = 'grayscale(100%)';
-
-          const spriteH = 70;
-          const aspectRatio = img.naturalWidth / img.naturalHeight;
-          const spriteW = spriteH * aspectRatio;
-
-          ctx.translate(this.x, this.y);
-          ctx.scale(this.side, 1);
-          ctx.scale(this.squashX, this.squashY);
-          ctx.rotate(this.lean * this.side);
-
-          if (state === 'idle' && Math.abs(this.vx) < 1 && Math.abs(this.vy) < 1) {
-            const breath = Math.sin(this.animTimer * 0.1) * 0.02;
-            ctx.scale(1, 1 + breath);
-          }
-
-          ctx.imageSmoothingEnabled = false;
-          ctx.drawImage(img, -spriteW / 2, -spriteH * 0.65, spriteW, spriteH);
-
-          // Hand hitbox
-          ctx.restore(); // restore the outer save
-          ctx.save();
-          const hx = this.x + this.side * 25, hy = this.y + 8;
-          if (game.state === 'FIGHT' && this.handMode === 'strike') {
-            const opp = (this.id === 1) ? game.p2 : game.p1;
-            if (Math.hypot(hx - opp.x, hy - opp.y) < 36) {
-              opp.takeDamage(1, true);
-              opp.vx = this.side * 6;
-              game.spawnParticles(opp.x, opp.y, '#fff', 6, 2);
-            }
-          }
-          ctx.restore();
-          return;
+      // Hand hitbox for strikes
+      if (game.state === 'FIGHT' && this.handMode === 'strike') {
+        const hx = this.x + this.side * 25, hy = this.y + 8;
+        const opp = (this.id === 1) ? game.p2 : game.p1;
+        if (opp && Math.hypot(hx - opp.x, hy - opp.y) < 36) {
+          opp.takeDamage(1, true);
+          opp.vx = this.side * 6;
+          game.spawnParticles(opp.x, opp.y, '#fff', 6, 2);
         }
       }
-      // Fall through to programmatic drawing if sprites not ready
+      ctx.restore();
+      return;
     }
 
     // Non-sprite / fallback drawing

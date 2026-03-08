@@ -750,114 +750,173 @@ const CharacterSelect: React.FC = () => {
     <div className="fixed inset-0 z-50 flex flex-col" style={{ overflow: 'hidden', animation: 'fadeIn 0.4s ease-out' }}>
       <BgCanvas />
 
-      {/* Top bar - cinematic */}
+      {/* === GOLDEN TOP BORDER === */}
+      <div style={{
+        position: 'relative', zIndex: 3, height: 4,
+        background: 'linear-gradient(90deg, transparent 5%, #ffcc33 20%, #ff8800 50%, #ffcc33 80%, transparent 95%)',
+        boxShadow: '0 2px 15px #ffcc3340',
+      }} />
+
+      {/* === TOP BAR: P1 SIDE | TITLE | P2 SIDE === */}
       <div style={{
         position: 'relative', zIndex: 2,
         display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-        padding: '14px 30px',
-        background: 'linear-gradient(180deg, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0.4) 80%, transparent 100%)',
-        borderBottom: '1px solid rgba(0,255,255,0.15)',
+        padding: '8px 25px',
+        background: 'linear-gradient(180deg, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.5) 100%)',
+        borderBottom: '2px solid rgba(255,204,51,0.2)',
       }}>
-        <div style={{
-          display: 'flex', alignItems: 'center', gap: 12,
-        }}>
-          <div style={{
-            width: 36, height: 36, display: 'flex', alignItems: 'center', justifyContent: 'center',
-            background: 'linear-gradient(135deg, #00ffff20, #00ffff05)',
-            border: '1px solid #00ffff40', transform: 'rotate(45deg)',
-          }}>
-            <span style={{ transform: 'rotate(-45deg)', color: '#00ffff', fontFamily: "'Orbitron', monospace", fontSize: 14, fontWeight: 900 }}>P1</span>
-          </div>
-          <div style={{
-            color: '#00ffff', fontFamily: "'Orbitron', monospace", fontSize: 'clamp(14px, 2.2vw, 22px)',
-            letterSpacing: 3, textShadow: '0 0 15px #00ffff60', fontWeight: 900,
-          }}>
-            {p1Name}
-          </div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+          <span style={{
+            color: '#ffcc33', fontFamily: "'Orbitron', monospace", fontSize: 'clamp(10px, 1.4vw, 14px)',
+            letterSpacing: 3, textShadow: '0 0 10px #ffcc3360', fontWeight: 900, opacity: 0.7,
+          }}>PLAYER 1 SIDE</span>
         </div>
-
         <div style={{
-          color: '#ff8c00', fontFamily: "'Orbitron', monospace",
-          fontSize: 'clamp(18px, 3.5vw, 36px)', fontWeight: 900,
-          textShadow: '0 0 30px #ff8c0080, 0 0 60px #ff8c0040',
-          letterSpacing: 6, position: 'relative',
+          color: '#ffcc33', fontFamily: "'Orbitron', monospace",
+          fontSize: 'clamp(16px, 3vw, 32px)', fontWeight: 900,
+          textShadow: '0 0 25px #ffcc3360, 0 0 50px #ff880030',
+          letterSpacing: 6,
         }}>
-          <span style={{ position: 'relative', zIndex: 1 }}>
-            {isP2Turn ? 'JUGADOR 2' : 'ELIGE LUCHADOR'}
-          </span>
+          {isP2Turn ? 'PLAYER SELECT' : 'CHARACTER SELECT'}
         </div>
-
-        <div style={{
-          display: 'flex', alignItems: 'center', gap: 12,
-        }}>
-          <div style={{
-            color: '#ff8c00', fontFamily: "'Orbitron', monospace", fontSize: 'clamp(14px, 2.2vw, 22px)',
-            letterSpacing: 3, textShadow: '0 0 15px #ff8c0060', fontWeight: 900,
-          }}>
-            {p2Name}
-          </div>
-          <div style={{
-            width: 36, height: 36, display: 'flex', alignItems: 'center', justifyContent: 'center',
-            background: 'linear-gradient(135deg, #ff8c0020, #ff8c0005)',
-            border: '1px solid #ff8c0040', transform: 'rotate(45deg)',
-          }}>
-            <span style={{ transform: 'rotate(-45deg)', color: '#ff8c00', fontFamily: "'Orbitron', monospace", fontSize: 14, fontWeight: 900 }}>P2</span>
-          </div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+          <span style={{
+            color: '#ffcc33', fontFamily: "'Orbitron', monospace", fontSize: 'clamp(10px, 1.4vw, 14px)',
+            letterSpacing: 3, textShadow: '0 0 10px #ffcc3360', fontWeight: 900, opacity: 0.7,
+          }}>PLAYER 2 SIDE</span>
         </div>
       </div>
 
-      {/* Main area */}
-      <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative', zIndex: 2, minHeight: 0 }}>
+      {/* === MAIN AREA: PORTRAITS + STAGE + ROSTER === */}
+      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', position: 'relative', zIndex: 2, minHeight: 0 }}>
 
-        {/* P1 side portrait */}
+        {/* TOP HALF: P1 Portrait | Stage Preview | P2 Portrait */}
         <div style={{
-          width: 'clamp(120px, 22vw, 280px)', height: '100%',
-          display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
-          position: 'relative',
+          flex: '0 0 48%', display: 'flex', position: 'relative',
+          borderBottom: '2px solid rgba(255,204,51,0.15)',
         }}>
-          {/* P1 color bar */}
+          {/* P1 Portrait area */}
           <div style={{
-            position: 'absolute', left: 0, top: 0, bottom: 0, width: 4,
-            background: 'linear-gradient(180deg, transparent 10%, #00ffff 50%, transparent 90%)',
-            opacity: 0.5,
-          }} />
-          <BigPortrait
-            char={displayP1 || null}
-            customChar={p1Custom}
-            color="#00ffff"
-            facing={1}
-          />
-          {/* Stats */}
-          {displayP1 && (
-            <div style={{ marginTop: 15, width: '80%' }}>
-              <StatBar label="VEL" value={displayP1.speed / 10} color="#00ffff" />
-              <StatBar label="POD" value={displayP1.weight} color="#ff4444" />
+            width: 'clamp(140px, 22vw, 300px)', position: 'relative', overflow: 'hidden',
+            borderRight: '2px solid rgba(255,204,51,0.15)',
+          }}>
+            {/* Diagonal color wash */}
+            <div style={{
+              position: 'absolute', inset: 0,
+              background: `linear-gradient(135deg, ${displayP1 ? displayP1.eyeColor + '15' : 'transparent'} 0%, transparent 60%)`,
+            }} />
+            <BigPortrait
+              char={displayP1 || null}
+              customChar={p1Custom}
+              color="#00ffff"
+              facing={1}
+              label="P1"
+            />
+            {/* Name plate */}
+            <div style={{
+              position: 'absolute', bottom: 0, left: 0, right: 0,
+              padding: '8px 15px',
+              background: 'linear-gradient(0deg, rgba(0,0,0,0.9) 0%, transparent 100%)',
+            }}>
+              <div style={{
+                color: '#ffcc33', fontFamily: "'Orbitron', monospace",
+                fontSize: 'clamp(14px, 2.5vw, 24px)', fontWeight: 900,
+                letterSpacing: 3, textShadow: '0 0 15px #ffcc3360',
+              }}>
+                {p1Name}
+              </div>
+              {displayP1 && (
+                <div style={{ marginTop: 4, display: 'flex', gap: 10 }}>
+                  <StatBar label="VEL" value={displayP1.speed / 10} color="#ffcc33" />
+                  <StatBar label="POD" value={displayP1.weight} color="#ff6600" />
+                </div>
+              )}
             </div>
-          )}
+          </div>
+
+          {/* Center stage - characters facing each other */}
+          <div style={{
+            flex: 1, position: 'relative', overflow: 'hidden',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+          }}>
+            {/* Stage floor line */}
+            <div style={{
+              position: 'absolute', bottom: '20%', left: '10%', right: '10%', height: 1,
+              background: 'linear-gradient(90deg, transparent, #ffcc3340, transparent)',
+            }} />
+            {/* VS emblem */}
+            <div style={{
+              position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)',
+              fontSize: 'clamp(40px, 8vw, 80px)', fontFamily: "'Orbitron', monospace", fontWeight: 900,
+              color: 'rgba(255,204,51,0.06)', letterSpacing: 10, pointerEvents: 'none',
+            }}>VS</div>
+            {/* Light beams from top */}
+            <div style={{
+              position: 'absolute', top: 0, left: '30%', width: '10%', height: '100%',
+              background: 'linear-gradient(180deg, #00ffff08, transparent 60%)',
+              transform: 'skewX(-15deg)',
+            }} />
+            <div style={{
+              position: 'absolute', top: 0, right: '30%', width: '10%', height: '100%',
+              background: 'linear-gradient(180deg, #ff8c0008, transparent 60%)',
+              transform: 'skewX(15deg)',
+            }} />
+          </div>
+
+          {/* P2 Portrait area */}
+          <div style={{
+            width: 'clamp(140px, 22vw, 300px)', position: 'relative', overflow: 'hidden',
+            borderLeft: '2px solid rgba(255,204,51,0.15)',
+          }}>
+            <div style={{
+              position: 'absolute', inset: 0,
+              background: `linear-gradient(-135deg, ${displayP2 ? displayP2.eyeColor + '15' : 'transparent'} 0%, transparent 60%)`,
+            }} />
+            <BigPortrait
+              char={displayP2 || null}
+              customChar={null}
+              color="#ff8c00"
+              facing={-1}
+              label="P2"
+            />
+            <div style={{
+              position: 'absolute', bottom: 0, left: 0, right: 0,
+              padding: '8px 15px', textAlign: 'right',
+              background: 'linear-gradient(0deg, rgba(0,0,0,0.9) 0%, transparent 100%)',
+            }}>
+              <div style={{
+                color: '#ffcc33', fontFamily: "'Orbitron', monospace",
+                fontSize: 'clamp(14px, 2.5vw, 24px)', fontWeight: 900,
+                letterSpacing: 3, textShadow: '0 0 15px #ffcc3360',
+              }}>
+                {p2Name}
+              </div>
+              {displayP2 && (
+                <div style={{ marginTop: 4, display: 'flex', gap: 10, justifyContent: 'flex-end' }}>
+                  <StatBar label="VEL" value={displayP2.speed / 10} color="#ffcc33" />
+                  <StatBar label="POD" value={displayP2.weight} color="#ff6600" />
+                </div>
+              )}
+            </div>
+          </div>
         </div>
 
-        {/* Center roster grid */}
+        {/* BOTTOM HALF: Hexagonal roster grid */}
         <div style={{
-          flex: 1, maxWidth: 600, display: 'flex', flexDirection: 'column',
-          alignItems: 'center', justifyContent: 'center', gap: 0, padding: '0 10px',
+          flex: 1, display: 'flex', flexDirection: 'column',
+          alignItems: 'center', justifyContent: 'center',
+          position: 'relative', padding: '8px 0',
         }}>
-          {/* VS emblem */}
-          <div style={{
-            position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)',
-            fontSize: 'clamp(80px, 15vw, 160px)', fontFamily: "'Orbitron', monospace", fontWeight: 900,
-            color: 'rgba(255,140,0,0.04)', letterSpacing: 20, pointerEvents: 'none', zIndex: 0,
-          }}>VS</div>
-
-          {/* Hexagonal grid - honeycomb layout */}
-          <div style={{ position: 'relative', zIndex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 0 }}>
+          {/* Hex grid */}
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 0 }}>
             {(() => {
               const allItems = [
                 ...charRenderData.map((ch, i) => ({ type: 'char' as const, ch, i })),
-                { type: 'custom' as const, ch: null, i: -1 },
-                { type: 'random' as const, ch: null, i: -2 },
+                { type: 'custom' as const, ch: null as any, i: -1 },
+                { type: 'random' as const, ch: null as any, i: -2 },
               ];
               const cols = Math.min(allItems.length, 4);
-              const hexW = Math.min(window.innerWidth * 0.11, 100);
+              const hexW = Math.min(window.innerWidth * 0.09, 85);
               const hexH = hexW * 1.155;
               const rows: (typeof allItems[number])[][] = [];
               for (let r = 0; r < Math.ceil(allItems.length / cols); r++) {
@@ -865,8 +924,8 @@ const CharacterSelect: React.FC = () => {
               }
               return rows.map((row, rIdx) => (
                 <div key={rIdx} style={{
-                  display: 'flex', gap: 0, justifyContent: 'center',
-                  marginTop: rIdx > 0 ? -hexH * 0.13 : 0,
+                  display: 'flex', gap: 2, justifyContent: 'center',
+                  marginTop: rIdx > 0 ? -hexH * 0.12 : 0,
                   marginLeft: rIdx % 2 !== 0 ? hexW * 0.52 : 0,
                 }}>
                   {row.map((item) => {
@@ -876,7 +935,6 @@ const CharacterSelect: React.FC = () => {
                       const isP1Selected = engine.p1Choice === i;
                       const isHovered = hoveredIdx === i;
                       const isFlashing = selectFlash === i;
-                      const borderColor = isP1Selected ? '#00ffff' : isHovered ? ch.eyeColor : 'rgba(80,80,120,0.6)';
                       return (
                         <div
                           key={ch.name}
@@ -888,48 +946,35 @@ const CharacterSelect: React.FC = () => {
                             clipPath: 'polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%)',
                             cursor: 'pointer', position: 'relative',
                             background: isFlashing
-                              ? `linear-gradient(135deg, ${ch.eyeColor}50, ${ch.eyeColor}15)`
+                              ? `linear-gradient(135deg, #ffcc3350, #ffcc3320)`
                               : isP1Selected
-                                ? 'linear-gradient(135deg, rgba(0,255,255,0.2), rgba(0,100,150,0.15))'
+                                ? 'linear-gradient(135deg, rgba(255,204,51,0.2), rgba(255,136,0,0.1))'
                                 : isHovered
-                                  ? `linear-gradient(135deg, rgba(30,30,70,0.95), rgba(20,20,50,0.9))`
-                                  : 'linear-gradient(135deg, rgba(18,18,50,0.95), rgba(10,10,35,0.98))',
+                                  ? 'linear-gradient(135deg, rgba(40,35,20,0.95), rgba(30,25,15,0.9))'
+                                  : 'linear-gradient(135deg, rgba(20,18,35,0.95), rgba(12,10,25,0.98))',
                             display: 'flex', alignItems: 'center', justifyContent: 'center',
                             transition: 'all 0.2s ease-out',
-                            transform: isHovered ? 'scale(1.12)' : 'scale(1)',
+                            transform: isHovered ? 'scale(1.15)' : 'scale(1)',
                             zIndex: isHovered ? 10 : 1,
-                            filter: isHovered ? `drop-shadow(0 0 12px ${ch.eyeColor}60)` : isP1Selected ? 'drop-shadow(0 0 10px #00ffff50)' : 'none',
+                            filter: isP1Selected
+                              ? 'drop-shadow(0 0 10px #ffcc3350)'
+                              : isHovered
+                                ? `drop-shadow(0 0 10px ${ch.eyeColor}50)`
+                                : 'none',
                           }}
                         >
-                          {/* Inner hex border */}
-                          <div style={{
-                            position: 'absolute', inset: 2,
-                            clipPath: 'polygon(50% 1%, 99% 25.5%, 99% 74.5%, 50% 99%, 1% 74.5%, 1% 25.5%)',
-                            border: 'none',
-                            background: isP1Selected
-                              ? 'rgba(0,255,255,0.08)'
-                              : 'transparent',
-                          }} />
-                          {/* Border overlay */}
-                          <div style={{
-                            position: 'absolute', inset: 0,
-                            clipPath: 'polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%)',
-                            background: 'transparent',
-                            boxShadow: `inset 0 0 0 2px ${borderColor}`,
-                            pointerEvents: 'none',
-                          }} />
                           <CanvasPortrait
                             char={ch}
-                            size={Math.min(hexW * 0.55, 55)}
+                            size={Math.min(hexW * 0.5, 45)}
                             isSelected={isP1Selected}
                             isHovered={isHovered}
                             facing={1}
                           />
                           {isP1Selected && (
                             <div style={{
-                              position: 'absolute', bottom: '12%',
-                              color: '#00ffff', fontSize: 7, fontFamily: "'Orbitron', monospace",
-                              fontWeight: 900, textShadow: '0 0 5px #00ffff', letterSpacing: 2,
+                              position: 'absolute', bottom: '10%',
+                              color: '#ffcc33', fontSize: 7, fontFamily: "'Orbitron', monospace",
+                              fontWeight: 900, textShadow: '0 0 5px #ffcc33', letterSpacing: 2,
                             }}>P1</div>
                           )}
                         </div>
@@ -945,23 +990,15 @@ const CharacterSelect: React.FC = () => {
                             width: hexW, height: hexH,
                             clipPath: 'polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%)',
                             cursor: 'pointer',
-                            background: 'linear-gradient(135deg, rgba(18,18,50,0.95), rgba(10,10,35,0.98))',
+                            background: 'linear-gradient(135deg, rgba(20,18,35,0.95), rgba(12,10,25,0.98))',
                             display: 'flex', alignItems: 'center', justifyContent: 'center',
                             transition: 'all 0.2s',
                           }}
                         >
-                          <div style={{
-                            width: hexW * 0.4, height: hexW * 0.4, borderRadius: '50%',
-                            background: 'linear-gradient(135deg, #33333380, #55555580)',
-                            border: '2px solid #ffff0060', boxShadow: '0 0 15px #ffff0020',
-                            display: 'flex', alignItems: 'center', justifyContent: 'center',
-                          }}>
-                            <span style={{ color: '#ffff00', fontSize: hexW * 0.25, fontWeight: 900, fontFamily: "'Orbitron', monospace" }}>?</span>
-                          </div>
+                          <span style={{ color: '#ffcc33', fontSize: hexW * 0.3, fontWeight: 900, fontFamily: "'Orbitron', monospace", textShadow: '0 0 10px #ffcc3340' }}>?</span>
                         </div>
                       );
                     }
-                    // random
                     return (
                       <div
                         key="random"
@@ -971,19 +1008,12 @@ const CharacterSelect: React.FC = () => {
                           width: hexW, height: hexH,
                           clipPath: 'polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%)',
                           cursor: 'pointer',
-                          background: 'linear-gradient(135deg, rgba(18,18,50,0.95), rgba(10,10,35,0.98))',
+                          background: 'linear-gradient(135deg, rgba(20,18,35,0.95), rgba(12,10,25,0.98))',
                           display: 'flex', alignItems: 'center', justifyContent: 'center',
                           transition: 'all 0.2s',
                         }}
                       >
-                        <div style={{
-                          width: hexW * 0.4, height: hexW * 0.4, borderRadius: '50%',
-                          background: 'linear-gradient(135deg, #ff008860, #00ffff60, #ffff0060)',
-                          border: '2px solid #ffffff30', boxShadow: '0 0 12px #ffffff15',
-                          display: 'flex', alignItems: 'center', justifyContent: 'center',
-                        }}>
-                          <span style={{ fontSize: hexW * 0.2 }}>🎲</span>
-                        </div>
+                        <span style={{ fontSize: hexW * 0.25 }}>🎲</span>
                       </div>
                     );
                   })}
@@ -994,15 +1024,15 @@ const CharacterSelect: React.FC = () => {
 
           {/* Character name below grid */}
           <div style={{
-            marginTop: 18, height: 30,
+            marginTop: 10, height: 24, textAlign: 'center',
             color: hoveredIdx !== null && hoveredIdx >= 0 && hoveredIdx < charRenderData.length
-              ? charRenderData[hoveredIdx].eyeColor
-              : 'rgba(255,255,255,0.3)',
+              ? '#ffcc33'
+              : 'rgba(255,255,255,0.2)',
             fontFamily: "'Orbitron', monospace",
-            fontSize: 'clamp(14px, 2.2vw, 22px)',
+            fontSize: 'clamp(12px, 1.8vw, 18px)',
             letterSpacing: 5, fontWeight: 900,
             textShadow: hoveredIdx !== null && hoveredIdx >= 0 && hoveredIdx < charRenderData.length
-              ? `0 0 20px ${charRenderData[hoveredIdx].eyeColor}60`
+              ? '0 0 15px #ffcc3360'
               : 'none',
             transition: 'all 0.2s',
           }}>
@@ -1011,64 +1041,46 @@ const CharacterSelect: React.FC = () => {
               : ''}
           </div>
         </div>
-
-        {/* P2 side portrait */}
-        <div style={{
-          width: 'clamp(120px, 22vw, 280px)', height: '100%',
-          display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
-          position: 'relative',
-        }}>
-          <div style={{
-            position: 'absolute', right: 0, top: 0, bottom: 0, width: 4,
-            background: 'linear-gradient(180deg, transparent 10%, #ff8c00 50%, transparent 90%)',
-            opacity: 0.5,
-          }} />
-          <BigPortrait
-            char={displayP2 || null}
-            customChar={null}
-            color="#ff8c00"
-            facing={-1}
-          />
-          {displayP2 && (
-            <div style={{ marginTop: 15, width: '80%' }}>
-              <StatBar label="VEL" value={displayP2.speed / 10} color="#ff8c00" />
-              <StatBar label="POD" value={displayP2.weight} color="#ff4444" />
-            </div>
-          )}
-        </div>
       </div>
 
-      {/* Bottom bar */}
+      {/* === BOTTOM BAR === */}
       <div style={{
         position: 'relative', zIndex: 2,
         display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-        padding: '12px 30px',
-        background: 'linear-gradient(0deg, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0.4) 80%, transparent 100%)',
-        borderTop: '1px solid rgba(0,255,255,0.1)',
+        padding: '8px 25px',
+        background: 'linear-gradient(0deg, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.5) 100%)',
+        borderTop: '2px solid rgba(255,204,51,0.15)',
       }}>
         <div style={{
-          color: 'rgba(135,206,235,0.5)', fontFamily: "'Orbitron', monospace",
-          fontSize: 'clamp(7px, 1vw, 10px)', letterSpacing: 2,
+          color: 'rgba(255,204,51,0.4)', fontFamily: "'Orbitron', monospace",
+          fontSize: 'clamp(7px, 0.9vw, 10px)', letterSpacing: 2,
         }}>
-          P1: WASD + F/G/H
+          1P: WASD + F/G/H
         </div>
         <button onClick={() => setGameState('MENU')} style={{
-          padding: '8px 30px', background: 'transparent',
-          border: '1px solid rgba(255,77,77,0.5)', color: '#ff4d4d',
+          padding: '6px 25px', background: 'transparent',
+          border: '1px solid rgba(255,204,51,0.3)', color: '#ffcc33',
           cursor: 'pointer', fontFamily: "'Orbitron', monospace",
-          fontSize: 'clamp(9px, 1.2vw, 12px)', letterSpacing: 4,
-          transition: 'all 0.3s', textShadow: '0 0 8px #ff4d4d40',
+          fontSize: 'clamp(8px, 1.1vw, 11px)', letterSpacing: 4,
+          transition: 'all 0.3s', textShadow: '0 0 8px #ffcc3330',
         }}
-        onMouseEnter={e => { e.currentTarget.style.borderColor = '#ff4d4d'; e.currentTarget.style.boxShadow = '0 0 20px #ff4d4d30'; }}
-        onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(255,77,77,0.5)'; e.currentTarget.style.boxShadow = 'none'; }}
+        onMouseEnter={e => { e.currentTarget.style.borderColor = '#ffcc33'; e.currentTarget.style.boxShadow = '0 0 15px #ffcc3330'; }}
+        onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(255,204,51,0.3)'; e.currentTarget.style.boxShadow = 'none'; }}
         >VOLVER</button>
         <div style={{
-          color: 'rgba(135,206,235,0.5)', fontFamily: "'Orbitron', monospace",
-          fontSize: 'clamp(7px, 1vw, 10px)', letterSpacing: 2, textAlign: 'right',
+          color: 'rgba(255,204,51,0.4)', fontFamily: "'Orbitron', monospace",
+          fontSize: 'clamp(7px, 0.9vw, 10px)', letterSpacing: 2, textAlign: 'right',
         }}>
-          P2: ↑↓←→ + [ ] \
+          2P: ↑↓←→ + [ ] \
         </div>
       </div>
+
+      {/* Golden bottom border */}
+      <div style={{
+        position: 'relative', zIndex: 3, height: 4,
+        background: 'linear-gradient(90deg, transparent 5%, #ffcc33 20%, #ff8800 50%, #ffcc33 80%, transparent 95%)',
+        boxShadow: '0 -2px 15px #ffcc3340',
+      }} />
 
       <style>{`
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
@@ -1079,23 +1091,21 @@ const CharacterSelect: React.FC = () => {
 
 // ===== Stat bar component =====
 const StatBar: React.FC<{ label: string; value: number; color: string }> = ({ label, value, color }) => (
-  <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 5 }}>
+  <div style={{ display: 'flex', alignItems: 'center', gap: 4, flex: 1 }}>
     <span style={{
       color: 'rgba(255,255,255,0.4)', fontFamily: "'Orbitron', monospace",
-      fontSize: 8, letterSpacing: 1, width: 28, textAlign: 'right',
+      fontSize: 7, letterSpacing: 1,
     }}>{label}</span>
     <div style={{
-      flex: 1, height: 4, background: 'rgba(255,255,255,0.06)',
-      overflow: 'hidden', position: 'relative',
+      flex: 1, height: 3, background: 'rgba(255,255,255,0.08)',
+      overflow: 'hidden',
     }}>
       <div style={{
         height: '100%', width: `${value * 100}%`,
-        background: `linear-gradient(90deg, ${color}80, ${color})`,
-        boxShadow: `0 0 8px ${color}40`,
-        transition: 'width 0.4s ease-out',
+        background: `linear-gradient(90deg, ${color}60, ${color})`,
+        boxShadow: `0 0 6px ${color}40`,
+        transition: 'width 0.3s ease-out',
       }} />
     </div>
   </div>
 );
-
-export default CharacterSelect;

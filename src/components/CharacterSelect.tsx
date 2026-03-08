@@ -277,12 +277,12 @@ function drawGameSprite(
   ctx.scale(1, 1 + breath);
   ctx.translate(-x / (side * s), -y / s);
 
-  const skinC = customChar ? customChar.skinColor : (charIdx === 0 ? '#f5deb3' : '#f5d1ad');
-  const clothC = customChar ? customChar.clothesColor : (charIdx === 0 ? '#b00000' : '#ffffff');
-  const pantsC = customChar ? (customChar.pantsColor || '#000') : '#000';
-  const hairC = customChar ? (customChar.hairColor || customChar.clothesColor) : (charIdx === 0 ? '#5a3a1a' : '#ffffff');
-  const eyeC = customChar ? customChar.eyesColor : (charIdx === 0 ? '#00ffff' : '#ffff00');
-  const handC = customChar ? customChar.handsColor : (charIdx === 0 ? '#d4af37' : '#f5d1ad');
+  const skinC = customChar ? customChar.skinColor : (char ? char.skinColor : (charIdx === 0 ? '#f5deb3' : '#f5d1ad'));
+  const clothC = customChar ? customChar.clothesColor : (char ? char.clothesColor : (charIdx === 0 ? '#b00000' : '#ffffff'));
+  const pantsC = customChar ? (customChar.pantsColor || '#000') : (char ? char.pantsColor : '#000');
+  const hairC = customChar ? (customChar.hairColor || customChar.clothesColor) : (char ? char.hairColor : (charIdx === 0 ? '#5a3a1a' : '#ffffff'));
+  const eyeC = customChar ? customChar.eyesColor : (char ? char.eyeColor : (charIdx === 0 ? '#00ffff' : '#ffff00'));
+  const handC = customChar ? customChar.handsColor : (char ? char.handsColor : (charIdx === 0 ? '#d4af37' : '#f5d1ad'));
   const cx = x / (side * s);
   const cy = y / s;
 

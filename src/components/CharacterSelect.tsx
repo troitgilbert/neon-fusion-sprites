@@ -634,7 +634,7 @@ const BgCanvas: React.FC = () => {
     // Particles (warm colored, floating upward)
     type Particle = { x: number; y: number; vx: number; vy: number; size: number; life: number; maxLife: number; color: [number,number,number] };
     const particles: Particle[] = [];
-    const pColors: [number,number,number][] = [[255,140,0],[255,180,50],[200,100,20],[255,200,80],[220,120,30]];
+    const pColors: [number,number,number][] = [[180,180,190],[200,200,210],[140,140,150],[220,220,230],[160,160,170]];
 
     let time = 0;
     const draw = () => {

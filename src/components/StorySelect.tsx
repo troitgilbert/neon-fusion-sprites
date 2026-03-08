@@ -49,86 +49,177 @@ function drawChar(ctx: CanvasRenderingContext2D, cx: number, cy: number, c: Stor
   const R = 30 * s;
   const f = facing;
 
-  // === BIG ROUND HEAD (skin) ===
-  ctx.beginPath(); ctx.arc(cx, cy, R, 0, Math.PI * 2);
-  ctx.fillStyle = c.skinColor; ctx.fill();
-  ctx.strokeStyle = '#111'; ctx.lineWidth = 1.5 * s; ctx.stroke();
-  // Head 3D shading
+  // === OUTER GLOW (ambient light) ===
   ctx.save();
-  const headGrad = ctx.createRadialGradient(cx - R * 0.3, cy - R * 0.3, R * 0.1, cx, cy, R);
-  headGrad.addColorStop(0, 'rgba(255,255,255,0.15)');
-  headGrad.addColorStop(0.6, 'transparent');
-  headGrad.addColorStop(1, 'rgba(0,0,0,0.12)');
-  ctx.fillStyle = headGrad;
-  ctx.beginPath(); ctx.arc(cx, cy, R * 0.98, 0, Math.PI * 2); ctx.fill();
+  ctx.globalAlpha = 0.08;
+  const outerGlow = ctx.createRadialGradient(cx, cy, R * 0.8, cx, cy, R * 1.4);
+  outerGlow.addColorStop(0, c.eyeColor);
+  outerGlow.addColorStop(1, 'transparent');
+  ctx.fillStyle = outerGlow;
+  ctx.beginPath(); ctx.arc(cx, cy, R * 1.4, 0, Math.PI * 2); ctx.fill();
   ctx.restore();
 
-  // === CLOTHES + PANTS (clipped inside sphere, centered) ===
+  // === BIG ROUND HEAD (skin) ===
+  ctx.beginPath(); ctx.arc(cx, cy, R, 0, Math.PI * 2);
+  const skinGrad = ctx.createRadialGradient(cx - R * 0.25, cy - R * 0.3, R * 0.05, cx + R * 0.1, cy + R * 0.1, R);
+  skinGrad.addColorStop(0, lightenColor(c.skinColor, 30));
+  skinGrad.addColorStop(0.5, c.skinColor);
+  skinGrad.addColorStop(1, darkenColor(c.skinColor, 40));
+  ctx.fillStyle = skinGrad; ctx.fill();
+  // Rim light (top-left highlight)
+  ctx.save();
+  ctx.globalAlpha = 0.25;
+  const rimGrad = ctx.createRadialGradient(cx - R * 0.4, cy - R * 0.4, 0, cx - R * 0.4, cy - R * 0.4, R * 0.7);
+  rimGrad.addColorStop(0, 'rgba(255,255,255,0.6)');
+  rimGrad.addColorStop(0.4, 'rgba(255,255,255,0.1)');
+  rimGrad.addColorStop(1, 'transparent');
+  ctx.fillStyle = rimGrad;
+  ctx.beginPath(); ctx.arc(cx, cy, R, 0, Math.PI * 2); ctx.fill();
+  ctx.restore();
+  // Bottom shadow on sphere
+  ctx.save();
+  ctx.globalAlpha = 0.2;
+  const botShadow = ctx.createLinearGradient(cx, cy + R * 0.3, cx, cy + R);
+  botShadow.addColorStop(0, 'transparent');
+  botShadow.addColorStop(1, 'rgba(0,0,0,0.5)');
+  ctx.fillStyle = botShadow;
+  ctx.beginPath(); ctx.arc(cx, cy, R, 0, Math.PI * 2); ctx.fill();
+  ctx.restore();
+  // Outline
+  ctx.strokeStyle = 'rgba(0,0,0,0.5)'; ctx.lineWidth = 1.5 * s; ctx.stroke();
+
+  // === CLOTHES + PANTS (clipped inside sphere) ===
   ctx.save();
   ctx.beginPath(); ctx.arc(cx, cy, R * 0.99, 0, Math.PI * 2); ctx.clip();
 
-  // Skin band (visible between hair and clothes — the face/neck area)
-  // Already drawn by the head circle above
-
-  // Clothes band (starts at vertical center of sphere)
+  // Clothes band
   const clothesY = cy;
   const clothesH = R * 0.4;
-  ctx.fillStyle = c.clothesColor;
+  const clothGrad = ctx.createLinearGradient(cx, clothesY, cx, clothesY + clothesH);
+  clothGrad.addColorStop(0, lightenColor(c.clothesColor, 15));
+  clothGrad.addColorStop(0.5, c.clothesColor);
+  clothGrad.addColorStop(1, darkenColor(c.clothesColor, 25));
+  ctx.fillStyle = clothGrad;
   ctx.fillRect(cx - R * 1.1, clothesY, R * 2.2, clothesH);
-  ctx.strokeStyle = '#111'; ctx.lineWidth = 1 * s;
-  ctx.strokeRect(cx - R * 1.1, clothesY, R * 2.2, clothesH);
-  // Clothes shading
-  const cGrad = ctx.createLinearGradient(cx - R, 0, cx + R, 0);
-  cGrad.addColorStop(0, 'rgba(0,0,0,0.12)');
-  cGrad.addColorStop(0.4, 'transparent');
-  cGrad.addColorStop(0.6, 'transparent');
-  cGrad.addColorStop(1, 'rgba(0,0,0,0.1)');
-  ctx.fillStyle = cGrad;
+  // Clothes horizontal shading (sides darker)
+  const clothSideGrad = ctx.createLinearGradient(cx - R, 0, cx + R, 0);
+  clothSideGrad.addColorStop(0, 'rgba(0,0,0,0.2)');
+  clothSideGrad.addColorStop(0.3, 'transparent');
+  clothSideGrad.addColorStop(0.7, 'transparent');
+  clothSideGrad.addColorStop(1, 'rgba(0,0,0,0.15)');
+  ctx.fillStyle = clothSideGrad;
   ctx.fillRect(cx - R * 1.1, clothesY, R * 2.2, clothesH);
+  // Clothes top edge highlight
+  ctx.beginPath();
+  ctx.moveTo(cx - R * 0.85, clothesY);
+  ctx.lineTo(cx + R * 0.85, clothesY);
+  ctx.strokeStyle = 'rgba(255,255,255,0.1)'; ctx.lineWidth = 1 * s; ctx.stroke();
+  // Collar V detail
+  ctx.beginPath();
+  ctx.moveTo(cx - R * 0.15, clothesY);
+  ctx.lineTo(cx, clothesY + R * 0.12);
+  ctx.lineTo(cx + R * 0.15, clothesY);
+  ctx.strokeStyle = 'rgba(255,255,255,0.08)'; ctx.lineWidth = 1.5 * s; ctx.stroke();
 
-  // Pants (below clothes to bottom of sphere)
+  // Pants
   const pantsY = clothesY + clothesH;
   const pantsH = R * 0.7;
-  ctx.fillStyle = c.pantsColor;
+  const pantsGrad = ctx.createLinearGradient(cx, pantsY, cx, pantsY + pantsH);
+  pantsGrad.addColorStop(0, lightenColor(c.pantsColor, 10));
+  pantsGrad.addColorStop(0.5, c.pantsColor);
+  pantsGrad.addColorStop(1, darkenColor(c.pantsColor, 30));
+  ctx.fillStyle = pantsGrad;
   ctx.fillRect(cx - R * 1.1, pantsY, R * 2.2, pantsH);
-  ctx.strokeStyle = '#111'; ctx.lineWidth = 0.8 * s;
-  ctx.strokeRect(cx - R * 1.1, pantsY, R * 2.2, pantsH);
+  // Pants side shading
+  ctx.fillStyle = clothSideGrad;
+  ctx.fillRect(cx - R * 1.1, pantsY, R * 2.2, pantsH);
+  // Belt line
+  ctx.beginPath();
+  ctx.moveTo(cx - R * 0.85, pantsY + 1);
+  ctx.lineTo(cx + R * 0.85, pantsY + 1);
+  ctx.strokeStyle = 'rgba(255,255,255,0.06)'; ctx.lineWidth = 2 * s; ctx.stroke();
+  // Belt buckle
+  ctx.fillStyle = 'rgba(180,150,80,0.3)';
+  ctx.fillRect(cx - R * 0.06, pantsY - 1, R * 0.12, R * 0.06);
   // Pants seam
   ctx.beginPath();
-  ctx.moveTo(cx, pantsY);
+  ctx.moveTo(cx, pantsY + R * 0.05);
   ctx.lineTo(cx, pantsY + pantsH);
-  ctx.strokeStyle = 'rgba(0,0,0,0.15)'; ctx.lineWidth = 1 * s; ctx.stroke();
+  ctx.strokeStyle = 'rgba(0,0,0,0.12)'; ctx.lineWidth = 1 * s; ctx.stroke();
 
   ctx.restore();
 
-  // === HAIR (on top of head) ===
+  // === HAIR (on top of head, clipped) ===
   ctx.save();
   ctx.beginPath(); ctx.arc(cx, cy, R * 0.99, 0, Math.PI * 2); ctx.clip();
   ctx.translate(cx, cy - R * 0.65);
   ctx.scale(1, 0.7);
+  const hairGrad = ctx.createRadialGradient(f * R * 0.1, -R * 0.15, 0, 0, 0, R * 0.8);
+  hairGrad.addColorStop(0, lightenColor(c.hairColor, 20));
+  hairGrad.addColorStop(0.6, c.hairColor);
+  hairGrad.addColorStop(1, darkenColor(c.hairColor, 35));
   ctx.beginPath(); ctx.arc(0, 0, R * 0.8, Math.PI, 0);
-  ctx.fillStyle = c.hairColor; ctx.fill();
-  ctx.strokeStyle = '#111'; ctx.lineWidth = 1 * s; ctx.stroke();
-  ctx.globalAlpha = 0.2;
-  ctx.beginPath(); ctx.arc(f * R * 0.15, -R * 0.05, R * 0.4, Math.PI, 0);
-  ctx.fillStyle = 'rgba(255,255,255,0.35)'; ctx.fill();
+  ctx.fillStyle = hairGrad; ctx.fill();
+  ctx.strokeStyle = 'rgba(0,0,0,0.3)'; ctx.lineWidth = 1 * s; ctx.stroke();
+  // Hair shine streak
+  ctx.globalAlpha = 0.3;
+  ctx.beginPath(); ctx.arc(f * R * 0.15, -R * 0.08, R * 0.35, Math.PI, 0);
+  ctx.fillStyle = 'rgba(255,255,255,0.4)'; ctx.fill();
+  // Hair strands detail
+  ctx.globalAlpha = 0.15;
+  for (let i = -3; i <= 3; i++) {
+    ctx.beginPath();
+    ctx.moveTo(i * R * 0.15, -R * 0.3);
+    ctx.quadraticCurveTo(i * R * 0.18, R * 0.1, i * R * 0.12, R * 0.3);
+    ctx.strokeStyle = 'rgba(0,0,0,0.3)'; ctx.lineWidth = 0.5 * s; ctx.stroke();
+  }
   ctx.restore();
 
-  // === EYES (centered) ===
+  // === EYES (centered, detailed) ===
   const eyeLX = cx - R * 0.2;
   const eyeRX = cx + R * 0.2;
   const eyeY = cy - R * 0.22;
-  ctx.fillStyle = c.eyeColor;
-  ctx.beginPath(); ctx.arc(eyeLX, eyeY, R * 0.14, 0, Math.PI * 2); ctx.fill();
-  ctx.beginPath(); ctx.arc(eyeRX, eyeY, R * 0.14, 0, Math.PI * 2); ctx.fill();
+  const eyeR = R * 0.14;
+  // Eye outer glow
   ctx.save();
-  ctx.globalAlpha = 0.4;
-  const glow = ctx.createRadialGradient(cx, eyeY, 0, cx, eyeY, R * 0.5);
-  glow.addColorStop(0, c.eyeColor);
-  glow.addColorStop(1, 'transparent');
-  ctx.fillStyle = glow;
-  ctx.fillRect(cx - R * 0.5, eyeY - R * 0.5, R, R);
+  ctx.globalAlpha = 0.15;
+  const eyeAura = ctx.createRadialGradient(cx, eyeY, 0, cx, eyeY, R * 0.6);
+  eyeAura.addColorStop(0, c.eyeColor);
+  eyeAura.addColorStop(1, 'transparent');
+  ctx.fillStyle = eyeAura;
+  ctx.fillRect(cx - R * 0.6, eyeY - R * 0.4, R * 1.2, R * 0.8);
   ctx.restore();
+  // Eye spheres with gradient
+  [eyeLX, eyeRX].forEach(ex => {
+    const eyeGrad = ctx.createRadialGradient(ex - eyeR * 0.3, eyeY - eyeR * 0.3, 0, ex, eyeY, eyeR);
+    eyeGrad.addColorStop(0, lightenColor(c.eyeColor, 50));
+    eyeGrad.addColorStop(0.5, c.eyeColor);
+    eyeGrad.addColorStop(1, darkenColor(c.eyeColor, 30));
+    ctx.beginPath(); ctx.arc(ex, eyeY, eyeR, 0, Math.PI * 2);
+    ctx.fillStyle = eyeGrad; ctx.fill();
+    // Eye specular highlight
+    ctx.save(); ctx.globalAlpha = 0.6;
+    ctx.beginPath(); ctx.arc(ex - eyeR * 0.25, eyeY - eyeR * 0.25, eyeR * 0.3, 0, Math.PI * 2);
+    ctx.fillStyle = 'rgba(255,255,255,0.8)'; ctx.fill();
+    ctx.restore();
+    // Pupil
+    ctx.beginPath(); ctx.arc(ex + f * eyeR * 0.15, eyeY + eyeR * 0.05, eyeR * 0.35, 0, Math.PI * 2);
+    ctx.fillStyle = 'rgba(0,0,0,0.5)'; ctx.fill();
+  });
+}
+
+// Color helpers
+function lightenColor(hex: string, amount: number): string {
+  const r = Math.min(255, parseInt(hex.slice(1, 3), 16) + amount);
+  const g = Math.min(255, parseInt(hex.slice(3, 5), 16) + amount);
+  const b = Math.min(255, parseInt(hex.slice(5, 7), 16) + amount);
+  return `rgb(${r},${g},${b})`;
+}
+function darkenColor(hex: string, amount: number): string {
+  const r = Math.max(0, parseInt(hex.slice(1, 3), 16) - amount);
+  const g = Math.max(0, parseInt(hex.slice(3, 5), 16) - amount);
+  const b = Math.max(0, parseInt(hex.slice(5, 7), 16) - amount);
+  return `rgb(${r},${g},${b})`;
 }
 
 const CharacterPreview: React.FC<{ chars: StoryChar[] | null; color: string; accent: string; id: string }> = ({ chars, color, accent, id }) => {

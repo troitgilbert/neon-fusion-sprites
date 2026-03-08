@@ -1263,10 +1263,10 @@ const CharacterSelect: React.FC = () => {
         {/* P2 indicator */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
           <span style={{
-            color: isP2Turn ? '#ff8c00' : 'rgba(255,140,0,0.4)',
-            fontFamily: "'Orbitron', monospace", fontSize: 'clamp(9px, 1.2vw, 13px)',
-            letterSpacing: 4, fontWeight: 700,
-            textShadow: isP2Turn ? '0 0 12px #ff8c0060' : 'none',
+            color: isP2Turn ? '#ff8c00' : 'rgba(255,140,0,0.7)',
+            fontFamily: "'Orbitron', monospace", fontSize: 'clamp(10px, 1.4vw, 15px)',
+            letterSpacing: 4, fontWeight: 900,
+            textShadow: isP2Turn ? '0 0 15px #ff8c00, 0 0 30px #ff8c0080' : '0 0 8px #ff8c0040',
             transition: 'all 0.3s',
           }}>PLAYER 2</span>
           <div style={{

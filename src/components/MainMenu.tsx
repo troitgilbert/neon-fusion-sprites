@@ -227,7 +227,8 @@ const MainMenu: React.FC = () => {
                     boxShadow: active
                       ? '0 0 15px rgba(255,140,0,0.4), inset 0 1px 0 rgba(255,255,200,0.3), inset 0 -1px 0 rgba(0,0,0,0.3)'
                       : 'inset 0 1px 0 rgba(255,255,255,0.1), inset 0 -1px 0 rgba(0,0,0,0.3)',
-                    transition: 'all 0.2s',
+                    transition: 'all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1)',
+                    animation: active ? 'mk9NumberGlow 1.5s ease-in-out infinite' : 'none',
                   }}>
                     {num}
                   </div>

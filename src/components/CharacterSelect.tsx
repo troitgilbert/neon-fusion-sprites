@@ -764,10 +764,10 @@ const BgCanvas: React.FC = () => {
 
         // Star glow
         if (s.size > 1) {
-          const sg = ctx.createRadialGradient(sx, sy, 0, sx, sy, s.size * 3);
-          sg.addColorStop(0, s.color + '60');
+          const sg = ctx.createRadialGradient(sx, sy, 0, sx, sy, s.size * 4.5);
+          sg.addColorStop(0, s.color + '90');
           sg.addColorStop(1, 'transparent');
-          ctx.globalAlpha = alpha * 0.4;
+          ctx.globalAlpha = alpha * 0.9;
           ctx.fillStyle = sg;
           ctx.fillRect(sx - s.size * 3, sy - s.size * 3, s.size * 6, s.size * 6);
           ctx.globalAlpha = alpha;

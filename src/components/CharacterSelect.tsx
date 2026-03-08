@@ -1259,9 +1259,6 @@ const CharacterSelect: React.FC = () => {
   const displayP2 = (skinSelectFor && skinSelectFor.pNum === 2 && skinPreviewChar)
     ? skinPreviewChar
     : (isP2Turn ? hoveredChar : null);
-  const displayP2 = (skinSelectFor && skinSelectFor.pNum === 2 && skinPreviewChar)
-    ? skinPreviewChar
-    : (isP2Turn ? hoveredChar : null);
 
   // Get skin display name
   const getSkinDisplayName = (charIdx: number | null, skinId: string | null): string | null => {

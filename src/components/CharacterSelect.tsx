@@ -1508,15 +1508,15 @@ const CharacterSelect: React.FC = () => {
               <div style={{
                 padding: '5px 25px',
                 background: 'linear-gradient(90deg, transparent, rgba(10,8,20,0.85) 15%, rgba(10,8,20,0.9) 50%, rgba(10,8,20,0.85) 85%, transparent)',
-                borderTop: '2px solid rgba(255,204,51,0.35)',
-                borderBottom: '2px solid rgba(255,204,51,0.35)',
+                borderTop: '2px solid rgba(180,180,180,0.35)',
+                borderBottom: '2px solid rgba(180,180,180,0.35)',
               }}>
                 <span style={{
-                  color: '#ffcc33', fontFamily: "'Orbitron', monospace",
+                  color: '#cccccc', fontFamily: "'Orbitron', monospace",
                   fontSize: 'clamp(12px, 1.6vw, 16px)',
                   letterSpacing: 6, fontWeight: 900,
-                  textShadow: '0 0 15px #ffcc3360, 0 0 30px #ff880030',
-                  background: 'linear-gradient(180deg, #ffee88, #ffcc33, #ff8800)',
+                  textShadow: '0 0 15px rgba(200,200,200,0.35), 0 0 30px rgba(150,150,150,0.2)',
+                  background: 'linear-gradient(180deg, #eeeeee, #cccccc, #888888)',
                   WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text',
                 }}>
                   {charRenderData[hoveredIdx].name}

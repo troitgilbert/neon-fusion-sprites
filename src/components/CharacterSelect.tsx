@@ -546,7 +546,12 @@ const BigPortrait: React.FC<{
       ctx.translate(W / 2 + sway, H * 0.43);
       ctx.scale(breathe, breathe);
 
-      drawCharOnCanvas(ctx, 0, 0, skinC, hairC, clothC, pantsC, eyeC, handC, sc, t, facing);
+      if (!customChar && char?.idx === 0) {
+        const previewState = Math.abs(Math.sin(t * 0.05)) > 0.7 ? 'walk' : 'idle';
+        drawEdowadoSprite(ctx, 0, sc * 22, previewState, t, facing, Math.max(1, sc * 1.45));
+      } else {
+        drawCharOnCanvas(ctx, 0, 0, skinC, hairC, clothC, pantsC, eyeC, handC, sc, t, facing);
+      }
 
       // Energy particles orbiting
       ctx.globalAlpha = 0.5;

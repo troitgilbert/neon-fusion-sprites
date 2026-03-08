@@ -277,12 +277,12 @@ function drawGameSprite(
   ctx.scale(1, 1 + breath);
   ctx.translate(-x / (side * s), -y / s);
 
-  const skinC = customChar ? customChar.skinColor : (charIdx === 0 ? '#f5deb3' : '#f5d1ad');
-  const clothC = customChar ? customChar.clothesColor : (charIdx === 0 ? '#b00000' : '#ffffff');
-  const pantsC = customChar ? (customChar.pantsColor || '#000') : '#000';
-  const hairC = customChar ? (customChar.hairColor || customChar.clothesColor) : (charIdx === 0 ? '#5a3a1a' : '#ffffff');
-  const eyeC = customChar ? customChar.eyesColor : (charIdx === 0 ? '#00ffff' : '#ffff00');
-  const handC = customChar ? customChar.handsColor : (charIdx === 0 ? '#d4af37' : '#f5d1ad');
+  const skinC = customChar ? customChar.skinColor : (char ? char.skinColor : (charIdx === 0 ? '#f5deb3' : '#f5d1ad'));
+  const clothC = customChar ? customChar.clothesColor : (char ? char.clothesColor : (charIdx === 0 ? '#b00000' : '#ffffff'));
+  const pantsC = customChar ? (customChar.pantsColor || '#000') : (char ? char.pantsColor : '#000');
+  const hairC = customChar ? (customChar.hairColor || customChar.clothesColor) : (char ? char.hairColor : (charIdx === 0 ? '#5a3a1a' : '#ffffff'));
+  const eyeC = customChar ? customChar.eyesColor : (char ? char.eyeColor : (charIdx === 0 ? '#00ffff' : '#ffff00'));
+  const handC = customChar ? customChar.handsColor : (char ? char.handsColor : (charIdx === 0 ? '#d4af37' : '#f5d1ad'));
   const cx = x / (side * s);
   const cy = y / s;
 
@@ -1695,7 +1695,7 @@ const CharacterSelect: React.FC = () => {
                         transition: 'all 0.3s cubic-bezier(0.16,1,0.3,1)',
                         textAlign: 'left', width: '100%', borderRadius: 3,
                         boxShadow: isActive ? '0 0 20px rgba(60,140,255,0.15)' : 'none',
-                        animation: `skinCardSlide 0.3s cubic-bezier(0.16,1,0.3,1) ${idx * 0.06}s both`,
+                        
                       }}
                       onMouseEnter={e => {
                         if (!isActive) {
@@ -1780,7 +1780,6 @@ const CharacterSelect: React.FC = () => {
 
       <style>{`
         @keyframes skinPanelSlide { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
-        @keyframes skinCardSlide { from { opacity: 0; transform: translateX(30px); } to { opacity: 1; transform: translateX(0); } }
       `}</style>
 
       {/* === BOTTOM BAR === */}

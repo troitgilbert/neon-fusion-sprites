@@ -44,7 +44,7 @@ const GameApp: React.FC = () => {
       {showNebula && <NebulaBackground />}
 
       {/* Crystal counter */}
-      {!inFight && gameState !== 'CREATOR' && gameState !== 'ACHIEVEMENTS' && gameState !== 'ADVENTURE_PLAY' && (
+      {!inFight && gameState !== 'CREATOR' && gameState !== 'ACHIEVEMENTS' && gameState !== 'ADVENTURE_PLAY' && gameState !== 'SELECT' && (
         <div style={{
           position: 'fixed', top: 14, right: 18, zIndex: 100,
           display: 'flex', alignItems: 'center', gap: 0,

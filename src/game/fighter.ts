@@ -2,7 +2,7 @@ import { CHAR_DATA, GROUND_Y, CANVAS_W } from './constants';
 import { FloatingText, PunchCircle } from './effects';
 import { playHitSound, playSpecialSound, playBlockSound, playSuperSound } from './audio';
 import type { Controls, CustomCharData } from './types';
-import { getEdowadoSprites, type SpriteState } from './sprites';
+import { getEdowadoSprites, isSpriteReady, type SpriteState } from './sprites';
 
 const SPEED_MAP: Record<string, number> = { lento: 3.5, normal: 5, rapido: 7, velocista: 9.5 };
 const SIZE_MAP: Record<string, number> = { 'pequeño': 0.75, normal: 1, grande: 1.3 };
@@ -460,14 +460,14 @@ export class Fighter {
       const frameIdx = Math.floor(this.animTimer * 0.15) % frames.length;
       const img = frames[frameIdx];
 
-      if (img.complete && img.naturalWidth > 0) {
+      if (isSpriteReady(img)) {
         ctx.save();
         if (this.hitFlash > 0) { ctx.shadowBlur = 20; ctx.shadowColor = '#ffffff'; }
         if (game.timeStopped && game.timeStopper !== this) ctx.filter = 'grayscale(100%)';
 
-        const spriteH = 55; // target height in game units
-        const scale = spriteH / img.naturalHeight;
-        const spriteW = img.naturalWidth * scale;
+        const spriteH = 70; // target height in game units
+        const aspectRatio = img.naturalWidth / img.naturalHeight;
+        const spriteW = spriteH * aspectRatio;
 
         // Flip based on side
         ctx.translate(this.x, this.y);
@@ -483,41 +483,44 @@ export class Fighter {
           ctx.scale(1, 1 + breath);
         }
 
-        // Draw sprite centered on character position
-        ctx.drawImage(img, -spriteW / 2, -spriteH * 0.6, spriteW, spriteH);
+        // Enable pixelated rendering for crisp pixel art
+        ctx.imageSmoothingEnabled = false;
+
+        // Draw sprite centered on character position, feet at floor
+        ctx.drawImage(img, -spriteW / 2, -spriteH * 0.65, spriteW, spriteH);
         ctx.restore();
 
         // Hand hitbox still needed for combat
         this._drawSpriteHitbox(ctx, game);
-      } else {
-        // Fallback to old drawing if sprite not loaded
-        this._drawFallback(ctx, game);
+        ctx.restore();
+        return; // Skip the rest of draw
       }
-    } else {
-      // Non-sprite characters use original drawing
-      ctx.translate(this.x, this.y);
-      ctx.scale(this.side * this.squashX, this.squashY);
-      ctx.rotate(this.lean * this.side);
-
-      // Breathing
-      if (Math.abs(this.vx) < 1 && Math.abs(this.vy) < 1) {
-        const breath = Math.sin(this.animTimer * 0.1) * 0.03;
-        ctx.scale(1, 1 + breath);
-      }
-
-      if (this.hitFlash > 0) { ctx.shadowBlur = 20; ctx.shadowColor = '#ffffff'; }
-      if (game.timeStopped && game.timeStopper !== this) ctx.filter = 'grayscale(100%)';
-
-      // Scale characters 30% smaller around their center
-      ctx.translate(-this.x, -this.y);
-      ctx.translate(this.x, this.y);
-      ctx.scale(0.7, 0.7);
-      ctx.translate(-this.x, -this.y);
-
-      // Draw character
-      this._drawBody(ctx);
-      this._drawHands(ctx, game);
+      // If sprite not ready, fall through to normal drawing
     }
+
+    // Non-sprite / fallback drawing
+    ctx.translate(this.x, this.y);
+    ctx.scale(this.side * this.squashX, this.squashY);
+    ctx.rotate(this.lean * this.side);
+
+    // Breathing
+    if (Math.abs(this.vx) < 1 && Math.abs(this.vy) < 1) {
+      const breath = Math.sin(this.animTimer * 0.1) * 0.03;
+      ctx.scale(1, 1 + breath);
+    }
+
+    if (this.hitFlash > 0) { ctx.shadowBlur = 20; ctx.shadowColor = '#ffffff'; }
+    if (game.timeStopped && game.timeStopper !== this) ctx.filter = 'grayscale(100%)';
+
+    // Scale characters 30% smaller around their center
+    ctx.translate(-this.x, -this.y);
+    ctx.translate(this.x, this.y);
+    ctx.scale(0.7, 0.7);
+    ctx.translate(-this.x, -this.y);
+
+    // Draw character
+    this._drawBody(ctx);
+    this._drawHands(ctx, game);
 
     ctx.restore();
   }
@@ -535,23 +538,8 @@ export class Fighter {
     }
   }
 
-  _drawFallback(ctx: CanvasRenderingContext2D, game: any) {
-    ctx.translate(this.x, this.y);
-    ctx.scale(this.side * this.squashX, this.squashY);
-    ctx.rotate(this.lean * this.side);
-    if (Math.abs(this.vx) < 1 && Math.abs(this.vy) < 1) {
-      const breath = Math.sin(this.animTimer * 0.1) * 0.03;
-      ctx.scale(1, 1 + breath);
-    }
-    if (this.hitFlash > 0) { ctx.shadowBlur = 20; ctx.shadowColor = '#ffffff'; }
-    if (game.timeStopped && game.timeStopper !== this) ctx.filter = 'grayscale(100%)';
-    ctx.translate(-this.x, -this.y);
-    ctx.translate(this.x, this.y);
-    ctx.scale(0.7, 0.7);
-    ctx.translate(-this.x, -this.y);
-    this._drawBody(ctx);
-    this._drawHands(ctx, game);
-  }
+
+
 
 
   _drawBody(ctx: CanvasRenderingContext2D) {

@@ -37,7 +37,7 @@ const SPRITE_SOURCES: Record<string, string> = {
   idle5: idle5Img,
   idle6: idle6Img,
   idle7: idle7Img,
-  idle8: idle8Img,
+  
   walk1: walk1Img,
   walk2: walk2Img,
   walk3: walk3Img,

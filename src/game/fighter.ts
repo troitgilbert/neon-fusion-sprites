@@ -236,8 +236,11 @@ export class Fighter {
     this.isDashing = (keys[c.left] && tapTracker[c.left]?.active) || (keys[c.right] && tapTracker[c.right]?.active);
     const currentSpeed = this.isDashing ? this.data.speed * 2.2 : this.data.speed;
 
-    if (keys[c.left]) { this.vx = -currentSpeed; this.side = -1; }
-    if (keys[c.right]) { this.vx = currentSpeed; this.side = 1; }
+    // Block movement during invocation
+    if (!this._invocationActive) {
+      if (keys[c.left]) { this.vx = -currentSpeed; this.side = -1; }
+      if (keys[c.right]) { this.vx = currentSpeed; this.side = 1; }
+    }
 
     // Crouch
     this.isCrouching = keys[c.down] && this.isGrounded && !this.isFlying && this.handTimer === 0;

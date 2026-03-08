@@ -1116,6 +1116,7 @@ const CharacterSelect: React.FC = () => {
   };
 
   const handleCustomSelect = (customIdx: number) => {
+    if (allReadyToFight) return;
     const ch = customChars[customIdx];
     if (!ch) return;
     playConfirmSound();
@@ -1124,6 +1125,7 @@ const CharacterSelect: React.FC = () => {
   };
 
   const handleRandomSelect = () => {
+    if (allReadyToFight) return;
     const allOptions: number[] = [...CHAR_DATA.map((_, i) => i)];
     customChars.forEach((ch, i) => { if (ch) allOptions.push(100 + i); });
     const pick = allOptions[Math.floor(Math.random() * allOptions.length)];

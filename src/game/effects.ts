@@ -68,4 +68,100 @@ export class Particle {
   }
 }
 
-export type Effect = PunchCircle | FloatingText | Shockwave | Particle;
+export class EnergyTrail {
+  x: number; y: number; life: number; maxLife: number;
+  particles: { x: number; y: number; vx: number; vy: number; size: number; alpha: number }[];
+  color: string; reversed: boolean;
+  constructor(x: number, y: number, color: string, reversed = false) {
+    this.x = x; this.y = y; this.color = color; this.reversed = reversed;
+    this.life = 30; this.maxLife = 30;
+    this.particles = [];
+    for (let i = 0; i < 18; i++) {
+      const angle = reversed
+        ? (Math.PI * 0.5 + (Math.random() - 0.5) * 1.2)   // downward fan
+        : (-Math.PI * 0.5 + (Math.random() - 0.5) * 1.2);  // upward fan
+      const spd = 3 + Math.random() * 6;
+      this.particles.push({
+        x: x + (Math.random() - 0.5) * 20,
+        y: y + (Math.random() - 0.5) * 10,
+        vx: Math.cos(angle) * spd + (Math.random() - 0.5) * 2,
+        vy: Math.sin(angle) * spd,
+        size: 3 + Math.random() * 5,
+        alpha: 0.7 + Math.random() * 0.3,
+      });
+    }
+  }
+  update() {
+    this.life--;
+    for (const p of this.particles) {
+      p.x += p.vx; p.y += p.vy;
+      p.vx *= 0.96; p.vy *= 0.96;
+      p.size *= 0.97; p.alpha *= 0.95;
+    }
+  }
+  draw(ctx: CanvasRenderingContext2D) {
+    const t = this.life / this.maxLife;
+    for (const p of this.particles) {
+      ctx.globalAlpha = p.alpha * t;
+      ctx.fillStyle = this.color;
+      ctx.beginPath(); ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2); ctx.fill();
+      // Glow
+      ctx.globalAlpha = p.alpha * t * 0.3;
+      ctx.fillStyle = '#ffffff';
+      ctx.beginPath(); ctx.arc(p.x, p.y, p.size * 0.5, 0, Math.PI * 2); ctx.fill();
+    }
+    ctx.globalAlpha = 1;
+  }
+}
+
+export class GiantFist {
+  x: number; y: number; targetX: number; targetY: number;
+  life: number; maxLife: number; color: string;
+  side: number; diagonal: number; // 1 = down-diagonal, -1 = up-diagonal
+  size: number; hit: boolean; owner: any;
+  constructor(x: number, y: number, side: number, diagonal: number, color: string, size: number, owner: any) {
+    this.x = x + side * 20; this.y = y;
+    this.targetX = x + side * 80; this.targetY = y + diagonal * 40;
+    this.side = side; this.diagonal = diagonal;
+    this.color = color; this.size = size;
+    this.life = 20; this.maxLife = 20;
+    this.hit = false; this.owner = owner;
+  }
+  update() {
+    const t = 1 - (this.life / this.maxLife);
+    this.x += (this.targetX - this.x) * 0.3;
+    this.y += (this.targetY - this.y) * 0.3;
+    this.life--;
+  }
+  draw(ctx: CanvasRenderingContext2D) {
+    const t = this.life / this.maxLife;
+    ctx.save();
+    ctx.globalAlpha = t;
+    ctx.translate(this.x, this.y);
+    // Rotate based on diagonal direction
+    const angle = this.diagonal > 0
+      ? (this.side > 0 ? Math.PI * 0.2 : Math.PI * 0.8)
+      : (this.side > 0 ? -Math.PI * 0.2 : -Math.PI * 0.8);
+    ctx.rotate(angle);
+    // Fist body
+    ctx.fillStyle = this.color;
+    ctx.beginPath(); ctx.arc(0, 0, this.size, 0, Math.PI * 2); ctx.fill();
+    ctx.strokeStyle = '#000'; ctx.lineWidth = 3; ctx.stroke();
+    // Knuckle lines
+    ctx.strokeStyle = 'rgba(0,0,0,0.4)'; ctx.lineWidth = 2;
+    for (let i = -1; i <= 1; i++) {
+      ctx.beginPath();
+      ctx.moveTo(i * this.size * 0.35, -this.size * 0.5);
+      ctx.lineTo(i * this.size * 0.35, -this.size * 0.2);
+      ctx.stroke();
+    }
+    // Energy glow
+    ctx.globalAlpha = t * 0.4;
+    ctx.fillStyle = '#ffffff';
+    ctx.beginPath(); ctx.arc(0, 0, this.size * 1.3, 0, Math.PI * 2); ctx.fill();
+    ctx.restore();
+    ctx.globalAlpha = 1;
+  }
+}
+
+export type Effect = PunchCircle | FloatingText | Shockwave | Particle | EnergyTrail | GiantFist;

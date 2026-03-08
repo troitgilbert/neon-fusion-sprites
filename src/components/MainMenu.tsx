@@ -147,7 +147,7 @@ const MainMenu: React.FC = () => {
 
       {/* ══════ TITLE ══════ */}
       <div style={{
-        position: 'absolute', top: 'clamp(30px, 5vh, 60px)', left: 0, right: 0,
+        position: 'absolute', top: 'clamp(10px, 2vh, 30px)', left: 0, right: 0,
         textAlign: 'center',
         opacity: phase >= 1 ? 1 : 0,
         transform: phase >= 1 ? 'translateY(0) scale(1)' : 'translateY(-40px) scale(0.9)',
@@ -163,7 +163,7 @@ const MainMenu: React.FC = () => {
         </div>
 
         <h1 style={{
-          fontSize: 'clamp(32px, 6vw, 80px)',
+          fontSize: 'clamp(24px, 4.5vw, 60px)',
           fontWeight: 900,
           fontFamily: "'Orbitron', serif",
           letterSpacing: 'clamp(4px, 1vw, 14px)',
@@ -182,7 +182,7 @@ const MainMenu: React.FC = () => {
           RELIQUIA
         </h1>
         <h1 style={{
-          fontSize: 'clamp(24px, 4vw, 56px)',
+          fontSize: 'clamp(18px, 3vw, 42px)',
           fontWeight: 700,
           fontFamily: "'Orbitron', serif",
           letterSpacing: 'clamp(6px, 1.5vw, 20px)',
@@ -217,12 +217,13 @@ const MainMenu: React.FC = () => {
 
       {/* ══════ CENTERED MENU ══════ */}
       <div style={{
-        position: 'absolute', left: '50%', top: '50%',
-        transform: 'translate(-50%, -45%)',
+        position: 'absolute', left: '50%', top: 'clamp(140px, 22vh, 220px)', bottom: 'clamp(50px, 8vh, 80px)',
+        transform: 'translateX(-50%)',
         display: 'flex', flexDirection: 'column', alignItems: 'center',
+        justifyContent: 'flex-start',
+        overflowY: 'auto', scrollbarWidth: 'none',
         opacity: phase >= 2 ? 1 : 0,
         transition: 'opacity 0.8s ease 0.2s',
-        marginTop: 'clamp(20px, 4vh, 50px)',
       }}>
         {menuItems.map((item, i) => {
           const active = isActive(i);

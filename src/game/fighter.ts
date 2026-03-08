@@ -151,17 +151,36 @@ export class Fighter {
       this.isDodging = true; this.dodgeCooldown = 40; this.vx = this.side * 20;
     }
 
+    // Emote
+    if (justPressed[c.emote] && this.emoteTimer === 0) {
+      this.emoteTimer = 90;
+      this.emoteType = Math.floor(Math.random() * 4);
+    }
+    if (this.emoteTimer > 0) this.emoteTimer--;
+
     this.isDashing = (keys[c.left] && tapTracker[c.left]?.active) || (keys[c.right] && tapTracker[c.right]?.active);
     const currentSpeed = this.isDashing ? this.data.speed * 2.2 : this.data.speed;
 
     if (keys[c.left]) { this.vx = -currentSpeed; this.side = -1; }
     if (keys[c.right]) { this.vx = currentSpeed; this.side = 1; }
 
+    // Crouch
+    this.isCrouching = keys[c.down] && this.isGrounded && !this.isFlying;
+
     if (this.isFlying) {
       if (keys[c.up]) this.vy = -currentSpeed;
       if (keys[c.down]) this.vy = currentSpeed;
     } else if (justPressed[c.up] && this.isGrounded) {
-      this.vy = -14; this.isGrounded = false; this.squashX = 0.7; this.squashY = 1.3;
+      // Super jump if crouching
+      const jumpForce = this.isCrouching ? -22 : -14;
+      this.vy = jumpForce;
+      this.isGrounded = false;
+      this.isCrouching = false;
+      this.squashX = 0.7; this.squashY = 1.3;
+      if (jumpForce === -22) {
+        game.spawnParticles(this.x, GROUND_Y, '#ffff00', 12, 3);
+        game.texts.push(new FloatingText(this.x, this.y - 30, 'SUPER SALTO', '#ffff00'));
+      }
     }
 
     if (justPressed[c.hit]) this.attack('hit', game);

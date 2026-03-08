@@ -1084,16 +1084,12 @@ const CharacterSelect: React.FC = () => {
           flex: '0 0 48%', display: 'flex', position: 'relative',
           borderBottom: '2px solid rgba(255,204,51,0.15)',
         }}>
-          {/* P1 Portrait area */}
+          {/* P1 Portrait - floating, no box */}
           <div style={{
-            width: 'clamp(140px, 22vw, 300px)', position: 'relative', overflow: 'hidden',
-            borderRight: '2px solid rgba(255,204,51,0.15)',
+            position: 'absolute', left: 0, top: 0, bottom: 0,
+            width: 'clamp(180px, 28vw, 380px)', zIndex: 5,
+            pointerEvents: 'none',
           }}>
-            {/* Diagonal color wash */}
-            <div style={{
-              position: 'absolute', inset: 0,
-              background: `linear-gradient(135deg, ${displayP1 ? displayP1.eyeColor + '15' : 'transparent'} 0%, transparent 60%)`,
-            }} />
             <BigPortrait
               char={displayP1 || null}
               customChar={p1Custom}
@@ -1101,21 +1097,20 @@ const CharacterSelect: React.FC = () => {
               facing={1}
               label="P1"
             />
-            {/* Name plate */}
+            {/* Name plate floating */}
             <div style={{
-              position: 'absolute', bottom: 0, left: 0, right: 0,
-              padding: '8px 15px',
-              background: 'linear-gradient(0deg, rgba(0,0,0,0.9) 0%, transparent 100%)',
+              position: 'absolute', bottom: 10, left: 15, right: 15,
+              pointerEvents: 'none',
             }}>
               <div style={{
                 color: '#ffcc33', fontFamily: "'Orbitron', monospace",
-                fontSize: 'clamp(14px, 2.5vw, 24px)', fontWeight: 900,
-                letterSpacing: 3, textShadow: '0 0 15px #ffcc3360',
+                fontSize: 'clamp(16px, 2.8vw, 28px)', fontWeight: 900,
+                letterSpacing: 3, textShadow: '0 0 15px #ffcc3360, 0 2px 8px rgba(0,0,0,0.8)',
               }}>
                 {p1Name}
               </div>
               {displayP1 && (
-                <div style={{ marginTop: 4, display: 'flex', gap: 10 }}>
+                <div style={{ marginTop: 4, display: 'flex', gap: 10, maxWidth: 200 }}>
                   <StatBar label="VEL" value={displayP1.speed / 10} color="#ffcc33" />
                   <StatBar label="POD" value={displayP1.weight} color="#ff6600" />
                 </div>
@@ -1123,10 +1118,8 @@ const CharacterSelect: React.FC = () => {
             </div>
           </div>
 
-          {/* Center stage - characters in game style facing each other */}
-          <div style={{
-            flex: 1, position: 'relative', overflow: 'hidden',
-          }}>
+          {/* Center stage - full width behind portraits */}
+          <div style={{ flex: 1, position: 'relative', overflow: 'hidden' }}>
             <StageCanvas
               p1Char={displayP1 || null}
               p2Char={displayP2 || null}
@@ -1140,15 +1133,12 @@ const CharacterSelect: React.FC = () => {
             }}>VS</div>
           </div>
 
-          {/* P2 Portrait area */}
+          {/* P2 Portrait - floating, no box */}
           <div style={{
-            width: 'clamp(140px, 22vw, 300px)', position: 'relative', overflow: 'hidden',
-            borderLeft: '2px solid rgba(255,204,51,0.15)',
+            position: 'absolute', right: 0, top: 0, bottom: 0,
+            width: 'clamp(180px, 28vw, 380px)', zIndex: 5,
+            pointerEvents: 'none',
           }}>
-            <div style={{
-              position: 'absolute', inset: 0,
-              background: `linear-gradient(-135deg, ${displayP2 ? displayP2.eyeColor + '15' : 'transparent'} 0%, transparent 60%)`,
-            }} />
             <BigPortrait
               char={displayP2 || null}
               customChar={null}
@@ -1157,19 +1147,18 @@ const CharacterSelect: React.FC = () => {
               label="P2"
             />
             <div style={{
-              position: 'absolute', bottom: 0, left: 0, right: 0,
-              padding: '8px 15px', textAlign: 'right',
-              background: 'linear-gradient(0deg, rgba(0,0,0,0.9) 0%, transparent 100%)',
+              position: 'absolute', bottom: 10, left: 15, right: 15, textAlign: 'right',
+              pointerEvents: 'none',
             }}>
               <div style={{
                 color: '#ffcc33', fontFamily: "'Orbitron', monospace",
-                fontSize: 'clamp(14px, 2.5vw, 24px)', fontWeight: 900,
-                letterSpacing: 3, textShadow: '0 0 15px #ffcc3360',
+                fontSize: 'clamp(16px, 2.8vw, 28px)', fontWeight: 900,
+                letterSpacing: 3, textShadow: '0 0 15px #ffcc3360, 0 2px 8px rgba(0,0,0,0.8)',
               }}>
                 {p2Name}
               </div>
               {displayP2 && (
-                <div style={{ marginTop: 4, display: 'flex', gap: 10, justifyContent: 'flex-end' }}>
+                <div style={{ marginTop: 4, display: 'flex', gap: 10, justifyContent: 'flex-end', maxWidth: 200, marginLeft: 'auto' }}>
                   <StatBar label="VEL" value={displayP2.speed / 10} color="#ffcc33" />
                   <StatBar label="POD" value={displayP2.weight} color="#ff6600" />
                 </div>

@@ -741,6 +741,25 @@ export class Fighter {
   }
 
   _drawEmote(ctx: CanvasRenderingContext2D) {
+    const isEdowado = this.charIdx === 0 && !this.customData;
+
+    // Edowado raises his hand - no speech bubble, just a golden glow on raised fist
+    if (isEdowado) {
+      ctx.save();
+      const fadeIn = Math.min(1, (90 - this.emoteTimer) / 10);
+      const fadeOut = Math.min(1, this.emoteTimer / 10);
+      ctx.globalAlpha = fadeIn * fadeOut * 0.6;
+      // Golden sparkles around raised hand
+      for (let i = 0; i < 3; i++) {
+        const sx = this.x + 22 + (Math.random() - 0.5) * 16;
+        const sy = this.y - 32 + (Math.random() - 0.5) * 16;
+        ctx.fillStyle = '#ffe066';
+        ctx.beginPath(); ctx.arc(sx, sy, 1.5 + Math.random() * 2, 0, Math.PI * 2); ctx.fill();
+      }
+      ctx.restore();
+      return;
+    }
+
     ctx.save();
     const fadeIn = Math.min(1, (90 - this.emoteTimer) / 15);
     const fadeOut = Math.min(1, this.emoteTimer / 15);
@@ -765,16 +784,10 @@ export class Fighter {
     ctx.lineTo(ex, ey + 20);
     ctx.fill();
 
-    // Emote content - character specific
     ctx.font = "bold 14px sans-serif";
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
-    let emotes: string[];
-    if (this.charIdx === 0 && !this.customData) {
-      emotes = ['👨‍🍳', '👊', '🍖', '🩺']; // Chef, Puño, Comida, Doctor
-    } else {
-      emotes = ['😤', '💪', '🔥', '⭐'];
-    }
+    const emotes = ['😤', '💪', '🔥', '⭐'];
     ctx.fillStyle = '#000';
     ctx.fillText(emotes[this.emoteType] || emotes[0], ex, ey);
 

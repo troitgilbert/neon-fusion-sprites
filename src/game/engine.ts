@@ -207,7 +207,8 @@ export class GameEngine {
       }
     } else {
       this.selectedSkins.p2 = skinId; this.p2Choice = charIdx;
-      this.setState('STAGE_SELECT');
+      // Return to roster — user must press Enter to go to stage select
+      this.setState('SELECT');
     }
   }
 

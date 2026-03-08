@@ -62,7 +62,7 @@ const OnlineMenu: React.FC = () => {
 
   if (mode === 'join') {
     return (
-      <div className="fixed inset-0 z-50 flex flex-col items-center justify-center" style={{
+      <div className="fixed inset-0 z-50 flex flex-col items-center justify-center anim-screen-zoom" style={{
         background: 'linear-gradient(135deg, #0a0a2e 0%, #001a3a 50%, #0a0a2e 100%)',
       }}>
         <h2 style={{ color: '#00ffff', fontFamily: "'Orbitron', monospace", fontSize: 28, letterSpacing: 5, marginBottom: 30 }}>

@@ -1358,14 +1358,6 @@ const CharacterSelect: React.FC = () => {
             padding: '8px 16px', pointerEvents: 'auto',
             position: 'relative',
           }}>
-            {/* Solid roster backdrop */}
-            <div style={{
-              position: 'absolute', inset: '-10px -20px',
-              background: 'rgba(0,0,0,0.6)',
-              border: '2px solid rgba(255,204,51,0.3)',
-              boxShadow: '0 0 30px rgba(0,0,0,0.5), inset 0 0 20px rgba(0,0,0,0.4)',
-              pointerEvents: 'none',
-            }} />
 
           {/* Honeycomb hex grid - proper beehive layout */}
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 0, position: 'relative', zIndex: 2 }}>

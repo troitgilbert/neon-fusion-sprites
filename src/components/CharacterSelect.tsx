@@ -851,7 +851,6 @@ const CharacterSelect: React.FC = () => {
     return () => window.removeEventListener('keydown', handler);
   }, [cursorIdx, allGridItems, GRID_COLS, skinSelectFor, showCustomMenu]);
 
-  const charRenderData = getCharRenderData();
 
   React.useEffect(() => {
     try {

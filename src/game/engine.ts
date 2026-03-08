@@ -302,8 +302,8 @@ export class GameEngine {
 
   resetRound() {
     if (!this.p1 || !this.p2) return;
-    this.p1.x = 150; this.p1.y = 400; this.p1.vx = 0; this.p1.vy = 0;
-    this.p2.x = 490; this.p2.y = 400; this.p2.vx = 0; this.p2.vy = 0;
+    this.p1.x = 200; this.p1.y = 400; this.p1.vx = 0; this.p1.vy = 0;
+    this.p2.x = 760; this.p2.y = 400; this.p2.vx = 0; this.p2.vy = 0;
 
     if (this.mode === 'survival') {
       if (this.round > 1) this.p1.hp = Math.min(100, this.p1.hp + 20);

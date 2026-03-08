@@ -377,153 +377,94 @@ const MainMenu: React.FC = () => {
             alignItems: 'center', justifyContent: 'center',
             animation: 'mk9OverlayIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards',
           }}>
-            {/* Dark backdrop with radial fire glow */}
+            {/* Dark backdrop - blue galaxy */}
             <div style={{
               position: 'absolute', inset: 0,
-              background: 'radial-gradient(ellipse at center 70%, rgba(80,15,0,0.15) 0%, rgba(0,0,0,0.95) 60%, rgba(0,0,0,0.98) 100%)',
+              background: 'radial-gradient(ellipse at center 60%, rgba(0,40,120,0.2) 0%, rgba(0,10,40,0.95) 50%, rgba(0,0,10,0.98) 100%)',
               backdropFilter: 'blur(12px)',
               animation: 'mk9BgFade 0.4s ease-out forwards',
             }} />
+            <div style={{ position: 'absolute', top: '20%', left: '30%', width: 300, height: 300, borderRadius: '50%', background: 'radial-gradient(circle, rgba(0,100,255,0.08) 0%, transparent 70%)', pointerEvents: 'none', filter: 'blur(40px)' }} />
+            <div style={{ position: 'absolute', bottom: '25%', right: '25%', width: 200, height: 200, borderRadius: '50%', background: 'radial-gradient(circle, rgba(80,0,200,0.06) 0%, transparent 70%)', pointerEvents: 'none', filter: 'blur(30px)' }} />
 
-            {/* Decorative vertical lines */}
-            <div style={{
-              position: 'absolute', left: 'clamp(30px, 8vw, 100px)', top: '10%', bottom: '10%',
-              width: 1, background: 'linear-gradient(180deg, transparent, rgba(200,80,0,0.15), rgba(255,140,0,0.08), transparent)',
-            }} />
-            <div style={{
-              position: 'absolute', right: 'clamp(30px, 8vw, 100px)', top: '10%', bottom: '10%',
-              width: 1, background: 'linear-gradient(180deg, transparent, rgba(200,80,0,0.15), rgba(255,140,0,0.08), transparent)',
-            }} />
+            <div style={{ position: 'absolute', left: 'clamp(30px, 8vw, 100px)', top: '10%', bottom: '10%', width: 1, background: 'linear-gradient(180deg, transparent, rgba(0,120,255,0.15), transparent)' }} />
+            <div style={{ position: 'absolute', right: 'clamp(30px, 8vw, 100px)', top: '10%', bottom: '10%', width: 1, background: 'linear-gradient(180deg, transparent, rgba(0,120,255,0.15), transparent)' }} />
+            <div style={{ position: 'absolute', top: 'clamp(40px, 8vh, 80px)', left: '15%', right: '15%', height: 1, background: 'linear-gradient(90deg, transparent, rgba(0,120,255,0.2), transparent)' }} />
+            <div style={{ position: 'absolute', bottom: 'clamp(40px, 8vh, 80px)', left: '15%', right: '15%', height: 1, background: 'linear-gradient(90deg, transparent, rgba(0,120,255,0.2), transparent)' }} />
 
-            {/* Horizontal accent lines */}
-            <div style={{
-              position: 'absolute', top: 'clamp(40px, 8vh, 80px)', left: '15%', right: '15%',
-              height: 1, background: 'linear-gradient(90deg, transparent, rgba(200,80,0,0.2), rgba(255,180,50,0.1), rgba(200,80,0,0.2), transparent)',
-            }} />
-            <div style={{
-              position: 'absolute', bottom: 'clamp(40px, 8vh, 80px)', left: '15%', right: '15%',
-              height: 1, background: 'linear-gradient(90deg, transparent, rgba(200,80,0,0.2), rgba(255,180,50,0.1), rgba(200,80,0,0.2), transparent)',
-            }} />
-
-            {/* Submenu title */}
-            <div style={{
-              position: 'relative', zIndex: 1,
-              marginBottom: 'clamp(20px, 4vh, 40px)', textAlign: 'center',
-              animation: 'mk9TitleSlide 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.1s both',
-            }}>
+            {/* Title */}
+            <div style={{ position: 'relative', zIndex: 1, marginBottom: 'clamp(20px, 4vh, 40px)', textAlign: 'center', animation: 'mk9TitleSlide 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.1s both' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 14, justifyContent: 'center', marginBottom: 10 }}>
-                <div style={{ width: 'clamp(30px, 6vw, 60px)', height: 1, background: 'linear-gradient(90deg, transparent, rgba(255,180,50,0.5))' }} />
-                <div style={{ width: 6, height: 6, border: '1px solid rgba(255,180,50,0.3)', transform: 'rotate(45deg)' }} />
-                <span style={{
-                  fontSize: 'clamp(7px, 0.8vw, 9px)', letterSpacing: 6,
-                  color: 'rgba(200,130,50,0.5)', fontFamily: "'Orbitron', monospace",
-                }}>SELECCIONA</span>
-                <div style={{ width: 6, height: 6, border: '1px solid rgba(255,180,50,0.3)', transform: 'rotate(45deg)' }} />
-                <div style={{ width: 'clamp(30px, 6vw, 60px)', height: 1, background: 'linear-gradient(270deg, transparent, rgba(255,180,50,0.5))' }} />
+                <div style={{ width: 'clamp(30px, 6vw, 60px)', height: 1, background: 'linear-gradient(90deg, transparent, rgba(0,180,255,0.5))' }} />
+                <div style={{ width: 6, height: 6, border: '1px solid rgba(0,180,255,0.3)', transform: 'rotate(45deg)' }} />
+                <span style={{ fontSize: 'clamp(7px, 0.8vw, 9px)', letterSpacing: 6, color: 'rgba(0,180,255,0.5)', fontFamily: "'Orbitron', monospace" }}>SELECCIONA</span>
+                <div style={{ width: 6, height: 6, border: '1px solid rgba(0,180,255,0.3)', transform: 'rotate(45deg)' }} />
+                <div style={{ width: 'clamp(30px, 6vw, 60px)', height: 1, background: 'linear-gradient(270deg, transparent, rgba(0,180,255,0.5))' }} />
               </div>
-              <h2 style={{
-                fontSize: 'clamp(22px, 3.5vw, 44px)', fontWeight: 900,
-                fontFamily: "'Orbitron', serif", letterSpacing: 'clamp(4px, 0.8vw, 10px)',
-                color: '#e8d5a3',
-                textShadow: '0 0 20px rgba(255,80,0,0.6), 0 0 50px rgba(200,30,0,0.25), 0 2px 0 #8b6914, 0 4px 6px rgba(0,0,0,0.7)',
-              }}>
+              <h2 style={{ fontSize: 'clamp(22px, 3.5vw, 44px)', fontWeight: 900, fontFamily: "'Orbitron', serif", letterSpacing: 'clamp(4px, 0.8vw, 10px)', color: '#a0d4ff', textShadow: '0 0 20px rgba(0,120,255,0.6), 0 0 50px rgba(0,60,200,0.25), 0 2px 0 #1a4a8b, 0 4px 6px rgba(0,0,0,0.7)' }}>
                 {parentItem.label}
               </h2>
-              <div style={{
-                width: 'clamp(80px, 14vw, 160px)', height: 2, margin: '10px auto 0',
-                background: 'linear-gradient(90deg, transparent, #d4a037 30%, #ff8800 50%, #d4a037 70%, transparent)',
-                boxShadow: '0 0 10px rgba(255,140,0,0.2)',
-              }} />
+              <div style={{ width: 'clamp(80px, 14vw, 160px)', height: 2, margin: '10px auto 0', background: 'linear-gradient(90deg, transparent, #3388dd 30%, #00bbff 50%, #3388dd 70%, transparent)', boxShadow: '0 0 10px rgba(0,140,255,0.2)' }} />
             </div>
 
-            {/* Submenu items */}
-            <div style={{
-              position: 'relative', zIndex: 1,
-              display: 'flex', flexDirection: 'column', alignItems: 'center',
-              maxHeight: '48vh', overflowY: 'auto', scrollbarWidth: 'none',
-              width: 'clamp(300px, 38vw, 480px)',
-              padding: '8px 0',
-            }}>
+            {/* Capsule items */}
+            <div style={{ position: 'relative', zIndex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', maxHeight: '48vh', overflowY: 'auto', scrollbarWidth: 'none', width: 'clamp(320px, 40vw, 500px)', padding: '8px 0', gap: 3 }}>
               {subs.map((sub, si) => {
                 const sa = subIndex === si;
                 const isBoss = sub.className === 'boss-rush';
                 const isMystery = sub.className === 'mystery';
-                const accentColor = isBoss ? [255, 50, 50] : [255, 140, 30];
-                const delay = si * 0.04;
+                const num = String(si + 1).padStart(2, '0');
+                const badgeActive = isBoss ? 'linear-gradient(135deg, #ff4444, #cc2222, #991111)' : 'linear-gradient(135deg, #33aaff, #0077dd, #004499)';
                 return (
                   <button key={sub.label}
                     onClick={() => sub.action()}
-                    onMouseEnter={() => {
-                      setSubIndex(si); setHoveredMode(sub.label);
-                      if (isMystery) setMysteryHover(true);
-                    }}
-                    onMouseLeave={() => {
-                      setHoveredMode('');
-                      if (isMystery) setMysteryHover(false);
-                    }}
+                    onMouseEnter={() => { setSubIndex(si); setHoveredMode(sub.label); if (isMystery) setMysteryHover(true); }}
+                    onMouseLeave={() => { setHoveredMode(''); if (isMystery) setMysteryHover(false); }}
                     style={{
-                      position: 'relative',
-                      width: '100%',
-                      padding: 'clamp(9px, 1.2vh, 14px) clamp(36px, 5vw, 56px)',
-                      margin: '2px 0',
-                      fontSize: 'clamp(12px, 1.3vw, 16px)',
-                      textAlign: 'center',
-                      display: 'flex', alignItems: 'center', justifyContent: 'center',
-                      fontFamily: "'Orbitron', serif",
-                      fontWeight: sa ? 800 : 500,
-                      letterSpacing: sa ? 4 : 2,
-                      cursor: 'pointer', border: 'none', borderRadius: 0,
-                      overflow: 'hidden',
-                      color: isBoss
-                        ? (sa ? '#ff5555' : 'rgba(180,60,60,0.5)')
-                        : isMystery
-                          ? (sa ? '#555' : '#1a1a1a')
-                          : (sa ? '#fff' : 'rgba(180,160,130,0.45)'),
-                      background: sa
-                        ? `linear-gradient(90deg, transparent 5%, rgba(${accentColor.join(',')},0.12) 25%, rgba(${accentColor.join(',')},0.18) 50%, rgba(${accentColor.join(',')},0.12) 75%, transparent 95%)`
-                        : 'transparent',
-                      textShadow: sa
-                        ? `0 0 18px rgba(${accentColor.join(',')},0.65), 0 0 35px rgba(${accentColor.join(',')},0.2), 0 1px 2px rgba(0,0,0,0.6)`
-                        : '0 1px 2px rgba(0,0,0,0.3)',
-                      transform: sa ? 'scale(1.06)' : 'scale(1)',
+                      position: 'relative', width: '100%', padding: 0, cursor: 'pointer', border: 'none', background: 'transparent',
+                      display: 'flex', alignItems: 'center', gap: 0,
+                      transform: sa ? 'translateX(6px) scale(1.03)' : 'scale(1)',
                       transition: 'all 0.2s cubic-bezier(0.16, 1, 0.3, 1)',
-                      animation: `mk9ItemIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) ${0.15 + delay}s both`,
+                      animation: `mk9ItemIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) ${0.12 + si * 0.04}s both`,
+                      filter: sa ? 'brightness(1.2)' : 'brightness(0.65)',
                     }}
                   >
-                    {/* Active decorations */}
-                    {sa && <>
-                      <div style={{
-                        position: 'absolute', top: 0, left: '8%', right: '8%', height: 1,
-                        background: `linear-gradient(90deg, transparent, rgba(${accentColor.join(',')},0.7), transparent)`,
-                        boxShadow: `0 0 6px rgba(${accentColor.join(',')},0.3)`,
-                      }} />
-                      <div style={{
-                        position: 'absolute', bottom: 0, left: '8%', right: '8%', height: 1,
-                        background: `linear-gradient(90deg, transparent, rgba(${accentColor.join(',')},0.7), transparent)`,
-                        boxShadow: `0 0 6px rgba(${accentColor.join(',')},0.3)`,
-                      }} />
-                      {/* Left/right diamonds */}
-                      <div style={{
-                        position: 'absolute', left: 'clamp(8px, 2vw, 20px)', top: '50%', transform: 'translateY(-50%) rotate(45deg)',
-                        width: 5, height: 5, background: `rgba(${accentColor.join(',')},0.6)`,
-                        boxShadow: `0 0 8px rgba(${accentColor.join(',')},0.4)`,
-                      }} />
-                      <div style={{
-                        position: 'absolute', right: 'clamp(8px, 2vw, 20px)', top: '50%', transform: 'translateY(-50%) rotate(45deg)',
-                        width: 5, height: 5, background: `rgba(${accentColor.join(',')},0.6)`,
-                        boxShadow: `0 0 8px rgba(${accentColor.join(',')},0.4)`,
-                      }} />
-                      {/* Sweep */}
-                      <div style={{
-                        position: 'absolute', inset: 0,
-                        background: 'linear-gradient(90deg, transparent 30%, rgba(255,220,150,0.04) 50%, transparent 70%)',
-                        animation: 'sweepRight 2s ease-in-out infinite',
-                        pointerEvents: 'none',
-                      }} />
-                    </>}
-                    {isMystery
-                      ? <span style={{ animation: 'mysteryFlicker 2s infinite' }}>{sub.label}</span>
-                      : sub.label}
+                    <div style={{
+                      width: 'clamp(30px, 3.2vw, 44px)', height: 'clamp(26px, 2.8vw, 36px)',
+                      display: 'flex', alignItems: 'center', justifyContent: 'center',
+                      background: sa ? badgeActive : 'linear-gradient(135deg, #4a5568, #2d3748, #1a202c)',
+                      borderRadius: 'clamp(13px, 1.4vw, 18px) 0 0 clamp(13px, 1.4vw, 18px)',
+                      fontFamily: "'Orbitron', monospace", fontSize: 'clamp(10px, 1.1vw, 14px)', fontWeight: 900,
+                      color: sa ? '#fff' : '#667', flexShrink: 0,
+                      boxShadow: sa ? (isBoss ? '0 0 15px rgba(255,50,50,0.4)' : '0 0 15px rgba(0,120,255,0.4)') : 'none',
+                      transition: 'all 0.2s',
+                    }}>{num}</div>
+                    <div style={{
+                      flex: 1, height: 'clamp(26px, 2.8vw, 36px)',
+                      display: 'flex', alignItems: 'center', justifyContent: 'center',
+                      padding: '0 clamp(14px, 1.8vw, 24px)',
+                      background: sa ? 'linear-gradient(180deg, rgba(0,50,100,0.85), rgba(0,15,40,0.95))' : 'linear-gradient(180deg, rgba(30,35,45,0.8), rgba(10,12,18,0.9))',
+                      borderRadius: '0 clamp(13px, 1.4vw, 18px) clamp(13px, 1.4vw, 18px) 0',
+                      border: sa ? (isBoss ? '1px solid rgba(255,80,80,0.4)' : '1px solid rgba(0,150,255,0.35)') : '1px solid rgba(80,90,110,0.15)',
+                      borderLeft: 'none', position: 'relative', overflow: 'hidden', transition: 'all 0.2s',
+                    }}>
+                      <div style={{ position: 'absolute', inset: 0, background: sa ? 'linear-gradient(180deg, rgba(100,200,255,0.1), transparent 30%)' : 'none', pointerEvents: 'none' }} />
+                      <div style={{ position: 'absolute', right: 10, top: '50%', transform: 'translateY(-50%)', display: 'flex', gap: 3, opacity: sa ? 0.5 : 0.12 }}>
+                        {Array.from({ length: 5 }).map((_, di) => (
+                          <div key={di} style={{ width: 3, height: 3, borderRadius: '50%', background: sa ? (isBoss ? 'rgba(255,100,100,0.6)' : 'rgba(100,200,255,0.6)') : 'rgba(100,110,130,0.25)' }} />
+                        ))}
+                      </div>
+                      {sa && <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(90deg, transparent 20%, rgba(100,200,255,0.06) 45%, transparent 80%)', animation: 'sweepRight 2s ease-in-out infinite', pointerEvents: 'none' }} />}
+                      <span style={{
+                        position: 'relative', zIndex: 1, fontFamily: "'Orbitron', serif",
+                        fontSize: 'clamp(10px, 1.1vw, 14px)', fontWeight: sa ? 800 : 600, letterSpacing: sa ? 3 : 1.5,
+                        color: isBoss ? (sa ? '#ff8888' : 'rgba(180,80,80,0.4)') : isMystery ? (sa ? '#556' : '#111') : (sa ? '#b0e0ff' : 'rgba(140,160,180,0.4)'),
+                        textShadow: sa ? (isBoss ? '0 0 12px rgba(255,80,80,0.5)' : '0 0 12px rgba(0,150,255,0.5)') : 'none',
+                        transition: 'all 0.2s',
+                      }}>
+                        {isMystery ? <span style={{ animation: 'mysteryFlicker 2s infinite' }}>{sub.label}</span> : sub.label}
+                      </span>
+                    </div>
                   </button>
                 );
               })}
@@ -537,10 +478,10 @@ const MainMenu: React.FC = () => {
               textAlign: 'center',
               animation: 'mk9ItemIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) 0.4s both',
             }}>
-              <div style={{ width: '60%', height: 1, margin: '0 auto 10px', background: 'linear-gradient(90deg, transparent, rgba(200,80,0,0.2), transparent)' }} />
+              <div style={{ width: '60%', height: 1, margin: '0 auto 10px', background: 'linear-gradient(90deg, transparent, rgba(0,120,255,0.2), transparent)' }} />
               <p style={{
                 fontSize: 'clamp(8px, 0.85vw, 11px)', lineHeight: 1.7,
-                color: 'rgba(200,180,150,0.45)', fontFamily: "'Orbitron', sans-serif", fontWeight: 400,
+                color: 'rgba(140,180,220,0.45)', fontFamily: "'Orbitron', sans-serif", fontWeight: 400,
                 transition: 'all 0.3s',
               }}>
                 {infoText}
@@ -560,23 +501,23 @@ const MainMenu: React.FC = () => {
                   fontSize: 'clamp(10px, 1.1vw, 13px)',
                   fontFamily: "'Orbitron', serif",
                   fontWeight: 700, letterSpacing: 4,
-                  color: 'rgba(200,150,80,0.5)',
-                  background: 'linear-gradient(180deg, rgba(180,60,0,0.06), rgba(100,30,0,0.1))',
-                  border: '1px solid rgba(180,60,0,0.2)',
-                  borderBottom: '2px solid rgba(200,80,0,0.25)',
-                  cursor: 'pointer',
+                  color: 'rgba(100,170,230,0.5)',
+                  background: 'linear-gradient(180deg, rgba(0,40,100,0.1), rgba(0,20,60,0.15))',
+                  border: '1px solid rgba(0,100,200,0.2)',
+                  borderBottom: '2px solid rgba(0,120,255,0.25)',
+                  cursor: 'pointer', borderRadius: 20,
                   transition: 'all 0.25s ease',
                 }}
                 onMouseEnter={e => {
-                  e.currentTarget.style.color = '#e8d5a3';
-                  e.currentTarget.style.borderColor = 'rgba(255,140,0,0.4)';
-                  e.currentTarget.style.background = 'linear-gradient(180deg, rgba(200,60,0,0.12), rgba(120,30,0,0.15))';
-                  e.currentTarget.style.textShadow = '0 0 10px rgba(255,140,0,0.3)';
+                  e.currentTarget.style.color = '#a0d4ff';
+                  e.currentTarget.style.borderColor = 'rgba(0,150,255,0.4)';
+                  e.currentTarget.style.background = 'linear-gradient(180deg, rgba(0,60,140,0.15), rgba(0,30,80,0.2))';
+                  e.currentTarget.style.textShadow = '0 0 10px rgba(0,150,255,0.3)';
                 }}
                 onMouseLeave={e => {
-                  e.currentTarget.style.color = 'rgba(200,150,80,0.5)';
-                  e.currentTarget.style.borderColor = 'rgba(180,60,0,0.2)';
-                  e.currentTarget.style.background = 'linear-gradient(180deg, rgba(180,60,0,0.06), rgba(100,30,0,0.1))';
+                  e.currentTarget.style.color = 'rgba(100,170,230,0.5)';
+                  e.currentTarget.style.borderColor = 'rgba(0,100,200,0.2)';
+                  e.currentTarget.style.background = 'linear-gradient(180deg, rgba(0,40,100,0.1), rgba(0,20,60,0.15))';
                   e.currentTarget.style.textShadow = 'none';
                 }}
               >

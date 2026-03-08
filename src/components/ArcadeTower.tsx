@@ -39,7 +39,7 @@ const ArcadeTower: React.FC = () => {
     }}>
       {/* Tower on the left */}
       <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: 20 }}>
-        <h2 style={{ color: '#ffcc33', fontFamily: "'Orbitron', monospace", fontSize: 'clamp(18px, 3vw, 28px)', letterSpacing: 4, marginBottom: 20, textShadow: '0 0 15px #ff6600' }}>
+        <h2 className="anim-title-slam" style={{ color: '#ffcc33', fontFamily: "'Orbitron', monospace", fontSize: 'clamp(18px, 3vw, 28px)', letterSpacing: 4, marginBottom: 20, textShadow: '0 0 15px #ff6600' }}>
           TORRE ARCADE
         </h2>
         <div style={{ display: 'flex', flexDirection: 'column-reverse', gap: 4, maxHeight: '70vh', overflowY: 'auto' }}>

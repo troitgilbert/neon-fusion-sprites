@@ -7,7 +7,7 @@ export interface CharAbility {
 }
 
 export const SPECIAL_ABILITIES: CharAbility[] = [
-  { name: 'Rombo Cósmico', source: 'Edowado', attackId: 'edowado_special' },
+  { name: 'Cristal', source: 'Edowado', attackId: 'edowado_special' },
   { name: 'Estela Dorada', source: 'Kaito', attackId: 'kaito_special' },
   { name: 'Intangibilidad', source: 'Demonio Blanco', attackId: 'demonio_special' },
   { name: 'Estela Asesina', source: 'Asesino', attackId: 'asesino_special' },

@@ -29,6 +29,10 @@ export class Fighter {
   _lastHitFrame: number;
   _hookCombo: number;
   _pendingTemblor: boolean;
+  _invocationActive: boolean;
+  _invocationX: number;
+  _invocationTimer: number;
+  _pendingImpactoCristalico: boolean;
   constructor(id: number, charIdx: number, x: number, side: number, controls: Controls, isAI = false, skinId: string | null = null, customData: CustomCharData | null = null) {
     this.id = id; this.charIdx = charIdx;
     this.customData = customData;
@@ -58,6 +62,10 @@ export class Fighter {
     this._lastHitFrame = 0;
     this._hookCombo = 0;
     this._pendingTemblor = false;
+    this._invocationActive = false;
+    this._invocationX = 0;
+    this._invocationTimer = 0;
+    this._pendingImpactoCristalico = false;
   }
 
   reset(x: number, side: number) {
@@ -69,6 +77,7 @@ export class Fighter {
     this.handPhase = Math.random() * Math.PI * 2; this.handOrder = 1;
     this.handMode = 'normal'; this.handTimer = 0; this.specialTrail = 0;
     this.isCrouching = false; this.emoteTimer = 0;
+    this._invocationActive = false; this._pendingImpactoCristalico = false;
   }
 
   isKaitoAsesino() { return this.charIdx === 1 && this.skinId === 'demonioBlanco2'; }
@@ -119,6 +128,33 @@ export class Fighter {
       this.specialTrail--;
     }
 
+    // Invocación Cristal: ! marker moving forward
+    if (this._invocationActive) {
+      this._invocationTimer++;
+      this._invocationX += this.side * 4;
+      // Draw ! effect as particles
+      game.spawnParticles(this._invocationX, this.y - 20, '#00ffff', 1, 2);
+      // Check if reached edge
+      if (this._invocationX < 20 || this._invocationX > CANVAS_W - 20) {
+        // Release: spawn crystal upward from ! position
+        game.spawnProjectile(this._invocationX, this.y, 0, -10, '#00ffff', this, 'crystal_rise');
+        game.texts.push(new FloatingText(this._invocationX, this.y - 50, 'INVOCACIÓN CRISTAL', '#00ffff'));
+        game.spawnParticles(this._invocationX, this.y, '#00ffff', 15, 3);
+        this._invocationActive = false;
+      }
+      // Check if forward key released
+      const fwdKey = this.id === 1
+        ? (this.side === 1 ? 'KeyD' : 'KeyA')
+        : (this.side === 1 ? 'ArrowRight' : 'ArrowLeft');
+      if (!keys[fwdKey]) {
+        // Release: spawn crystal upward from ! position
+        game.spawnProjectile(this._invocationX, this.y, 0, -10, '#00ffff', this, 'crystal_rise');
+        game.texts.push(new FloatingText(this._invocationX, this.y - 50, 'INVOCACIÓN CRISTAL', '#00ffff'));
+        game.spawnParticles(this._invocationX, this.y, '#00ffff', 15, 3);
+        this._invocationActive = false;
+      }
+    }
+
     // Physics
     if (!this.isFlying) {
       this.vy += 0.6; this.vx *= this.isDashing ? 0.95 : 0.8;
@@ -127,30 +163,40 @@ export class Fighter {
            this.squashX = 1.3; this.squashY = 0.7;
            game.spawnParticles(this.x, 425, '#888', 5, 2);
            // Temblor landing effect
-           if (this._pendingTemblor) {
-             this._pendingTemblor = false;
-             const opp2 = (this.id === 1) ? game.p2 : game.p1;
-             game.shake = 25;
-             game.hitStop = 10;
-             game.spawnShockwave(this.x, GROUND_Y, '#4488ff');
-             game.spawnShockwave(this.x, GROUND_Y, '#00aaff');
-             game.spawnParticles(this.x, GROUND_Y, '#4488ff', 30, 4);
-             game.texts.push(new FloatingText(this.x, this.y - 50, 'TEMBLOR', '#4488ff'));
-             playHitSound();
-             // AoE damage - anyone within range
-             const distToOpp = Math.abs(this.x - opp2.x);
-             if (distToOpp < 160) {
-               const dmg = 2.5 * this.damageBoost;
-               opp2.takeDamage(dmg, true);
-               game.trackStat('totalDamage', dmg);
-               opp2.vy = -10;
-               opp2.vx = (opp2.x > this.x ? 1 : -1) * 12;
-               opp2.stun = 15;
-               this.comboHits++;
-               game.trackStat('comboMax', this.comboHits);
-             }
-             this.damageBoost = 1;
-           }
+            if (this._pendingTemblor) {
+              this._pendingTemblor = false;
+              const opp2 = (this.id === 1) ? game.p2 : game.p1;
+              game.shake = 25;
+              game.hitStop = 10;
+              game.spawnShockwave(this.x, GROUND_Y, '#4488ff');
+              game.spawnShockwave(this.x, GROUND_Y, '#00aaff');
+              game.spawnParticles(this.x, GROUND_Y, '#4488ff', 30, 4);
+              game.texts.push(new FloatingText(this.x, this.y - 50, 'TEMBLOR', '#4488ff'));
+              playHitSound();
+              const distToOpp = Math.abs(this.x - opp2.x);
+              if (distToOpp < 160) {
+                const dmg = 2.5 * this.damageBoost;
+                opp2.takeDamage(dmg, true);
+                game.trackStat('totalDamage', dmg);
+                opp2.vy = -10;
+                opp2.vx = (opp2.x > this.x ? 1 : -1) * 12;
+                opp2.stun = 15;
+                this.comboHits++;
+                game.trackStat('comboMax', this.comboHits);
+              }
+              this.damageBoost = 1;
+            }
+            // Impacto Cristálico landing effect
+            if (this._pendingImpactoCristalico) {
+              this._pendingImpactoCristalico = false;
+              game.shake = 30;
+              game.hitStop = 12;
+              game.texts.push(new FloatingText(this.x, this.y - 60, 'IMPACTO CRISTÁLICO', '#66bbff'));
+              game.spawnProjectile(this.x, GROUND_Y, 0, 0, '#66bbff', this, 'crystal_pillar');
+              game.spawnShockwave(this.x, GROUND_Y, '#66bbff');
+              game.spawnParticles(this.x, GROUND_Y, '#88ccff', 40, 4);
+              playSpecialSound();
+            }
          }
          this.y = GROUND_Y; this.vy = 0; this.isGrounded = true;
       }
@@ -191,8 +237,11 @@ export class Fighter {
     this.isDashing = (keys[c.left] && tapTracker[c.left]?.active) || (keys[c.right] && tapTracker[c.right]?.active);
     const currentSpeed = this.isDashing ? this.data.speed * 2.2 : this.data.speed;
 
-    if (keys[c.left]) { this.vx = -currentSpeed; this.side = -1; }
-    if (keys[c.right]) { this.vx = currentSpeed; this.side = 1; }
+    // Block movement during invocation
+    if (!this._invocationActive) {
+      if (keys[c.left]) { this.vx = -currentSpeed; this.side = -1; }
+      if (keys[c.right]) { this.vx = currentSpeed; this.side = 1; }
+    }
 
     // Crouch
     this.isCrouching = keys[c.down] && this.isGrounded && !this.isFlying && this.handTimer === 0;
@@ -249,7 +298,26 @@ export class Fighter {
         this.attack('hit', game);
       }
     }
-    if (justPressed[c.spec]) this.attack('special', game);
+    if (justPressed[c.spec]) {
+      if (!this.customData && this.charIdx === 0) {
+        const fwdKey = this.side === 1 ? c.right : c.left;
+        if (!this.isGrounded && keys[c.down]) {
+          this.attack('crystal_descend', game);
+        } else if (!this.isGrounded && keys[fwdKey]) {
+          this.attack('crystal_impact', game);
+        } else if (keys[fwdKey]) {
+          this.attack('crystal_invocation', game);
+        } else if (keys[c.down]) {
+          this.attack('crystal_bounce_shot', game);
+        } else if (keys[c.up]) {
+          this.attack('crystal_curve_shot', game);
+        } else {
+          this.attack('special', game);
+        }
+      } else {
+        this.attack('special', game);
+      }
+    }
     if (justPressed[c.super]) this.attack('super', game);
     if (justPressed[c.ultra]) this.attack('ultra', game);
 
@@ -580,6 +648,69 @@ export class Fighter {
       return;
     }
 
+    // === EDOWADO DIRECTIONAL SPECIALS ===
+
+    // Forward + Special: Invocación Cristal
+    if (type === 'crystal_invocation' && this.energy >= 49.5) {
+      this.energy -= 49.5;
+      playSpecialSound();
+      this._invocationActive = true;
+      this._invocationX = this.x;
+      this._invocationTimer = 0;
+      this.vx = 0;
+      game.trackStat('totalSpecials');
+      return;
+    }
+
+    // Down + Special: Rebote Cristal (bouncing diagonal crystal 5s)
+    if (type === 'crystal_bounce_shot' && this.energy >= 49.5) {
+      this.energy -= 49.5;
+      playSpecialSound();
+      game.texts.push(new FloatingText(this.x, this.y - 50, 'REBOTE CRISTAL', '#00ffff'));
+      game.spawnProjectile(this.x, this.y, this.side * 6, 5, '#00ddff', this, 'crystal_bounce');
+      game.spawnShockwave(this.x, this.y, '#00ffff');
+      game.shake = 10;
+      game.trackStat('totalSpecials');
+      return;
+    }
+
+    // Up + Special: Curved crystal toward enemy
+    if (type === 'crystal_curve_shot' && this.energy >= 49.5) {
+      this.energy -= 49.5;
+      playSpecialSound();
+      const dx = opp.x - this.x;
+      const vxCurve = dx * 0.04;
+      game.texts.push(new FloatingText(this.x, this.y - 50, 'CRISTAL CURVA', '#66bbff'));
+      game.spawnProjectile(this.x, this.y, vxCurve, -12, '#66bbff', this, 'crystal_curve');
+      game.spawnShockwave(this.x, this.y, '#66bbff');
+      game.shake = 10;
+      game.trackStat('totalSpecials');
+      return;
+    }
+
+    // Air + Down + Special: Descenso Cristálico (2 diagonal downward crystals)
+    if (type === 'crystal_descend' && this.energy >= 49.5) {
+      this.energy -= 49.5;
+      playSpecialSound();
+      game.texts.push(new FloatingText(this.x, this.y - 50, 'DESCENSO CRISTÁLICO', '#00ccff'));
+      game.spawnProjectile(this.x, this.y, -4, 8, '#00ccff', this, 'crystal_descend');
+      game.spawnProjectile(this.x, this.y, 4, 8, '#00ccff', this, 'crystal_descend');
+      game.spawnParticles(this.x, this.y, '#00ccff', 15, 3);
+      game.shake = 8;
+      game.trackStat('totalSpecials');
+      return;
+    }
+
+    // Air + Forward + Special: Impacto Cristálico (slam + crystal pillar)
+    if (type === 'crystal_impact' && this.energy >= 49.5) {
+      this.energy -= 49.5;
+      playSpecialSound();
+      this.vy = 30; // slam down
+      this._pendingImpactoCristalico = true;
+      game.trackStat('totalSpecials');
+      return;
+    }
+
     if (type === 'hit') {
       // Alternating hands for all characters
       this.handMode = this.handOrder > 0 ? 'punch_left' : 'punch_right';
@@ -617,7 +748,7 @@ export class Fighter {
       game.shake = 14; game.hitStop = 6;
       game.trackStat('totalSpecials');
       if (this.charIdx === 0) {
-        game.texts.push(new FloatingText(this.x, this.y - 50, 'ROMBO CÓSMICO', '#00ffff'));
+        game.texts.push(new FloatingText(this.x, this.y - 50, 'CRISTAL', '#00ffff'));
         game.spawnProjectile(this.x, this.y, this.side * 12, 0, '#00ffff', this, 'rhombus');
       } else {
         game.texts.push(new FloatingText(this.x, this.y - 50, 'ESTELA DORADA', '#ffff00'));

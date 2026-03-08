@@ -283,9 +283,9 @@ const MainMenu: React.FC = () => {
 
                     {/* Sweep animation on active */}
                     {active && <div style={{
-                      position: 'absolute', inset: 0,
-                      background: 'linear-gradient(90deg, transparent 20%, rgba(255,220,150,0.08) 45%, transparent 80%)',
-                      animation: 'sweepRight 2s ease-in-out infinite',
+                      position: 'absolute', top: 0, bottom: 0, width: '40%',
+                      background: 'linear-gradient(90deg, transparent, rgba(255,220,150,0.15), rgba(255,255,255,0.05), transparent)',
+                      animation: 'mk9SweepShine 2.5s ease-in-out infinite',
                       pointerEvents: 'none',
                     }} />}
 

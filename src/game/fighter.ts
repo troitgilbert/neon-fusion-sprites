@@ -983,6 +983,12 @@ export class Fighter {
       rx = this.x + 22 + Math.cos(arcAngle) * 6;
       ry = this.y - Math.sin(arcAngle) * 28;
       lx = this.x + 16; ly = this.y - 4;
+    } else if (this.handMode === 'uppercut_up') {
+      // Uppercut: fist goes straight up from body
+      const t = this.handTimer / 20;
+      rx = this.x + 22;
+      ry = this.y - 10 - (1 - t) * 30; // fist rises upward
+      lx = this.x + 16; ly = this.y - 4;
     } else if (this.handMode === 'block') {
       lx = this.x + 34; rx = this.x + 40; ly = this.y - 4; ry = this.y + 8;
     }

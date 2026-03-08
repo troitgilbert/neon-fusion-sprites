@@ -9,6 +9,7 @@ const VersusTypeMenu: React.FC = () => {
     border: '1px solid #87ceeb', color: '#87ceeb', padding: 12, margin: 6, width: 240,
     cursor: 'pointer', textTransform: 'uppercase', fontWeight: 'bold', letterSpacing: 2,
     fontFamily: "'Orbitron', monospace",
+    transition: 'all 0.25s cubic-bezier(0.16, 1, 0.3, 1)',
   };
 
   return (

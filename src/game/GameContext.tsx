@@ -12,16 +12,7 @@ interface GameContextType {
   setGameState: (s: GameState, mode?: GameMode) => void;
 }
 
-const gameContextSingletonKey = '__lovable_game_context_singleton__';
-const globalGameContext = globalThis as typeof globalThis & {
-  [key: string]: React.Context<GameContextType | null> | undefined;
-};
-
-const GameCtx =
-  globalGameContext[gameContextSingletonKey] ??
-  createContext<GameContextType | null>(null);
-
-globalGameContext[gameContextSingletonKey] = GameCtx;
+const GameCtx = createContext<GameContextType | null>(null);
 
 export const useGame = () => {
   const ctx = useContext(GameCtx);

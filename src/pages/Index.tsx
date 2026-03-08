@@ -1,4 +1,3 @@
-// @refresh reset
 import React from 'react';
 import { GameProvider, useGame } from '../game/GameContext';
 import NebulaBackground from '../components/NebulaBackground';
@@ -196,12 +195,10 @@ const GameApp: React.FC = () => {
   );
 };
 
-const Index: React.FC = () => {
-  return (
-    <GameProvider>
-      <GameApp />
-    </GameProvider>
-  );
-};
+const Index: React.FC = () => (
+  <GameProvider>
+    <GameApp />
+  </GameProvider>
+);
 
 export default Index;

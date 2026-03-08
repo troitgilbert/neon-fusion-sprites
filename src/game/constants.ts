@@ -1,6 +1,6 @@
 import { CharData, Controls, SkinCatalogItem } from './types';
 
-export const CANVAS_W = 640;
+export const CANVAS_W = 960;
 export const CANVAS_H = 480;
 export const GROUND_Y = 400;
 export const FLOOR_Y = 425;

@@ -475,7 +475,7 @@ export class Fighter {
       this.handOrder *= -1;
       // Hook towards forward - giant fist appears diagonal DOWN
       this.vx = this.side * 16;
-      const giantFist = new GiantFist(this.x, this.y, this.side, 1, '#d4af37', 22, this);
+      const giantFist = new GiantFist(this.x, this.y, this.side, 1, '#d4af37', 14, this);
       game.particles.push(giantFist);
       // Extended range thanks to giant fist
       if (dist < 130 && Math.abs(this.y - opp.y) < 60) {

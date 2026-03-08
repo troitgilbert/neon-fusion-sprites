@@ -1,258 +1,518 @@
 // Pixel art sprite drawing for Edowado
-// Draws directly on canvas - no image loading needed
+// Based on reference: spiky dark hair, red/dark vest, dark pants, fighting stance
 
 export type SpriteState = 'idle' | 'walk' | 'attack' | 'jump' | 'block' | 'hurt';
 
-const P = 2; // pixel size for the pixel art
-
-// Color palette
-const SKIN = '#f5deb3';
-const SKIN_DARK = '#d4b896';
-const HAIR = '#5a3a1a';
-const HAIR_DARK = '#3d2710';
-const SHIRT = '#b00000';
-const SHIRT_DARK = '#800000';
-const PANTS = '#1a1a2e';
-const PANTS_DARK = '#0d0d17';
-const EYE = '#00ffff';
-const EYE_GLOW = '#80ffff';
-const SHOE = '#3a2a1a';
-const HAND = '#d4af37';
-const OUTLINE = '#222222';
-const BELT = '#8B7355';
+// Color palette matching reference
+const C = {
+  // Outline
+  O: '#1a1018',
+  // Hair
+  H: '#2a1a0a',
+  Hh: '#1a0f05',
+  Hs: '#4a3520', // hair spike highlight
+  // Skin
+  S: '#f0d0a0',
+  Sd: '#d4af78',
+  Sl: '#ffe8c8',
+  // Shirt / vest (red)
+  R: '#c02020',
+  Rd: '#8b1515',
+  Rl: '#e03030',
+  // Undershirt (yellow/gold)
+  Y: '#d4a020',
+  Yd: '#a07818',
+  // Pants (dark)
+  P: '#1a1a30',
+  Pd: '#0e0e1e',
+  Pl: '#2a2a44',
+  // Belt
+  B: '#8B7355',
+  Bd: '#6a5540',
+  // Shoes
+  K: '#2a1a10',
+  Kl: '#3d2a18',
+  // Eyes
+  E: '#00ffff',
+  El: '#80ffff',
+  // Hands
+  D: '#d4af37',
+  Dd: '#b08c20',
+  // White
+  W: '#ffffff',
+};
 
 /**
- * Draw a single pixel-art pixel
+ * Draw a filled pixel
  */
-function px(ctx: CanvasRenderingContext2D, x: number, y: number, color: string, size: number = P) {
+function px(ctx: CanvasRenderingContext2D, x: number, y: number, color: string, s: number) {
   ctx.fillStyle = color;
-  ctx.fillRect(x, y, size, size);
+  ctx.fillRect(x, y, s, s);
 }
 
 /**
- * Draw a row of pixels from a color map
- * Each character maps to a color (. = transparent)
+ * Draw a sprite from a 2D color array
  */
-function drawRow(ctx: CanvasRenderingContext2D, ox: number, y: number, row: string, palette: Record<string, string>, size: number = P) {
-  for (let i = 0; i < row.length; i++) {
-    const ch = row[i];
-    if (ch !== '.' && palette[ch]) {
-      ctx.fillStyle = palette[ch];
-      ctx.fillRect(ox + i * size, y, size, size);
+function drawPixelGrid(
+  ctx: CanvasRenderingContext2D,
+  ox: number, oy: number,
+  grid: (string | null)[][],
+  s: number
+) {
+  for (let row = 0; row < grid.length; row++) {
+    for (let col = 0; col < grid[row].length; col++) {
+      const c = grid[row][col];
+      if (c) px(ctx, ox + col * s, oy + row * s, c, s);
     }
   }
 }
 
-const PAL: Record<string, string> = {
-  'O': OUTLINE,
-  'S': SKIN,
-  's': SKIN_DARK,
-  'H': HAIR,
-  'h': HAIR_DARK,
-  'R': SHIRT,
-  'r': SHIRT_DARK,
-  'P': PANTS,
-  'p': PANTS_DARK,
-  'E': EYE,
-  'G': EYE_GLOW,
-  'B': BELT,
-  'K': SHOE,
-  'D': HAND,
-  'd': '#b8962e',
+// Helper: create grid from string art + palette
+const _ = null;
+function g(rows: string[], pal: Record<string, string | null>): (string | null)[][] {
+  return rows.map(row =>
+    row.split('').map(ch => pal[ch] ?? null)
+  );
+}
+
+const P: Record<string, string | null> = {
+  '.': _,
+  'O': C.O,
+  'H': C.H,
+  'h': C.Hh,
+  'i': C.Hs,
+  'S': C.S,
+  's': C.Sd,
+  'l': C.Sl,
+  'R': C.R,
+  'r': C.Rd,
+  'L': C.Rl,
+  'Y': C.Y,
+  'y': C.Yd,
+  'P': C.P,
+  'p': C.Pd,
+  'q': C.Pl,
+  'B': C.B,
+  'b': C.Bd,
+  'K': C.K,
+  'k': C.Kl,
+  'E': C.E,
+  'e': C.El,
+  'D': C.D,
+  'd': C.Dd,
+  'W': C.W,
 };
 
-// Sprite definitions as pixel rows (each char = 1 pixel)
-// ~16x20 pixel sprites
-
-const IDLE_1 = [
-  '....OOOOO....',
-  '...OHHHHHO...',
-  '..OHHHHHHO...',
-  '..OHSSSSHHO..',
-  '..OSSEESSO..',
-  '..OSSSSSSO..',
-  '..OOSSSOO...',
-  '...ORRRO....',
+// ====== IDLE FRAMES (4 frames for fluidity) ======
+const IDLE_0 = g([
+  '...OhHHiO...',
+  '..OhHHHHiO..',
+  '..OHHhHHHO..',
+  '.OHHhHHHHO..',
+  '.OSlSSSlSO..',
+  '.OSESlSEsO..',
+  '..OsSSSSO...',
+  '..OSsllsO...',
+  '...OYYYO....',
+  '..ORYYRRO...',
   '..ORRRRRO...',
-  '..ORRRRRO...',
+  '..OLRRRL O..',
   '...OBBBO....',
   '..OPPPPPO...',
-  '..OPPPPO....',
+  '..OqPPPqO...',
+  '..OPPPPPO...',
   '...OPPO.....',
-  '..ODDODDO...',
-  '..OO..OO....',
-  '..OK..KO....',
-  '..OO..OO....',
-];
+  '..OKO.OKO...',
+  '..OOO.OOO...',
+], P);
 
-const IDLE_2 = [
-  '....OOOOO....',
-  '...OHHHHHO...',
-  '..OHHHHHHO...',
-  '..OHSSSSHHO..',
-  '..OSSEESSO..',
-  '..OSSSSSSO..',
-  '..OOSSSOO...',
-  '...ORRRO....',
+const IDLE_1 = g([
+  '...OhHHiO...',
+  '..OhHHHHiO..',
+  '..OHHhHHHO..',
+  '.OHHhHHHHO..',
+  '.OSlSSSlSO..',
+  '.OSESlSEsO..',
+  '..OsSSSSO...',
+  '..OSsllsO...',
+  '...OYYYO....',
+  '..ORYYRRO...',
   '..ORRRRRO...',
-  '..ORRRRRO...',
+  '..OLRRRL O..',
   '...OBBBO....',
   '..OPPPPPO...',
-  '..OPPPPO....',
+  '..OqPPPqO...',
+  '..OPPPPPO...',
   '...OPPO.....',
-  '.ODDOODDO...',
-  '..OO..OO....',
-  '..OK..KO....',
-  '..OO..OO....',
-];
+  '..OKO.OKO...',
+  '..OOO.OOO...',
+], P);
 
-const WALK_1 = [
-  '....OOOOO....',
-  '...OHHHHHO...',
-  '..OHHHHHHO...',
-  '..OHSSSSHHO..',
-  '..OSSEESSO..',
-  '..OSSSSSSO..',
-  '..OOSSSOO...',
-  '...ORRRO....',
+const IDLE_2 = g([
+  '...OhHHiO...',
+  '..OhHHHHiO..',
+  '..OHHhHHHO..',
+  '.OHHhHHHHO..',
+  '.OSlSSSlSO..',
+  '.OSESlSEsO..',
+  '..OsSSSSO...',
+  '..OSsllsO...',
+  '...OYYYO....',
+  '..ORYYRRO...',
   '..ORRRRRO...',
-  '..ORRRRRO...',
+  '..OLRRRLO...',
   '...OBBBO....',
   '..OPPPPPO...',
-  '..OPPPPO....',
+  '..OqPPPqO...',
+  '..OPPPPPO...',
   '...OPPO.....',
-  '..ODD.ODDO..',
-  '..OO...OO...',
-  '.OK.....KO..',
-  '.OO.....OO..',
-];
+  '..OKO.OKO...',
+  '..OOO.OOO...',
+], P);
 
-const WALK_2 = [
-  '....OOOOO....',
-  '...OHHHHHO...',
-  '..OHHHHHHO...',
-  '..OHSSSSHHO..',
-  '..OSSEESSO..',
-  '..OSSSSSSO..',
-  '..OOSSSOO...',
-  '...ORRRO....',
+const IDLE_3 = g([
+  '...OhHHiO...',
+  '..OhHHHHiO..',
+  '..OHHhHHHO..',
+  '.OHHhHHHHO..',
+  '.OSlSSSlSO..',
+  '.OSESlSEsO..',
+  '..OsSSSSO...',
+  '..OSsllsO...',
+  '...OYYYO....',
+  '..ORYYRRO...',
   '..ORRRRRO...',
+  '..OLRRRLO...',
+  '...OBBBO....',
+  '..OPPPPPO...',
+  '..OqPPPqO...',
+  '..OPPPPPO...',
+  '...OPPO.....',
+  '..OKO.OKO...',
+  '..OOO.OOO...',
+], P);
+
+// ====== WALK FRAMES (4 frames) ======
+const WALK_0 = g([
+  '...OhHHiO...',
+  '..OhHHHHiO..',
+  '..OHHhHHHO..',
+  '.OHHhHHHHO..',
+  '.OSlSSSlSO..',
+  '.OSESlSEsO..',
+  '..OsSSSSO...',
+  '..OSsllsO...',
+  '...OYYYO....',
+  '..ORYYRRO...',
   '..ORRRRRO...',
+  '..OLRRRLO...',
   '...OBBBO....',
   '..OPPPPPO...',
-  '..OPPPPO....',
-  '...OPPO.....',
-  '..ODDODDO...',
-  '...OO.OO....',
-  '...KOKO.....',
-  '...OOOO.....',
-];
+  '.OqPP.PPqO..',
+  '.OPP...PPO..',
+  'OKO.....OKO.',
+  'OOO.....OOO.',
+], P);
 
-const ATTACK = [
-  '....OOOOO....',
-  '...OHHHHHO...',
-  '..OHHHHHHO...',
-  '..OHSSSSHHO..',
-  '..OSSEESSO..',
-  '..OSSSSSSO..',
-  '..OOSSSOO...',
-  '...ORRRO.ODD.',
-  '..ORRRRRODDO.',
-  '..ORRRRRO....',
+const WALK_1 = g([
+  '...OhHHiO...',
+  '..OhHHHHiO..',
+  '..OHHhHHHO..',
+  '.OHHhHHHHO..',
+  '.OSlSSSlSO..',
+  '.OSESlSEsO..',
+  '..OsSSSSO...',
+  '..OSsllsO...',
+  '...OYYYO....',
+  '..ORYYRRO...',
+  '..ORRRRRO...',
+  '..OLRRRLO...',
   '...OBBBO....',
   '..OPPPPPO...',
-  '..OPPPPO....',
-  '...OPPO.....',
-  '..ODDODDO...',
-  '..OO..OO....',
-  '..OK..KO....',
-  '..OO..OO....',
-];
-
-const JUMP = [
-  '....OOOOO....',
-  '...OHHHHHO...',
-  '..OHHHHHHO...',
-  '..OHSSSSHHO..',
-  '..OSSEESSO..',
-  '..OSSSSSSO..',
-  '..OOSSSOO...',
-  '.ODD.RRRODDO.',
-  '..ORRRRRO....',
-  '..ORRRRRO....',
-  '...OBBBO....',
-  '..OPPPPPO...',
+  '..OqPPPqO...',
   '...OPPPO....',
-  '....OPO.....',
-  '...OKKO.....',
-  '...OOOO.....',
-];
+  '...OKkKO....',
+  '...OOOOO....',
+], P);
 
-const BLOCK = [
-  '....OOOOO....',
-  '...OHHHHHO...',
-  '..OHHHHHHO...',
-  '..OHSSSSHHO..',
-  '..OSSEESSO..',
-  '..OSSSSSSO..',
-  '..OOSSSOO...',
-  '..ODDRRRODDO.',
-  '..ODDRRRODDO.',
-  '..ORRRRRO....',
+const WALK_2 = g([
+  '...OhHHiO...',
+  '..OhHHHHiO..',
+  '..OHHhHHHO..',
+  '.OHHhHHHHO..',
+  '.OSlSSSlSO..',
+  '.OSESlSEsO..',
+  '..OsSSSSO...',
+  '..OSsllsO...',
+  '...OYYYO....',
+  '..ORYYRRO...',
+  '..ORRRRRO...',
+  '..OLRRRLO...',
   '...OBBBO....',
   '..OPPPPPO...',
+  '..OPP.PPO...',
+  '.OqP...PqO..',
+  '.OKO...OKO..',
+  '.OOO...OOO..',
+], P);
+
+const WALK_3 = g([
+  '...OhHHiO...',
+  '..OhHHHHiO..',
+  '..OHHhHHHO..',
+  '.OHHhHHHHO..',
+  '.OSlSSSlSO..',
+  '.OSESlSEsO..',
+  '..OsSSSSO...',
+  '..OSsllsO...',
+  '...OYYYO....',
+  '..ORYYRRO...',
+  '..ORRRRRO...',
+  '..OLRRRLO...',
+  '...OBBBO....',
+  '..OPPPPPO...',
+  '..OqPPPqO...',
   '..OPPPPO....',
+  '..OKOkKO....',
+  '..OOO.OO....',
+], P);
+
+// ====== ATTACK FRAMES (3 frames) ======
+const ATK_0 = g([
+  '...OhHHiO...........',
+  '..OhHHHHiO..........',
+  '..OHHhHHHO..........',
+  '.OHHhHHHHO..........',
+  '.OSlSSSlSO..........',
+  '.OSESlSEsO..........',
+  '..OsSSSSO...........',
+  '..OSsllsO...........',
+  '...OYYYO............',
+  '..ORYYRRO...........',
+  '..ORRRRRO.ODDO......',
+  '..OLRRRLOOODDDO.....',
+  '...OBBBO..ODDO......',
+  '..OPPPPPO...........',
+  '..OqPPPqO...........',
+  '..OPPPPPO...........',
+  '...OPPO.............',
+  '..OKO.OKO...........',
+  '..OOO.OOO...........',
+], P);
+
+const ATK_1 = g([
+  '...OhHHiO..............',
+  '..OhHHHHiO.............',
+  '..OHHhHHHO.............',
+  '.OHHhHHHHO.............',
+  '.OSlSSSlSO.............',
+  '.OSESlSEsO.............',
+  '..OsSSSSO..............',
+  '..OSsllsO..............',
+  '...OYYYO...............',
+  '..ORYYRRO..............',
+  '..ORRRRROOODDDDO.......',
+  '..OLRRRLO..ODDDO.......',
+  '...OBBBO...OODDO.......',
+  '..OPPPPPO..............',
+  '..OqPPPqO..............',
+  '..OPPPPPO..............',
+  '..OOPPO................',
+  '.OKO.OKO...............',
+  '.OOO.OOO...............',
+], P);
+
+const ATK_2 = g([
+  '...OhHHiO.........',
+  '..OhHHHHiO........',
+  '..OHHhHHHO........',
+  '.OHHhHHHHO........',
+  '.OSlSSSlSO........',
+  '.OSESlSEsO........',
+  '..OsSSSSO.........',
+  '..OSsllsO.........',
+  '...OYYYO..........',
+  '..ORYYRROOODDO....',
+  '..ORRRRROODDDDO...',
+  '..OLRRRLO.ODDO....',
+  '...OBBBO..........',
+  '..OPPPPPO.........',
+  '..OqPPPqO.........',
+  '..OPPPPPO.........',
+  '...OPPO...........',
+  '..OKO.OKO.........',
+  '..OOO.OOO.........',
+], P);
+
+// ====== JUMP FRAMES (3 frames) ======
+const JUMP_0 = g([
+  '..OhHHiO....',
+  '.OhHHHHiO...',
+  '.OHHhHHHO...',
+  'OHHhHHHHO...',
+  'OSlSSSlSO...',
+  'OSESlSEsO...',
+  '.OsSSSSO....',
+  '.OSsllsO....',
+  '..OYYYO.....',
+  'ODDYYRRODDO.',
+  '.ORRRRRO....',
+  '.OLRRRLO....',
+  '..OBBBO.....',
+  '.OPPPPPO....',
+  '..OqPqO.....',
+  '...OPO......',
+  '..OKKO......',
+  '..OOOO......',
+], P);
+
+const JUMP_1 = g([
+  '.OhHHiO.....',
+  'OhHHHHiO....',
+  'OHHhHHHO....',
+  'OHhHHHHO....',
+  'OSlSSSlSO...',
+  'OSESlSEsO...',
+  '.OsSSSSO....',
+  '.OSsllsO....',
+  '..OYYYO.....',
+  'ODDYYRRODDO.',
+  '.ORRRRRO....',
+  '.OLRRRLO....',
+  '..OBBBO.....',
+  '.OPPPPPO....',
+  '..OPPO......',
+  '..OKOKO.....',
+  '..OOOOO.....',
+], P);
+
+// ====== BLOCK FRAMES (2 frames) ======
+const BLOCK_0 = g([
+  '...OhHHiO...',
+  '..OhHHHHiO..',
+  '..OHHhHHHO..',
+  '.OHHhHHHHO..',
+  '.OSlSSSlSO..',
+  '.OSESlSEsO..',
+  '..OsSSSSO...',
+  'ODDSDDSDDO..',
+  'ODDOYYYO....',
+  '..ORYYRRO...',
+  'ODDRRRRRO...',
+  'ODDLRRRLO...',
+  '...OBBBO....',
+  '..OPPPPPO...',
+  '..OqPPPqO...',
+  '..OPPPPPO...',
   '...OPPO.....',
-  '..ODDODDO...',
-  '..OO..OO....',
-  '..OK..KO....',
-  '..OO..OO....',
-];
+  '..OKO.OKO...',
+  '..OOO.OOO...',
+], P);
 
-const HURT = [
-  '......OOOOO..',
-  '.....OHHHHHO.',
-  '....OHHHHHHO.',
-  '....OHSSSSHhO',
-  '....OSSxESSO.',
-  '....OSSSSSSO.',
-  '....OOSSSOO..',
-  '.....ORRRO...',
-  '....ORRRRRO..',
-  '....ORRRRRO..',
-  '.....OBBBO...',
-  '....OPPPPPO..',
-  '....OPPPPO...',
-  '.....OPPO....',
-  '....ODD.ODDO.',
-  '....OO...OO..',
-  '....OK...KO..',
-  '....OO...OO..',
-];
+const BLOCK_1 = g([
+  '...OhHHiO...',
+  '..OhHHHHiO..',
+  '..OHHhHHHO..',
+  '.OHHhHHHHO..',
+  '.OSlSSSlSO..',
+  '.OSESlSEsO..',
+  '..OsSSSSO...',
+  'ODDSDDSDDO..',
+  'ODDOYYYO....',
+  '..ORYYRRO...',
+  'ODDRRRRRO...',
+  'ODDLRRRLO...',
+  '...OBBBO....',
+  '..OPPPPPO...',
+  '..OqPPPqO...',
+  '..OPPPPPO...',
+  '...OPPO.....',
+  '..OKO.OKO...',
+  '..OOO.OOO...',
+], P);
 
-const HURT_PAL: Record<string, string> = {
-  ...PAL,
-  'x': '#ff4444', // hurt eye flash
+// ====== HURT FRAMES (3 frames) ======
+const HURT_PAL: Record<string, string | null> = {
+  ...P,
+  'E': '#ff4444',
+  'e': '#ff8888',
 };
 
-const SPRITES: Record<SpriteState, { frames: string[][]; palette: Record<string, string> }> = {
-  idle: { frames: [IDLE_1, IDLE_2], palette: PAL },
-  walk: { frames: [WALK_1, WALK_2], palette: PAL },
-  attack: { frames: [ATTACK], palette: PAL },
-  jump: { frames: [JUMP], palette: PAL },
-  block: { frames: [BLOCK], palette: PAL },
-  hurt: { frames: [HURT], palette: HURT_PAL },
+const HURT_0 = g([
+  '.....OhHHiO.',
+  '....OhHHHHiO',
+  '....OHHhHHHO',
+  '...OHHhHHHHO',
+  '...OSlSSSlSO',
+  '...OSESlSEsO',
+  '....OsSSSSO.',
+  '....OSsllsO.',
+  '.....OYYYO..',
+  '....ORYYRRO.',
+  '....ORRRRRO.',
+  '....OLRRRLO.',
+  '.....OBBBO..',
+  '....OPPPPPO.',
+  '...OPP.PPO..',
+  '..OqP...PqO.',
+  '..OKO...OKO.',
+  '..OOO...OOO.',
+], HURT_PAL);
+
+const HURT_1 = g([
+  '......OhHHiO',
+  '.....OhHHHiO',
+  '.....OHHhHHO',
+  '....OHHhHHHO',
+  '....OSlSSlSO',
+  '....OSESlEsO',
+  '.....OsSSSOO',
+  '.....OSsllsO',
+  '......OYYYO.',
+  '.....ORYYRRO',
+  '.....ORRRRRO',
+  '.....OLRRRLO',
+  '......OBBBO.',
+  '.....OPPPPPO',
+  '....OPP.PPO.',
+  '...OqP...PqO',
+  '...OKO...OKO',
+  '...OOO...OOO',
+], HURT_PAL);
+
+const HURT_2 = g([
+  '.....OhHHiO.',
+  '....OhHHHHiO',
+  '....OHHhHHHO',
+  '...OHHhHHHHO',
+  '...OSlSSSlSO',
+  '...OSESlSEsO',
+  '....OsSSSSO.',
+  '....OSsllsO.',
+  '.....OYYYO..',
+  '....ORYYRRO.',
+  '....ORRRRRO.',
+  '....OLRRRLO.',
+  '.....OBBBO..',
+  '....OPPPPPO.',
+  '...OqPPPqO..',
+  '....OPPPO...',
+  '....OKkKO...',
+  '....OOOOO...',
+], HURT_PAL);
+
+// ====== SPRITE SETS ======
+const SPRITE_FRAMES: Record<SpriteState, { grids: (string | null)[][][]; speeds: number }> = {
+  idle:   { grids: [IDLE_0, IDLE_1, IDLE_2, IDLE_3], speeds: 0.06 },
+  walk:   { grids: [WALK_0, WALK_1, WALK_2, WALK_3], speeds: 0.18 },
+  attack: { grids: [ATK_0, ATK_1, ATK_2],            speeds: 0.25 },
+  jump:   { grids: [JUMP_0, JUMP_1],                  speeds: 0.1 },
+  block:  { grids: [BLOCK_0, BLOCK_1],                speeds: 0.08 },
+  hurt:   { grids: [HURT_0, HURT_1, HURT_2],          speeds: 0.15 },
 };
 
 /**
- * Draw Edowado as pixel art on the canvas.
- * @param ctx Canvas context
- * @param x Center X position
- * @param y Center Y position (feet)
- * @param state Current animation state
- * @param frame Animation frame counter
- * @param side -1 for facing left, 1 for facing right
- * @param scale Drawing scale multiplier
+ * Draw Edowado pixel art sprite
  */
 export function drawEdowadoSprite(
   ctx: CanvasRenderingContext2D,
@@ -262,39 +522,33 @@ export function drawEdowadoSprite(
   side: number,
   scale: number = 1,
 ) {
-  const spriteData = SPRITES[state];
-  if (!spriteData) return;
+  const data = SPRITE_FRAMES[state];
+  if (!data) return;
 
-  const { frames, palette } = spriteData;
-  const frameIdx = Math.floor(frame * 0.12) % frames.length;
-  const rows = frames[frameIdx];
+  const { grids, speeds } = data;
+  const frameIdx = Math.floor(frame * speeds) % grids.length;
+  const grid = grids[frameIdx];
 
-  // Calculate sprite dimensions
-  const maxW = Math.max(...rows.map(r => r.length));
-  const h = rows.length;
-  const pxSize = P * scale;
+  const maxW = Math.max(...grid.map(r => r.length));
+  const h = grid.length;
+  const pxSize = 2.5 * scale;
   const totalW = maxW * pxSize;
   const totalH = h * pxSize;
 
   ctx.save();
   ctx.imageSmoothingEnabled = false;
-  
-  // Position: x,y is center-bottom
   ctx.translate(x, y);
-  ctx.scale(side, 1); // flip for facing direction
-  
+  ctx.scale(side, 1);
+
   const ox = -totalW / 2;
-  const oy = -totalH + 4 * pxSize; // offset so feet are near y
+  const oy = -totalH + 5 * pxSize;
 
-  for (let row = 0; row < rows.length; row++) {
-    drawRow(ctx, ox, oy + row * pxSize, rows[row], palette, pxSize);
-  }
-
+  drawPixelGrid(ctx, ox, oy, grid, pxSize);
   ctx.restore();
 }
 
 /**
- * Get the sprite state from fighter properties
+ * Get sprite state from fighter properties
  */
 export function getSpriteState(
   hitFlash: number, stun: number, isBlocking: boolean,

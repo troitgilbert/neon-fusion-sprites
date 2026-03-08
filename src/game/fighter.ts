@@ -24,6 +24,8 @@ export class Fighter {
   damageBoost: number;
   sizeScale: number;
   isBigBang: boolean;
+  isCrouching: boolean;
+  emoteTimer: number; emoteType: number;
 
   constructor(id: number, charIdx: number, x: number, side: number, controls: Controls, isAI = false, skinId: string | null = null, customData: CustomCharData | null = null) {
     this.id = id; this.charIdx = charIdx;
@@ -49,6 +51,8 @@ export class Fighter {
     this.isTransformed = false; this.transformTimer = 0; this.baseName = '';
     this.invulnTimer = 0; this.isIntangible = false; this.damageBoost = 1;
     this.isBigBang = false;
+    this.isCrouching = false;
+    this.emoteTimer = 0; this.emoteType = 0;
   }
 
   reset(x: number, side: number) {

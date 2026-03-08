@@ -432,396 +432,651 @@ export class GameEngine {
     const t = Date.now() * 0.001;
 
     if (this.selectedStage === 'nada') {
-      // La Nada - existential void with subtle distortion
+      // === LA NADA - Existential abyss ===
       ctx.fillStyle = '#000000';
       ctx.fillRect(-50, -50, CANVAS_W + 100, CANVAS_H + 100);
 
-      // Faint static noise grid
+      // Deep void gradient pulses
       ctx.save();
-      for (let i = 0; i < 40; i++) {
-        const nx = (i * 67 + Math.floor(t * 2) * 13) % CANVAS_W;
-        const ny = (i * 43 + Math.floor(t * 3) * 7) % CANVAS_H;
-        ctx.globalAlpha = 0.015 + Math.sin(t * 5 + i) * 0.01;
-        ctx.fillStyle = '#ffffff';
-        ctx.fillRect(nx, ny, 1, 1);
-      }
-
-      // Pulsing void rings
       for (let i = 0; i < 3; i++) {
-        const pulse = Math.sin(t * 0.5 + i * 2.1) * 0.5 + 0.5;
-        ctx.globalAlpha = 0.02 + pulse * 0.015;
-        ctx.strokeStyle = '#444444';
-        ctx.lineWidth = 0.5;
-        ctx.beginPath();
-        ctx.arc(320, 240, 80 + i * 90 + pulse * 30, 0, Math.PI * 2);
-        ctx.stroke();
-      }
-
-      // Distorted horizon line hint
-      ctx.globalAlpha = 0.03;
-      ctx.strokeStyle = '#333333';
-      ctx.lineWidth = 1;
-      ctx.beginPath();
-      for (let x = 0; x <= CANVAS_W; x += 4) {
-        const waveY = FLOOR_Y + Math.sin(x * 0.03 + t * 1.5) * 3;
-        x === 0 ? ctx.moveTo(x, waveY) : ctx.lineTo(x, waveY);
-      }
-      ctx.stroke();
-
-      // Faint vertical glitch lines
-      for (let i = 0; i < 4; i++) {
-        const gx = (Math.floor(t * 8 + i * 100) * 137) % CANVAS_W;
-        ctx.globalAlpha = 0.02;
-        ctx.fillStyle = '#222222';
-        ctx.fillRect(gx, 0, 1, CANVAS_H);
+        const pulse = Math.sin(t * 0.3 + i * 2.1) * 0.5 + 0.5;
+        ctx.globalAlpha = 0.03 + pulse * 0.02;
+        const vg = ctx.createRadialGradient(320, 240, 0, 320, 240, 200 + i * 100);
+        vg.addColorStop(0, i === 0 ? 'rgba(30,0,50,0.4)' : i === 1 ? 'rgba(0,10,30,0.3)' : 'rgba(20,0,0,0.2)');
+        vg.addColorStop(1, 'transparent');
+        ctx.fillStyle = vg;
+        ctx.fillRect(0, 0, CANVAS_W, CANVAS_H);
       }
       ctx.restore();
+
+      // Static noise field - dense
+      ctx.save();
+      for (let i = 0; i < 120; i++) {
+        const nx = (i * 67 + Math.floor(t * 3) * 13 + Math.floor(Math.sin(i * 0.7) * 100)) % CANVAS_W;
+        const ny = (i * 43 + Math.floor(t * 4) * 7 + Math.floor(Math.cos(i * 0.5) * 80)) % CANVAS_H;
+        ctx.globalAlpha = 0.01 + Math.sin(t * 8 + i * 1.3) * 0.008;
+        ctx.fillStyle = i % 5 === 0 ? '#332244' : i % 7 === 0 ? '#220022' : '#ffffff';
+        const sz = 0.5 + Math.sin(t * 6 + i) * 0.5;
+        ctx.fillRect(nx, ny, sz, sz);
+      }
+      ctx.restore();
+
+      // Pulsing concentric void rings
+      ctx.save();
+      for (let i = 0; i < 6; i++) {
+        const pulse = Math.sin(t * 0.4 + i * 1.05) * 0.5 + 0.5;
+        ctx.globalAlpha = 0.015 + pulse * 0.02;
+        ctx.strokeStyle = i % 2 === 0 ? '#333344' : '#221133';
+        ctx.lineWidth = 0.5 + pulse * 0.5;
+        ctx.beginPath();
+        ctx.arc(320, 240, 40 + i * 55 + pulse * 20 + Math.sin(t * 0.6 + i) * 10, 0, Math.PI * 2);
+        ctx.stroke();
+      }
+      ctx.restore();
+
+      // Distorted horizon with interference
+      ctx.save();
+      ctx.globalAlpha = 0.04;
+      ctx.strokeStyle = '#444455';
+      ctx.lineWidth = 1;
+      for (let line = 0; line < 3; line++) {
+        ctx.beginPath();
+        for (let x = 0; x <= CANVAS_W; x += 2) {
+          const waveY = FLOOR_Y + line * 3 + Math.sin(x * 0.03 + t * 1.5 + line) * 3 + Math.sin(x * 0.09 + t * 4) * 1;
+          x === 0 ? ctx.moveTo(x, waveY) : ctx.lineTo(x, waveY);
+        }
+        ctx.stroke();
+      }
+      ctx.restore();
+
+      // Vertical glitch bands
+      ctx.save();
+      for (let i = 0; i < 8; i++) {
+        const gx = (Math.floor(t * 12 + i * 100) * 137) % CANVAS_W;
+        const gh = 20 + Math.sin(t * 7 + i * 2) * 40;
+        const gy = (Math.floor(t * 5 + i * 50) * 89) % CANVAS_H;
+        ctx.globalAlpha = 0.015 + Math.sin(t * 10 + i) * 0.01;
+        ctx.fillStyle = i % 3 === 0 ? '#110022' : '#001111';
+        ctx.fillRect(gx, gy, 1 + (i % 2), gh);
+      }
+      ctx.restore();
+
+      // Floating void fragments
+      ctx.save();
+      for (let i = 0; i < 15; i++) {
+        const fx = 50 + ((i * 113 + t * 5) % (CANVAS_W - 100));
+        const fy = 50 + ((i * 79 + Math.sin(t * 0.3 + i) * 30) % (CANVAS_H - 100));
+        const flicker = Math.sin(t * 6 + i * 3.7) * 0.5 + 0.5;
+        ctx.globalAlpha = flicker * 0.03;
+        ctx.fillStyle = '#665577';
+        ctx.fillRect(fx, fy, 2 + flicker * 2, 1);
+      }
+      ctx.restore();
+
+      // Central eye/void focal point
+      ctx.save();
+      const eyePulse = Math.sin(t * 0.5) * 0.5 + 0.5;
+      ctx.globalAlpha = 0.02 + eyePulse * 0.015;
+      const eyeG = ctx.createRadialGradient(320, 220, 0, 320, 220, 60 + eyePulse * 20);
+      eyeG.addColorStop(0, 'rgba(80,0,120,0.3)');
+      eyeG.addColorStop(0.5, 'rgba(40,0,60,0.1)');
+      eyeG.addColorStop(1, 'transparent');
+      ctx.fillStyle = eyeG;
+      ctx.fillRect(200, 150, 240, 140);
+      ctx.restore();
+
       ctx.globalAlpha = 1;
       return;
     }
 
     if (this.selectedStage === 'infierno') {
-      // Background gradient - deep hellish tones
+      // === INFIERNO - Apocalyptic hellscape ===
       const bg = ctx.createLinearGradient(0, 0, 0, CANVAS_H);
-      bg.addColorStop(0, '#0a0000');
-      bg.addColorStop(0.2, '#1f0000');
-      bg.addColorStop(0.5, '#3d0500');
-      bg.addColorStop(0.8, '#2a0200');
+      bg.addColorStop(0, '#050000');
+      bg.addColorStop(0.1, '#120000');
+      bg.addColorStop(0.25, '#2a0300');
+      bg.addColorStop(0.45, '#4a0800');
+      bg.addColorStop(0.65, '#3a0400');
+      bg.addColorStop(0.8, '#1f0200');
       bg.addColorStop(1, '#000000');
       ctx.fillStyle = bg;
       ctx.fillRect(-50, -50, CANVAS_W + 100, CANVAS_H + 100);
 
-      // Volcanic smoke clouds
+      // Distant volcanic eruption glow
       ctx.save();
-      for (let i = 0; i < 6; i++) {
-        const cx = ((i * 130 + t * (8 + i * 2)) % 900) - 100;
-        const cy = 30 + i * 20 + Math.sin(t * 0.3 + i) * 15;
-        ctx.globalAlpha = 0.06 + (i % 2) * 0.03;
-        const smokeG = ctx.createRadialGradient(cx, cy, 0, cx, cy, 80 + i * 15);
-        smokeG.addColorStop(0, 'rgba(60,10,0,0.4)');
-        smokeG.addColorStop(0.5, 'rgba(30,5,0,0.2)');
-        smokeG.addColorStop(1, 'transparent');
-        ctx.fillStyle = smokeG;
+      for (let i = 0; i < 3; i++) {
+        const eruptX = 120 + i * 220;
+        const eruptPulse = Math.sin(t * 1.2 + i * 2.5) * 0.5 + 0.5;
+        ctx.globalAlpha = 0.04 + eruptPulse * 0.06;
+        const eg = ctx.createRadialGradient(eruptX, 180, 0, eruptX, 180, 100 + eruptPulse * 40);
+        eg.addColorStop(0, 'rgba(255,100,0,0.4)');
+        eg.addColorStop(0.4, 'rgba(200,30,0,0.2)');
+        eg.addColorStop(1, 'transparent');
+        ctx.fillStyle = eg;
+        ctx.fillRect(0, 0, CANVAS_W, CANVAS_H);
+      }
+      ctx.restore();
+
+      // Massive volcanic smoke/ash clouds
+      ctx.save();
+      for (let i = 0; i < 10; i++) {
+        const cx = ((i * 110 + t * (6 + i * 1.5)) % 1000) - 150;
+        const cy = 15 + i * 18 + Math.sin(t * 0.25 + i * 0.8) * 12;
+        const cw = 110 + (i % 3) * 50;
+        const ch = 30 + (i % 4) * 15;
+        ctx.globalAlpha = 0.04 + (i % 3) * 0.015;
+        ctx.fillStyle = i % 2 === 0 ? '#1a0500' : '#0f0300';
         ctx.beginPath();
-        ctx.ellipse(cx, cy, 100 + i * 20, 40 + i * 8, 0, 0, Math.PI * 2);
+        ctx.ellipse(cx, cy, cw, ch, 0, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.beginPath();
+        ctx.ellipse(cx - cw * 0.3, cy - ch * 0.5, cw * 0.5, ch * 0.7, 0, 0, Math.PI * 2);
         ctx.fill();
       }
       ctx.restore();
 
-      // Red ambient glow from below
+      // Red ambient glow from below - more intense
       ctx.save();
-      ctx.globalAlpha = 0.15 + Math.sin(t * 1.5) * 0.05;
-      const redGlow = ctx.createRadialGradient(320, CANVAS_H, 0, 320, CANVAS_H, 400);
-      redGlow.addColorStop(0, 'rgba(255,50,0,0.3)');
-      redGlow.addColorStop(0.5, 'rgba(200,20,0,0.1)');
+      const glowPulse = Math.sin(t * 1.5) * 0.08;
+      ctx.globalAlpha = 0.2 + glowPulse;
+      const redGlow = ctx.createRadialGradient(320, CANVAS_H + 50, 0, 320, CANVAS_H, 450);
+      redGlow.addColorStop(0, 'rgba(255,60,0,0.5)');
+      redGlow.addColorStop(0.3, 'rgba(220,30,0,0.25)');
+      redGlow.addColorStop(0.6, 'rgba(150,10,0,0.1)');
       redGlow.addColorStop(1, 'transparent');
       ctx.fillStyle = redGlow;
       ctx.fillRect(0, 0, CANVAS_W, CANVAS_H);
       ctx.restore();
 
-      // 3D perspective grid
-      ctx.strokeStyle = 'rgba(255,50,0,0.12)';
-      ctx.lineWidth = 1;
-      const vanishY = 180, vanishX = 320;
-      for (let i = 0; i < 14; i++) {
+      // Multi-layer mountain silhouettes with jagged peaks
+      for (let layer = 0; layer < 4; layer++) {
+        const baseY = 200 + layer * 30;
+        const r = 15 + layer * 12;
+        const g = Math.floor(r * 0.2);
+        const b = Math.floor(r * 0.1);
+        ctx.fillStyle = `rgb(${r}, ${g}, ${b})`;
+        ctx.globalAlpha = 0.8 + layer * 0.05;
         ctx.beginPath();
-        ctx.moveTo(i * 55 - 30, CANVAS_H);
-        ctx.lineTo(vanishX, vanishY);
-        ctx.stroke();
-      }
-      for (let i = 0; i < 10; i++) {
-        const y = FLOOR_Y + i * 10;
-        const sp = (y - vanishY) / (CANVAS_H - vanishY);
-        ctx.beginPath();
-        ctx.moveTo(vanishX - sp * 450, y);
-        ctx.lineTo(vanishX + sp * 450, y);
-        ctx.stroke();
-      }
-
-      // Distant mountain silhouettes with jagged peaks
-      for (let layer = 0; layer < 3; layer++) {
-        const baseY = 230 + layer * 30;
-        const shade = 20 + layer * 15;
-        ctx.fillStyle = `rgb(${shade + 10}, ${Math.floor(shade * 0.3)}, ${Math.floor(shade * 0.2)})`;
-        ctx.beginPath();
-        ctx.moveTo(-10, baseY + 50);
-        for (let x = -10; x <= CANVAS_W + 10; x += 15 + layer * 5) {
-          const h = Math.sin(x * 0.015 + layer * 2) * 35 + Math.sin(x * 0.04 + layer) * 18 + Math.sin(x * 0.08 + t * 0.1) * 5;
+        ctx.moveTo(-10, baseY + 60);
+        for (let x = -10; x <= CANVAS_W + 10; x += 8 + layer * 4) {
+          const h = Math.sin(x * 0.012 + layer * 2.3) * 40 + Math.sin(x * 0.035 + layer * 1.1) * 22 + Math.sin(x * 0.07 + t * 0.08 + layer) * 6;
           ctx.lineTo(x, baseY - h);
         }
-        ctx.lineTo(CANVAS_W + 10, baseY + 50);
+        ctx.lineTo(CANVAS_W + 10, baseY + 60);
         ctx.fill();
       }
+      ctx.globalAlpha = 1;
 
-      // Jagged rock pillars
-      for (let i = 0; i < 6; i++) {
-        ctx.fillStyle = `rgb(${35 + i * 6}, ${8 + i * 2}, ${3 + i})`;
-        const rx = 70 + i * 110, ry = FLOOR_Y - 2;
-        const rh = 18 + (i % 3) * 12;
+      // Jagged rock pillars with detail
+      for (let i = 0; i < 8; i++) {
+        const rx = 40 + i * 85, ry = FLOOR_Y - 2;
+        const rh = 22 + (i % 3) * 18 + Math.sin(i * 1.7) * 8;
+        // Shadow
+        ctx.fillStyle = `rgb(${20 + i * 4}, ${3 + i}, ${1 + i})`;
         ctx.beginPath();
-        ctx.moveTo(rx - 12, ry);
-        ctx.lineTo(rx - 8, ry - rh * 0.6);
-        ctx.lineTo(rx - 3, ry - rh);
-        ctx.lineTo(rx + 4, ry - rh * 0.8);
-        ctx.lineTo(rx + 10, ry - rh * 0.4);
-        ctx.lineTo(rx + 14, ry);
+        ctx.moveTo(rx - 14, ry);
+        ctx.lineTo(rx - 10, ry - rh * 0.5);
+        ctx.lineTo(rx - 5, ry - rh * 0.85);
+        ctx.lineTo(rx - 2, ry - rh);
+        ctx.lineTo(rx + 3, ry - rh * 0.9);
+        ctx.lineTo(rx + 7, ry - rh * 0.6);
+        ctx.lineTo(rx + 12, ry - rh * 0.3);
+        ctx.lineTo(rx + 16, ry);
         ctx.fill();
+        // Highlight edge
+        ctx.strokeStyle = `rgba(255,60,0,${0.1 + Math.sin(t * 2 + i) * 0.05})`;
+        ctx.lineWidth = 0.5;
+        ctx.beginPath();
+        ctx.moveTo(rx - 5, ry - rh * 0.85);
+        ctx.lineTo(rx - 2, ry - rh);
+        ctx.lineTo(rx + 3, ry - rh * 0.9);
+        ctx.stroke();
       }
 
-      // Fire particles rising
-      for (let i = 0; i < 30; i++) {
-        const fx = ((i * 97 + t * 35) % 700) - 20;
-        const fy = FLOOR_Y - ((t * 25 + i * 47) % 250);
-        const life = Math.max(0, 1 - (FLOOR_Y - fy) / 250);
-        ctx.globalAlpha = life * 0.7;
-        const colors = ['#ff2200', '#ff5500', '#ff8800', '#ffcc00', '#ffee66'];
+      // 3D perspective grid
+      ctx.strokeStyle = 'rgba(255,50,0,0.1)';
+      ctx.lineWidth = 1;
+      const vYi = 170, vXi = 320;
+      for (let i = 0; i < 16; i++) {
+        ctx.beginPath();
+        ctx.moveTo(i * 48 - 40, CANVAS_H);
+        ctx.lineTo(vXi, vYi);
+        ctx.stroke();
+      }
+      for (let i = 0; i < 12; i++) {
+        const y = FLOOR_Y + i * 8;
+        const sp = (y - vYi) / (CANVAS_H - vYi);
+        ctx.beginPath();
+        ctx.moveTo(vXi - sp * 500, y);
+        ctx.lineTo(vXi + sp * 500, y);
+        ctx.stroke();
+      }
+
+      // Fire particles - dense field
+      for (let i = 0; i < 50; i++) {
+        const fx = ((i * 97 + t * (30 + i % 5 * 5)) % 750) - 25;
+        const fy = FLOOR_Y - ((t * (20 + i % 3 * 10) + i * 47) % 300);
+        const life = Math.max(0, 1 - (FLOOR_Y - fy) / 300);
+        ctx.globalAlpha = life * 0.65;
+        const colors = ['#ff1100', '#ff3300', '#ff5500', '#ff7700', '#ff9900', '#ffbb00', '#ffdd44', '#ffee88'];
         ctx.fillStyle = colors[i % colors.length];
-        const sz = 1.5 + Math.sin(t * 4 + i) * 1 + life * 2;
+        const sz = 1 + Math.sin(t * 5 + i * 0.7) * 1.2 + life * 2.5;
         ctx.beginPath();
-        ctx.arc(fx, fy, sz, 0, Math.PI * 2);
+        ctx.arc(fx + Math.sin(t * 3 + i) * 3, fy, sz, 0, Math.PI * 2);
         ctx.fill();
       }
 
-      // Lava pool at floor with animated waves
-      ctx.globalAlpha = 0.4 + Math.sin(t * 2) * 0.1;
+      // Ember sparks (small fast particles)
+      for (let i = 0; i < 20; i++) {
+        const ex = ((i * 53 + t * 50) % 700) - 10;
+        const ey = FLOOR_Y - ((t * 60 + i * 31) % 350);
+        const eLife = Math.max(0, 1 - (FLOOR_Y - ey) / 350);
+        ctx.globalAlpha = eLife * 0.5;
+        ctx.fillStyle = '#ffee44';
+        ctx.fillRect(ex, ey, 0.8, 0.8);
+      }
+
+      // Lava pool with complex surface
+      ctx.globalAlpha = 0.5 + Math.sin(t * 2) * 0.1;
       const lava = ctx.createLinearGradient(0, FLOOR_Y, 0, CANVAS_H);
-      lava.addColorStop(0, 'rgba(255,120,0,0.7)');
-      lava.addColorStop(0.3, 'rgba(255,60,0,0.5)');
-      lava.addColorStop(1, 'rgba(180,0,0,0.3)');
+      lava.addColorStop(0, 'rgba(255,130,0,0.8)');
+      lava.addColorStop(0.15, 'rgba(255,80,0,0.7)');
+      lava.addColorStop(0.4, 'rgba(220,40,0,0.5)');
+      lava.addColorStop(1, 'rgba(150,0,0,0.3)');
       ctx.fillStyle = lava;
       ctx.fillRect(0, FLOOR_Y, CANVAS_W, CANVAS_H - FLOOR_Y);
 
-      // Lava surface highlights
-      ctx.globalAlpha = 0.25;
-      for (let x = 0; x < CANVAS_W; x += 30) {
-        const wave = Math.sin(x * 0.05 + t * 3) * 2;
-        ctx.fillStyle = '#ffcc00';
-        ctx.fillRect(x, FLOOR_Y + wave - 1, 20, 2);
+      // Lava surface detail - multiple wave layers
+      for (let layer = 0; layer < 3; layer++) {
+        ctx.globalAlpha = 0.2 - layer * 0.05;
+        ctx.fillStyle = layer === 0 ? '#ffee44' : layer === 1 ? '#ffcc00' : '#ff8800';
+        for (let x = 0; x < CANVAS_W; x += 15 + layer * 10) {
+          const wave = Math.sin(x * 0.04 + t * (3 + layer) + layer * 2) * 2;
+          const w = 8 + layer * 6 + Math.sin(x * 0.1 + t * 2) * 3;
+          ctx.fillRect(x, FLOOR_Y + wave - 1 + layer, w, 1.5);
+        }
       }
       ctx.globalAlpha = 1;
       return;
     }
 
     if (this.selectedStage === 'cielo') {
-      // Sky gradient - divine golden hour
+      // === CIELO - Divine celestial realm ===
       const bg = ctx.createLinearGradient(0, 0, 0, CANVAS_H);
-      bg.addColorStop(0, '#1a3a6e');
-      bg.addColorStop(0.15, '#3a6eb5');
-      bg.addColorStop(0.35, '#6aacde');
-      bg.addColorStop(0.55, '#9fd4f0');
-      bg.addColorStop(0.75, '#d4ecfa');
+      bg.addColorStop(0, '#0d2247');
+      bg.addColorStop(0.08, '#1a3a6e');
+      bg.addColorStop(0.2, '#2d5a9e');
+      bg.addColorStop(0.35, '#5a9ad5');
+      bg.addColorStop(0.5, '#7dbce8');
+      bg.addColorStop(0.65, '#a8d8f4');
+      bg.addColorStop(0.8, '#d4ecfa');
+      bg.addColorStop(0.92, '#f0e8d0');
       bg.addColorStop(1, '#fff5d0');
       ctx.fillStyle = bg;
       ctx.fillRect(-50, -50, CANVAS_W + 100, CANVAS_H + 100);
 
-      // God rays from top
+      // Sun with corona
       ctx.save();
-      ctx.globalAlpha = 0.06;
-      for (let i = 0; i < 8; i++) {
-        const rx = 80 + i * 75 + Math.sin(t * 0.2 + i * 0.8) * 25;
+      const sunX = 320, sunY = -30;
+      // Outer corona
+      for (let r = 0; r < 4; r++) {
+        const coronaPulse = Math.sin(t * 0.6 + r * 1.5) * 0.02;
+        ctx.globalAlpha = 0.03 + coronaPulse;
+        const corona = ctx.createRadialGradient(sunX, sunY, 0, sunX, sunY, 250 + r * 60);
+        corona.addColorStop(0, 'rgba(255,245,200,0.4)');
+        corona.addColorStop(0.3, 'rgba(255,230,150,0.15)');
+        corona.addColorStop(0.6, 'rgba(255,200,80,0.05)');
+        corona.addColorStop(1, 'transparent');
+        ctx.fillStyle = corona;
+        ctx.fillRect(0, 0, CANVAS_W, CANVAS_H);
+      }
+      ctx.restore();
+
+      // God rays - volumetric light shafts
+      ctx.save();
+      for (let i = 0; i < 12; i++) {
+        const rx = 60 + i * 55 + Math.sin(t * 0.15 + i * 0.7) * 20;
+        const rayAlpha = 0.03 + Math.sin(t * 0.5 + i * 1.2) * 0.015;
+        ctx.globalAlpha = rayAlpha;
         ctx.fillStyle = '#fffde0';
         ctx.beginPath();
-        ctx.moveTo(rx - 3, -10);
-        ctx.lineTo(rx - 50 - i * 5, CANVAS_H + 10);
-        ctx.lineTo(rx + 50 + i * 5, CANVAS_H + 10);
-        ctx.lineTo(rx + 3, -10);
+        ctx.moveTo(rx - 2, -10);
+        ctx.lineTo(rx - 40 - i * 4, CANVAS_H + 10);
+        ctx.lineTo(rx + 40 + i * 4, CANVAS_H + 10);
+        ctx.lineTo(rx + 2, -10);
         ctx.fill();
       }
       ctx.restore();
 
-      // Sun/divine light source
+      // Multi-layer cloud system
       ctx.save();
-      ctx.globalAlpha = 0.12 + Math.sin(t * 0.8) * 0.03;
-      const sunG = ctx.createRadialGradient(320, -20, 0, 320, -20, 300);
-      sunG.addColorStop(0, 'rgba(255,240,180,0.5)');
-      sunG.addColorStop(0.3, 'rgba(255,220,130,0.2)');
-      sunG.addColorStop(1, 'transparent');
-      ctx.fillStyle = sunG;
-      ctx.fillRect(0, 0, CANVAS_W, CANVAS_H);
-      ctx.restore();
-
-      // 3D perspective grid (golden)
-      ctx.strokeStyle = 'rgba(255,215,0,0.08)';
-      ctx.lineWidth = 1;
-      const vanishY = 160, vanishX = 320;
-      for (let i = 0; i < 14; i++) {
-        ctx.beginPath();
-        ctx.moveTo(i * 55 - 30, CANVAS_H);
-        ctx.lineTo(vanishX, vanishY);
-        ctx.stroke();
-      }
-      for (let i = 0; i < 10; i++) {
-        const y = FLOOR_Y + i * 10;
-        const sp = (y - vanishY) / (CANVAS_H - vanishY);
-        ctx.beginPath();
-        ctx.moveTo(vanishX - sp * 450, y);
-        ctx.lineTo(vanishX + sp * 450, y);
-        ctx.stroke();
-      }
-
-      // Layered cloud formations
-      for (let layer = 0; layer < 3; layer++) {
-        const speed = 10 + layer * 5;
-        const baseAlpha = 0.2 + layer * 0.1;
-        for (let i = 0; i < 6; i++) {
-          const cx = ((i * 140 + t * speed + layer * 200) % 900) - 100;
-          const cy = 40 + layer * 40 + i * 15 + Math.sin(t * 0.4 + i * 1.5 + layer) * 12;
-          const cw = 90 + (i % 3) * 40 + layer * 20;
-          const ch = 18 + (i % 2) * 12 + layer * 5;
-          ctx.globalAlpha = baseAlpha - layer * 0.03;
-          ctx.fillStyle = layer === 0 ? '#ffffff' : layer === 1 ? '#f0f5ff' : '#e8eeff';
+      for (let layer = 0; layer < 4; layer++) {
+        const speed = 6 + layer * 4;
+        for (let i = 0; i < 8; i++) {
+          const cx = ((i * 120 + t * speed + layer * 180) % 1000) - 150;
+          const cy = 25 + layer * 35 + i * 12 + Math.sin(t * 0.3 + i * 1.2 + layer * 0.7) * 10;
+          const cw = 80 + (i % 3) * 45 + layer * 15;
+          const ch = 15 + (i % 2) * 10 + layer * 4;
+          ctx.globalAlpha = (0.25 - layer * 0.03) * (0.8 + Math.sin(t * 0.4 + i) * 0.2);
+          const cloudColors = ['#ffffff', '#f5f8ff', '#edf2ff', '#e0eaff'];
+          ctx.fillStyle = cloudColors[layer];
+          // Main body
           ctx.beginPath();
           ctx.ellipse(cx, cy, cw, ch, 0, 0, Math.PI * 2);
           ctx.fill();
-          // Sub-cloud puffs
+          // Puffs
           ctx.beginPath();
-          ctx.ellipse(cx - cw * 0.3, cy - ch * 0.4, cw * 0.5, ch * 0.7, 0, 0, Math.PI * 2);
+          ctx.ellipse(cx - cw * 0.35, cy - ch * 0.5, cw * 0.55, ch * 0.75, 0, 0, Math.PI * 2);
           ctx.fill();
           ctx.beginPath();
-          ctx.ellipse(cx + cw * 0.25, cy - ch * 0.3, cw * 0.4, ch * 0.6, 0, 0, Math.PI * 2);
+          ctx.ellipse(cx + cw * 0.3, cy - ch * 0.35, cw * 0.45, ch * 0.65, 0, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.beginPath();
+          ctx.ellipse(cx + cw * 0.15, cy - ch * 0.6, cw * 0.35, ch * 0.5, 0, 0, Math.PI * 2);
           ctx.fill();
         }
       }
+      ctx.restore();
 
-      // Floating golden particles / divine dust
-      for (let i = 0; i < 25; i++) {
-        const px = (i * 73 + t * 12) % CANVAS_W;
-        const py = 30 + ((i * 41 + t * 6) % (FLOOR_Y - 40));
-        const sparkle = Math.sin(t * 5 + i * 2.3) * 0.5 + 0.5;
-        ctx.globalAlpha = 0.15 + sparkle * 0.35;
-        ctx.fillStyle = i % 3 === 0 ? '#ffd700' : '#ffffcc';
+      // 3D perspective grid (golden)
+      ctx.strokeStyle = 'rgba(255,215,0,0.06)';
+      ctx.lineWidth = 1;
+      const vYc = 150, vXc = 320;
+      for (let i = 0; i < 16; i++) {
         ctx.beginPath();
-        ctx.arc(px, py, 1 + sparkle * 1.5, 0, Math.PI * 2);
-        ctx.fill();
+        ctx.moveTo(i * 48 - 40, CANVAS_H);
+        ctx.lineTo(vXc, vYc);
+        ctx.stroke();
+      }
+      for (let i = 0; i < 12; i++) {
+        const y = FLOOR_Y + i * 8;
+        const sp = (y - vYc) / (CANVAS_H - vYc);
+        ctx.beginPath();
+        ctx.moveTo(vXc - sp * 500, y);
+        ctx.lineTo(vXc + sp * 500, y);
+        ctx.stroke();
       }
 
-      // Distant floating islands / celestial platforms
-      ctx.globalAlpha = 0.15;
-      for (let i = 0; i < 3; i++) {
-        const ix = 100 + i * 220 + Math.sin(t * 0.15 + i * 3) * 15;
-        const iy = 200 + i * 30 + Math.sin(t * 0.25 + i) * 8;
-        ctx.fillStyle = '#c8d8e8';
+      // Floating celestial islands with more detail
+      ctx.save();
+      for (let i = 0; i < 4; i++) {
+        const ix = 80 + i * 170 + Math.sin(t * 0.12 + i * 2.5) * 20;
+        const iy = 185 + i * 25 + Math.sin(t * 0.2 + i * 1.3) * 10;
+        const iw = 40 + i * 15;
+        // Shadow underneath
+        ctx.globalAlpha = 0.06;
+        ctx.fillStyle = '#445566';
         ctx.beginPath();
-        ctx.ellipse(ix, iy, 50 + i * 10, 10 + i * 2, 0, 0, Math.PI * 2);
+        ctx.ellipse(ix, iy + 8, iw * 0.8, 6, 0, 0, Math.PI * 2);
+        ctx.fill();
+        // Rock body
+        ctx.globalAlpha = 0.18;
+        ctx.fillStyle = '#b8c8d8';
+        ctx.beginPath();
+        ctx.ellipse(ix, iy, iw, 10 + i * 2, 0, 0, Math.PI * 2);
+        ctx.fill();
+        // Underside rocks
+        ctx.fillStyle = '#8898a8';
+        ctx.beginPath();
+        ctx.ellipse(ix, iy + 5, iw * 0.7, 8, 0, 0, Math.PI);
         ctx.fill();
         // Grass on top
-        ctx.fillStyle = '#90c890';
+        ctx.fillStyle = '#78b878';
         ctx.beginPath();
-        ctx.ellipse(ix, iy - 3, 48 + i * 10, 5, 0, Math.PI, 0);
+        ctx.ellipse(ix, iy - 3, iw - 3, 5, 0, Math.PI, 0);
         ctx.fill();
+        // Tiny trees
+        if (i % 2 === 0) {
+          ctx.fillStyle = '#5a9a5a';
+          ctx.beginPath();
+          ctx.arc(ix - 8, iy - 10, 4, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.fillStyle = '#664422';
+          ctx.fillRect(ix - 9, iy - 7, 2, 5);
+        }
       }
+      ctx.restore();
+
+      // Golden divine particles
+      ctx.save();
+      for (let i = 0; i < 40; i++) {
+        const px = (i * 73 + t * (8 + i % 4 * 3)) % CANVAS_W;
+        const py = 20 + ((i * 41 + t * (4 + i % 3 * 2)) % (FLOOR_Y - 30));
+        const sparkle = Math.sin(t * 5 + i * 2.3) * 0.5 + 0.5;
+        ctx.globalAlpha = 0.1 + sparkle * 0.4;
+        ctx.fillStyle = i % 4 === 0 ? '#ffd700' : i % 4 === 1 ? '#ffffcc' : i % 4 === 2 ? '#fff8e0' : '#ffeeaa';
+        const sz = 0.8 + sparkle * 1.8;
+        ctx.beginPath();
+        ctx.arc(px, py, sz, 0, Math.PI * 2);
+        ctx.fill();
+        // Cross sparkle on bright ones
+        if (sparkle > 0.7 && i % 3 === 0) {
+          ctx.globalAlpha *= 0.4;
+          ctx.strokeStyle = '#ffd700';
+          ctx.lineWidth = 0.5;
+          ctx.beginPath();
+          ctx.moveTo(px - 4, py);
+          ctx.lineTo(px + 4, py);
+          ctx.moveTo(px, py - 4);
+          ctx.lineTo(px, py + 4);
+          ctx.stroke();
+        }
+      }
+      ctx.restore();
+
+      // Faint rainbow arc
+      ctx.save();
+      ctx.globalAlpha = 0.02;
+      const rainbowColors = ['#ff0000', '#ff8800', '#ffff00', '#00ff00', '#0088ff', '#8800ff'];
+      for (let c = 0; c < rainbowColors.length; c++) {
+        ctx.strokeStyle = rainbowColors[c];
+        ctx.lineWidth = 3;
+        ctx.beginPath();
+        ctx.arc(320, 500, 380 + c * 4, Math.PI * 1.15, Math.PI * 1.85);
+        ctx.stroke();
+      }
+      ctx.restore();
+
       ctx.globalAlpha = 1;
       return;
     }
 
-    // === GALAXIA (default) ===
+    // === GALAXIA (default) - Deep space epic ===
     const bg = ctx.createLinearGradient(0, 0, CANVAS_W * 0.5, CANVAS_H);
-    bg.addColorStop(0, '#020012');
-    bg.addColorStop(0.3, '#06022a');
-    bg.addColorStop(0.6, '#0a0435');
-    bg.addColorStop(1, '#050218');
+    bg.addColorStop(0, '#010010');
+    bg.addColorStop(0.15, '#030020');
+    bg.addColorStop(0.35, '#06022a');
+    bg.addColorStop(0.55, '#0a0438');
+    bg.addColorStop(0.75, '#070228');
+    bg.addColorStop(1, '#030015');
     ctx.fillStyle = bg;
     ctx.fillRect(-50, -50, CANVAS_W + 100, CANVAS_H + 100);
 
-    // Deep space nebula clouds
-    for (let i = 0; i < 6; i++) {
-      const nx = 80 + i * 110 + Math.sin(t * 0.15 + i * 1.8) * 35;
-      const ny = 60 + i * 55 + Math.cos(t * 0.12 + i * 1.2) * 25;
-      const nr = 100 + i * 25 + Math.sin(t * 0.1 + i) * 15;
-      const nebColors = [
-        ['rgba(120,0,220,0.07)', 'rgba(120,0,220,0)'],
-        ['rgba(0,80,220,0.06)', 'rgba(0,80,220,0)'],
-        ['rgba(220,0,120,0.05)', 'rgba(220,0,120,0)'],
-        ['rgba(0,180,160,0.04)', 'rgba(0,180,160,0)'],
-        ['rgba(180,60,200,0.04)', 'rgba(180,60,200,0)'],
-        ['rgba(40,0,180,0.05)', 'rgba(40,0,180,0)'],
-      ];
+    // Multi-layer nebula system
+    const nebulaData = [
+      { x: 100, y: 80, r: 140, c1: 'rgba(120,0,220,0.08)', c2: 'rgba(120,0,220,0)', speed: 0.12 },
+      { x: 400, y: 120, r: 120, c1: 'rgba(0,80,220,0.07)', c2: 'rgba(0,80,220,0)', speed: 0.15 },
+      { x: 250, y: 200, r: 160, c1: 'rgba(220,0,120,0.06)', c2: 'rgba(220,0,120,0)', speed: 0.08 },
+      { x: 500, y: 250, r: 130, c1: 'rgba(0,180,160,0.05)', c2: 'rgba(0,180,160,0)', speed: 0.1 },
+      { x: 150, y: 300, r: 110, c1: 'rgba(180,60,200,0.05)', c2: 'rgba(180,60,200,0)', speed: 0.14 },
+      { x: 350, y: 50, r: 150, c1: 'rgba(40,0,180,0.06)', c2: 'rgba(40,0,180,0)', speed: 0.09 },
+      { x: 550, y: 160, r: 100, c1: 'rgba(200,100,0,0.04)', c2: 'rgba(200,100,0,0)', speed: 0.11 },
+      { x: 80, y: 180, r: 130, c1: 'rgba(0,120,200,0.05)', c2: 'rgba(0,120,200,0)', speed: 0.13 },
+    ];
+    for (const n of nebulaData) {
+      const nx = n.x + Math.sin(t * n.speed) * 30;
+      const ny = n.y + Math.cos(t * n.speed * 0.8) * 20;
+      const nr = n.r + Math.sin(t * 0.1) * 15;
       const grad = ctx.createRadialGradient(nx, ny, 0, nx, ny, nr);
-      grad.addColorStop(0, nebColors[i][0]);
-      grad.addColorStop(0.6, nebColors[i][1]);
+      grad.addColorStop(0, n.c1);
+      grad.addColorStop(0.6, n.c2);
       grad.addColorStop(1, 'transparent');
       ctx.fillStyle = grad;
       ctx.fillRect(0, 0, CANVAS_W, CANVAS_H);
     }
 
-    // Milky way band
+    // Milky way band - enhanced
     ctx.save();
-    ctx.globalAlpha = 0.03;
+    ctx.globalAlpha = 0.04;
     ctx.translate(320, 200);
     ctx.rotate(-0.3);
-    const milky = ctx.createLinearGradient(-300, -40, 300, 40);
+    const milky = ctx.createLinearGradient(-350, -50, 350, 50);
     milky.addColorStop(0, 'transparent');
-    milky.addColorStop(0.3, 'rgba(200,180,255,0.5)');
-    milky.addColorStop(0.5, 'rgba(220,200,255,0.7)');
-    milky.addColorStop(0.7, 'rgba(200,180,255,0.5)');
+    milky.addColorStop(0.2, 'rgba(180,160,255,0.3)');
+    milky.addColorStop(0.4, 'rgba(200,180,255,0.6)');
+    milky.addColorStop(0.5, 'rgba(220,200,255,0.8)');
+    milky.addColorStop(0.6, 'rgba(200,180,255,0.6)');
+    milky.addColorStop(0.8, 'rgba(180,160,255,0.3)');
     milky.addColorStop(1, 'transparent');
     ctx.fillStyle = milky;
-    ctx.fillRect(-350, -35, 700, 70);
+    ctx.fillRect(-400, -45, 800, 90);
+    // Milky way dust
+    for (let i = 0; i < 60; i++) {
+      const dx = -350 + i * 12 + Math.sin(i * 0.5) * 8;
+      const dy = -20 + Math.sin(i * 0.8 + t * 0.5) * 18;
+      ctx.globalAlpha = 0.02 + Math.sin(t * 3 + i) * 0.01;
+      ctx.fillStyle = '#ccbbff';
+      ctx.fillRect(dx, dy, 1, 1);
+    }
     ctx.restore();
 
-    // Stars with twinkling
+    // Stars with twinkling - enhanced density
     this.stars.forEach((s, i) => {
       const tw = 0.3 + Math.sin(t * 3 + s.blink * 10) * 0.4 + Math.sin(t * 7 + i) * 0.2;
       ctx.globalAlpha = Math.max(0, Math.min(1, tw));
       const size = s.s * (0.8 + Math.sin(t * 2 + s.blink * 5) * 0.3);
-      // Star color variation
-      const starColors = ['#ffffff', '#aaccff', '#ffddaa', '#ccddff', '#ffeedd'];
+      const starColors = ['#ffffff', '#aaccff', '#ffddaa', '#ccddff', '#ffeedd', '#ddeeff', '#ffccdd'];
       ctx.fillStyle = starColors[i % starColors.length];
       ctx.beginPath();
       ctx.arc(s.x, s.y, size, 0, Math.PI * 2);
       ctx.fill();
-      // Glow halo for bright stars
+      // Cross sparkle for bright stars
       if (size > 1.2) {
-        ctx.globalAlpha *= 0.2;
-        const halo = ctx.createRadialGradient(s.x, s.y, 0, s.x, s.y, size * 4);
+        ctx.globalAlpha *= 0.25;
+        ctx.strokeStyle = starColors[i % starColors.length];
+        ctx.lineWidth = 0.3;
+        const sparkLen = size * 5;
+        ctx.beginPath();
+        ctx.moveTo(s.x - sparkLen, s.y);
+        ctx.lineTo(s.x + sparkLen, s.y);
+        ctx.moveTo(s.x, s.y - sparkLen);
+        ctx.lineTo(s.x, s.y + sparkLen);
+        ctx.stroke();
+        // Glow halo
+        ctx.globalAlpha *= 0.5;
+        const halo = ctx.createRadialGradient(s.x, s.y, 0, s.x, s.y, size * 5);
         halo.addColorStop(0, starColors[i % starColors.length]);
         halo.addColorStop(1, 'transparent');
         ctx.fillStyle = halo;
         ctx.beginPath();
-        ctx.arc(s.x, s.y, size * 4, 0, Math.PI * 2);
+        ctx.arc(s.x, s.y, size * 5, 0, Math.PI * 2);
         ctx.fill();
       }
     });
     ctx.globalAlpha = 1;
 
-    // Distant planet
+    // Distant planet with atmosphere
     ctx.save();
-    ctx.globalAlpha = 0.12;
     const planetX = 520 + Math.sin(t * 0.05) * 5;
-    const planetY = 100 + Math.cos(t * 0.03) * 3;
-    const pG = ctx.createRadialGradient(planetX - 8, planetY - 8, 0, planetX, planetY, 30);
-    pG.addColorStop(0, '#4488cc');
-    pG.addColorStop(0.7, '#223366');
+    const planetY = 95 + Math.cos(t * 0.03) * 3;
+    const planetR = 32;
+    // Atmosphere glow
+    ctx.globalAlpha = 0.08;
+    const atmoG = ctx.createRadialGradient(planetX, planetY, planetR, planetX, planetY, planetR + 15);
+    atmoG.addColorStop(0, 'rgba(100,150,255,0.5)');
+    atmoG.addColorStop(1, 'transparent');
+    ctx.fillStyle = atmoG;
+    ctx.beginPath();
+    ctx.arc(planetX, planetY, planetR + 15, 0, Math.PI * 2);
+    ctx.fill();
+    // Planet body
+    ctx.globalAlpha = 0.15;
+    const pG = ctx.createRadialGradient(planetX - 10, planetY - 10, 0, planetX, planetY, planetR);
+    pG.addColorStop(0, '#5599dd');
+    pG.addColorStop(0.4, '#3366aa');
+    pG.addColorStop(0.8, '#223366');
     pG.addColorStop(1, '#111133');
     ctx.fillStyle = pG;
     ctx.beginPath();
-    ctx.arc(planetX, planetY, 28, 0, Math.PI * 2);
+    ctx.arc(planetX, planetY, planetR, 0, Math.PI * 2);
     ctx.fill();
+    // Planet bands
+    ctx.globalAlpha = 0.04;
+    ctx.strokeStyle = '#6699cc';
+    ctx.lineWidth = 1;
+    for (let b = -2; b <= 2; b++) {
+      ctx.beginPath();
+      ctx.ellipse(planetX, planetY + b * 8, planetR - 3, 3, 0, 0, Math.PI * 2);
+      ctx.stroke();
+    }
     // Planet ring
-    ctx.globalAlpha = 0.08;
+    ctx.globalAlpha = 0.1;
     ctx.strokeStyle = '#8899bb';
-    ctx.lineWidth = 2;
+    ctx.lineWidth = 2.5;
     ctx.beginPath();
-    ctx.ellipse(planetX, planetY, 45, 8, -0.2, 0, Math.PI * 2);
+    ctx.ellipse(planetX, planetY, 50, 9, -0.2, 0, Math.PI * 2);
+    ctx.stroke();
+    ctx.globalAlpha = 0.04;
+    ctx.strokeStyle = '#aabbcc';
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.ellipse(planetX, planetY, 55, 10, -0.2, 0, Math.PI * 2);
     ctx.stroke();
     ctx.restore();
 
-    // 3D perspective grid (cyan)
-    ctx.strokeStyle = 'rgba(0,255,255,0.06)';
-    ctx.lineWidth = 1;
-    const vanishY = 200, vanishX = 320;
-    for (let i = 0; i < 14; i++) {
+    // Second smaller planet/moon
+    ctx.save();
+    ctx.globalAlpha = 0.08;
+    const moonX = 120, moonY = 140;
+    const mG = ctx.createRadialGradient(moonX - 3, moonY - 3, 0, moonX, moonY, 12);
+    mG.addColorStop(0, '#aa7744');
+    mG.addColorStop(0.8, '#664422');
+    mG.addColorStop(1, '#332211');
+    ctx.fillStyle = mG;
+    ctx.beginPath();
+    ctx.arc(moonX, moonY, 12, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.restore();
+
+    // Shooting star (occasional)
+    const shootPhase = (t * 0.3) % 4;
+    if (shootPhase < 0.5) {
+      const sp = shootPhase / 0.5;
+      const sx = 50 + sp * 400;
+      const sy = 30 + sp * 120;
+      ctx.save();
+      ctx.globalAlpha = (1 - sp) * 0.6;
+      ctx.strokeStyle = '#ffffff';
+      ctx.lineWidth = 1.5;
       ctx.beginPath();
-      ctx.moveTo(i * 50 - 10, CANVAS_H);
+      ctx.moveTo(sx, sy);
+      ctx.lineTo(sx - 30, sy - 10);
+      ctx.stroke();
+      ctx.globalAlpha *= 0.3;
+      ctx.lineWidth = 0.5;
+      ctx.beginPath();
+      ctx.moveTo(sx - 30, sy - 10);
+      ctx.lineTo(sx - 60, sy - 20);
+      ctx.stroke();
+      ctx.restore();
+    }
+
+    // 3D perspective grid (cyan)
+    ctx.strokeStyle = 'rgba(0,255,255,0.05)';
+    ctx.lineWidth = 1;
+    const vanishY = 190, vanishX = 320;
+    for (let i = 0; i < 16; i++) {
+      ctx.beginPath();
+      ctx.moveTo(i * 48 - 40, CANVAS_H);
       ctx.lineTo(vanishX, vanishY);
       ctx.stroke();
     }
-    for (let i = 0; i < 8; i++) {
-      const y = FLOOR_Y + i * 12;
+    for (let i = 0; i < 10; i++) {
+      const y = FLOOR_Y + i * 10;
       const sp = (y - vanishY) / (CANVAS_H - vanishY);
       ctx.beginPath();
-      ctx.moveTo(vanishX - sp * 450, y);
-      ctx.lineTo(vanishX + sp * 450, y);
+      ctx.moveTo(vanishX - sp * 500, y);
+      ctx.lineTo(vanishX + sp * 500, y);
       ctx.stroke();
     }
   }

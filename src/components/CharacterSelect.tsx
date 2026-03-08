@@ -1763,7 +1763,7 @@ const CharacterSelect: React.FC = () => {
           </div>
         );
       })()}
-      `}</style>
+
 
       {/* === BOTTOM BAR === */}
       <div style={{

@@ -895,7 +895,7 @@ const BgCanvas: React.FC = () => {
       ctx.save();
       ctx.globalAlpha = 0.025;
       const p1Glow = ctx.createRadialGradient(0, H * 0.5, 0, 0, H * 0.5, W * 0.35);
-      p1Glow.addColorStop(0, '#00ddff');
+      p1Glow.addColorStop(0, '#aabbcc');
       p1Glow.addColorStop(1, 'transparent');
       ctx.fillStyle = p1Glow;
       ctx.fillRect(0, 0, W * 0.5, H);

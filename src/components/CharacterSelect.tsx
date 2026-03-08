@@ -1393,6 +1393,13 @@ const CharacterSelect: React.FC = () => {
                 background: 'linear-gradient(180deg, #b0ffff 0%, #00ffff 50%, #0088aa 100%)',
                 WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text',
               }}>{p1Name}</div>
+              {p1SubName && (
+                <div style={{
+                  color: '#7ab8ff', fontFamily: "'Orbitron', monospace",
+                  fontSize: 'clamp(7px, 1vw, 11px)', letterSpacing: 2, marginTop: 2,
+                  textShadow: '0 0 8px #5a9ae060',
+                }}>{p1SubName}</div>
+              )}
               {displayP1 && (
                 <div style={{ display: 'flex', gap: 8, marginTop: 4, padding: '0 10%' }}>
                   <StatBar label="ATK" value={0.7} color="#ff4444" />

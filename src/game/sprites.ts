@@ -22,6 +22,7 @@ const imageCache = new Map<string, HTMLImageElement>();
 function loadImg(src: string): HTMLImageElement {
   if (imageCache.has(src)) return imageCache.get(src)!;
   const img = new Image();
+  img.crossOrigin = 'anonymous';
   img.src = src;
   imageCache.set(src, img);
   return img;
@@ -40,6 +41,13 @@ export function getEdowadoSprites(): SpriteSet {
     hurt: [loadImg(edowadoHurt)],
   };
   return edowadoSprites;
+}
+
+// Preload all sprites immediately
+getEdowadoSprites();
+
+export function isSpriteReady(img: HTMLImageElement): boolean {
+  return img.complete && img.naturalWidth > 0 && img.naturalHeight > 0;
 }
 
 export type SpriteState = 'idle' | 'walk' | 'attack' | 'jump' | 'block' | 'hurt';

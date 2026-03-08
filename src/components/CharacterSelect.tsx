@@ -965,6 +965,7 @@ const CharacterSelect: React.FC = () => {
   const [konamiProgress, setKonamiProgress] = useState(0);
   const [cheatActive, setCheatActive] = useState(false);
   const [selectFlash, setSelectFlash] = useState<number | null>(null);
+  const skinJustClosedRef = useRef(false);
 
   const charRenderData = getCharRenderData();
 

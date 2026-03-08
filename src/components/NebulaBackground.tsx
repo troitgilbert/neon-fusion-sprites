@@ -91,14 +91,14 @@ const NebulaBackground: React.FC = () => {
 
       // Cosmic dust band
       ctx.save();
-      ctx.globalAlpha = 0.025 + Math.sin(time * 0.0005) * 0.01;
+      ctx.globalAlpha = 0.015 + Math.sin(time * 0.0005) * 0.005;
       ctx.translate(w * 0.5, h * 0.5);
       ctx.rotate(0.35 + Math.sin(time * 0.0001) * 0.04);
       const dustGrad = ctx.createLinearGradient(-w, 0, w, 0);
       dustGrad.addColorStop(0, 'transparent');
-      dustGrad.addColorStop(0.25, 'rgba(180,140,255,1)');
-      dustGrad.addColorStop(0.5, 'rgba(255,180,100,1)');
-      dustGrad.addColorStop(0.75, 'rgba(100,180,255,1)');
+      dustGrad.addColorStop(0.25, 'rgba(120,60,40,1)');
+      dustGrad.addColorStop(0.5, 'rgba(180,100,40,1)');
+      dustGrad.addColorStop(0.75, 'rgba(80,40,30,1)');
       dustGrad.addColorStop(1, 'transparent');
       ctx.fillStyle = dustGrad;
       ctx.fillRect(-w, -h * 0.12, w * 2, h * 0.24);

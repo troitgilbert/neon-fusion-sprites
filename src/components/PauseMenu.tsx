@@ -12,10 +12,10 @@ const MOVE_LIST = [
     { name: 'Esquivar', p1: 'T', p2: ';' },
   ]},
   { category: 'ATAQUES', moves: [
-    { name: 'Golpe', p1: 'F', p2: '[' },
-    { name: 'Especial', p1: 'G', p2: ']' },
-    { name: 'Super', p1: 'H', p2: '\\' },
-    { name: 'Ultra', p1: 'E', p2: 'Enter' },
+    { name: 'Golpe', p1: 'F', p2: '[', type: 'hit' },
+    { name: 'Especial', p1: 'G', p2: ']', type: 'spec' },
+    { name: 'Super', p1: 'H', p2: '\\', type: 'super' },
+    { name: 'Ultra', p1: 'E', p2: 'Enter', type: 'ultra' },
   ]},
   { category: 'DEFENSA', moves: [
     { name: 'Bloquear', p1: 'R', p2: "'" },

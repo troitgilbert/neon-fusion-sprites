@@ -116,8 +116,8 @@ const GameApp: React.FC = () => {
           }}>
             {cheatNotification}
           </div>
-          <div style={{ color: '#00ff66', fontFamily: "'Orbitron', monospace", fontSize: 14, marginTop: 8, textAlign: 'center' }}>
-            🔷 999,999,999 CRISTALES
+          <div style={{ color: '#00ff66', fontFamily: "'Orbitron', monospace", fontSize: 14, marginTop: 8, textAlign: 'center', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6 }}>
+            <img src={crystalIcon} alt="crystal" style={{ height: 18, filter: 'drop-shadow(0 0 4px #00bfff)' }} /> 999,999,999 CRISTALES
           </div>
         </div>
       )}

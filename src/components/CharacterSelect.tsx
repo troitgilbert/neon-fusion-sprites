@@ -617,14 +617,14 @@ const BgCanvas: React.FC = () => {
       });
     }
 
-    // Warm nebulae (orange/amber like main menu)
+    // Cool grayscale nebulae
     const nebulae = [
-      { bx: 0.12, by: 0.18, r: 0.45, color: [180,80,10], alpha: 0.12, sx: 0.0003, sy: 0.0004 },
-      { bx: 0.82, by: 0.72, r: 0.5, color: [200,100,15], alpha: 0.11, sx: 0.0002, sy: 0.0003 },
-      { bx: 0.48, by: 0.08, r: 0.35, color: [220,120,20], alpha: 0.09, sx: 0.00025, sy: 0.0002 },
-      { bx: 0.72, by: 0.32, r: 0.3, color: [160,60,15], alpha: 0.08, sx: 0.00035, sy: 0.0005 },
-      { bx: 0.28, by: 0.78, r: 0.38, color: [200,90,10], alpha: 0.08, sx: 0.0004, sy: 0.00025 },
-      { bx: 0.55, by: 0.52, r: 0.55, color: [170,70,10], alpha: 0.07, sx: 0.0002, sy: 0.00015 },
+      { bx: 0.12, by: 0.18, r: 0.45, color: [80,80,90], alpha: 0.12, sx: 0.0003, sy: 0.0004 },
+      { bx: 0.82, by: 0.72, r: 0.5, color: [100,100,110], alpha: 0.11, sx: 0.0002, sy: 0.0003 },
+      { bx: 0.48, by: 0.08, r: 0.35, color: [120,120,130], alpha: 0.09, sx: 0.00025, sy: 0.0002 },
+      { bx: 0.72, by: 0.32, r: 0.3, color: [60,60,70], alpha: 0.08, sx: 0.00035, sy: 0.0005 },
+      { bx: 0.28, by: 0.78, r: 0.38, color: [90,90,100], alpha: 0.08, sx: 0.0004, sy: 0.00025 },
+      { bx: 0.55, by: 0.52, r: 0.55, color: [70,70,80], alpha: 0.07, sx: 0.0002, sy: 0.00015 },
     ];
 
     // Shooting stars

@@ -746,8 +746,8 @@ const BgCanvas: React.FC = () => {
       // Stars with twinkling
       stars.forEach(s => {
         const sx = s.x * W, sy = s.y * H;
-        const twinkle = 0.5 + 0.5 * Math.sin(frame * s.twinkleSpeed + s.twinkleOffset);
-        const alpha = s.brightness * twinkle;
+        const twinkle = 0.7 + 0.3 * Math.sin(frame * s.twinkleSpeed + s.twinkleOffset);
+        const alpha = Math.min(1, s.brightness * twinkle * 1.5);
         ctx.save();
         ctx.globalAlpha = alpha;
 

@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { useGame } from '../game/GameContext';
 import { MODE_INFO } from '../game/constants';
+import titleLogo from '../assets/title-logo.png';
 
 interface MenuItem {
   label: string;

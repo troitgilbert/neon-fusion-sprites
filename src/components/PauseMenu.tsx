@@ -26,6 +26,11 @@ const MOVE_LIST = [
     { name: 'Descenso Cristálico (Aire+↓+Esp)', p1: 'S+G (aire)', p2: '↓+] (aire)' },
     { name: 'Impacto Cristálico (Aire+→+Esp)', p1: 'D+G (aire)', p2: '→+] (aire)' },
     { name: 'Super', p1: 'H', p2: '\\' },
+    { name: 'Impulso (↓+Super)', p1: 'S+H', p2: '↓+\\' },
+    { name: 'Cohete (↑+Super)', p1: 'W+H', p2: '↑+\\' },
+    { name: 'Atracción (→+Super)', p1: 'D+H', p2: '→+\\' },
+    { name: 'Presión (Aire+↓+Super)', p1: 'S+H (aire)', p2: '↓+\\ (aire)' },
+    { name: 'Agarre (Aire+→+Super)', p1: 'D+H (aire)', p2: '→+\\ (aire)' },
     { name: 'Ultra', p1: 'E', p2: 'Enter' },
   ]},
   { category: 'DEFENSA', moves: [

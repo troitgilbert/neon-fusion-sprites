@@ -78,6 +78,7 @@ const GameApp: React.FC = () => {
       {gameState === 'STORY_SELECT' && <StorySelect />}
       {gameState === 'ARCADE_TOWER' && <ArcadeTower />}
       {gameState === 'ADVENTURE_SELECT' && <AdventureSelect />}
+      {gameState === 'ADVENTURE_CHAR_SELECT' && <AdventureCharSelect />}
       {gameState === 'MISSIONS' && <MissionsMenu />}
       {gameState === 'EVENTS' && <EventsMenu />}
       {gameState === 'BOSS_RUSH' && <BossRushMenu />}
@@ -93,6 +94,28 @@ const GameApp: React.FC = () => {
         />
       )}
       {gameState === 'ADVENTURE_PLAY' && <AdventurePlay />}
+      {gameState === 'ONLINE' && <OnlineMenu />}
+
+      {/* Cheat code notification */}
+      {cheatNotification && (
+        <div style={{
+          position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%, -50%)',
+          zIndex: 300, padding: '20px 50px',
+          background: 'rgba(0,0,0,0.95)', border: '3px solid #ffcc33',
+          boxShadow: '0 0 60px rgba(255,204,51,0.5), inset 0 0 30px rgba(255,204,51,0.1)',
+          animation: 'slideInRight 0.3s ease-out',
+        }}>
+          <div style={{
+            color: '#ffcc33', fontFamily: "'Orbitron', monospace", fontSize: 24,
+            letterSpacing: 5, fontWeight: 900, textShadow: '0 0 20px #ff6600',
+          }}>
+            {cheatNotification}
+          </div>
+          <div style={{ color: '#00ff66', fontFamily: "'Orbitron', monospace", fontSize: 14, marginTop: 8, textAlign: 'center' }}>
+            🔷 999,999,999 CRISTALES
+          </div>
+        </div>
+      )}
 
       {/* Achievement popup */}
       {achievementPopup && (

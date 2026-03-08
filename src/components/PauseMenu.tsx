@@ -9,6 +9,7 @@ const MOVE_LIST = [
     { name: 'Mover Derecha', p1: 'D', p2: '→' },
     { name: 'Saltar', p1: 'W', p2: '↑' },
     { name: 'Agacharse', p1: 'S', p2: '↓' },
+    { name: 'Super Salto', p1: 'S+W', p2: '↓+↑' },
     { name: 'Esquivar', p1: 'T', p2: ';' },
   ]},
   { category: 'ATAQUES', moves: [
@@ -20,6 +21,9 @@ const MOVE_LIST = [
   { category: 'DEFENSA', moves: [
     { name: 'Bloquear', p1: 'R', p2: "'" },
     { name: 'Transformar', p1: 'Y', p2: 'P' },
+  ]},
+  { category: 'EXTRA', moves: [
+    { name: 'Emote', p1: 'U', p2: 'L' },
   ]},
 ];
 

@@ -15,12 +15,12 @@ export const CONTROLS: { p1: Controls; p2: Controls } = {
   p1: {
     up: 'KeyW', down: 'KeyS', left: 'KeyA', right: 'KeyD',
     hit: 'KeyF', spec: 'KeyG', super: 'KeyH', ultra: 'KeyE',
-    block: 'KeyR', dodge: 'KeyT'
+    block: 'KeyR', dodge: 'KeyT', emote: 'KeyU'
   },
   p2: {
     up: 'ArrowUp', down: 'ArrowDown', left: 'ArrowLeft', right: 'ArrowRight',
     hit: 'BracketLeft', spec: 'BracketRight', super: 'Backslash', ultra: 'Enter',
-    block: 'Quote', dodge: 'Semicolon'
+    block: 'Quote', dodge: 'Semicolon', emote: 'KeyL'
   }
 };
 

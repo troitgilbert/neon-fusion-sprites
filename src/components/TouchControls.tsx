@@ -32,6 +32,7 @@ const TouchControls: React.FC = () => {
       <div {...bind(CONTROLS.p1.ultra)} style={{ ...btnStyle, right: 120, bottom: 40, pointerEvents: 'auto' }}>Ultra</div>
       <div {...bind(CONTROLS.p1.dodge)} style={{ ...btnStyle, right: 60, bottom: 40, pointerEvents: 'auto' }}>Esq</div>
       <div {...bind(CONTROLS.p1.block)} style={{ ...btnStyle, right: 0, bottom: 40, pointerEvents: 'auto' }}>Esc</div>
+      <div {...bind(CONTROLS.p1.emote)} style={{ ...btnStyle, right: 180, bottom: 70, pointerEvents: 'auto', background: 'rgba(255,200,0,0.18)', border: '2px solid #ffcc00' }}>😤</div>
 
       {/* Pause */}
       <div

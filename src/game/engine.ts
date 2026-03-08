@@ -1181,9 +1181,17 @@ export class GameEngine {
     this.drawStageFloor(ctx);
 
     if (this.state === 'FIGHT' || this.state === 'PAUSED' || this.state === 'ROUND_OVER') {
-      ctx.fillStyle = 'rgba(0,0,0,0.6)';
-      ctx.beginPath(); ctx.ellipse(this.p1!.x, FLOOR_Y, 20, 5, 0, 0, Math.PI * 2); ctx.fill();
-      ctx.beginPath(); ctx.ellipse(this.p2!.x, FLOOR_Y, 20, 5, 0, 0, Math.PI * 2); ctx.fill();
+      // Stage-colored ground shadows
+      const shadowColors: Record<string, string> = {
+        infierno: 'rgba(255,60,0,0.4)',
+        cielo: 'rgba(255,215,0,0.3)',
+        nada: 'rgba(80,0,120,0.3)',
+        default: 'rgba(0,200,255,0.3)',
+      };
+      const sc = shadowColors[this.selectedStage] || shadowColors.default;
+      ctx.fillStyle = sc;
+      ctx.beginPath(); ctx.ellipse(this.p1!.x, FLOOR_Y, 22, 6, 0, 0, Math.PI * 2); ctx.fill();
+      ctx.beginPath(); ctx.ellipse(this.p2!.x, FLOOR_Y, 22, 6, 0, 0, Math.PI * 2); ctx.fill();
 
       this.p2!.draw(ctx, this);
       this.p1!.draw(ctx, this);

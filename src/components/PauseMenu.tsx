@@ -138,45 +138,76 @@ const PauseMenu: React.FC = () => {
                 <div style={{ color: '#555', fontFamily: "'Orbitron', monospace", fontSize: 7, letterSpacing: 2, textAlign: 'center' }}>P2</div>
               </div>
 
-              {cat.moves.map((move, mi) => (
-                <div key={mi} style={{
-                  display: 'grid',
-                  gridTemplateColumns: '1fr 60px 60px',
-                  gap: 4,
-                  padding: '4px 0',
-                  borderBottom: '1px solid rgba(255,255,255,0.03)',
-                  animation: `itemCascade 0.3s cubic-bezier(0.16,1,0.3,1) ${(ci * 5 + mi) * 0.04}s both`,
-                }}>
-                  <div style={{
-                    color: '#ccdde8',
-                    fontFamily: "'Orbitron', monospace",
-                    fontSize: 10,
-                    letterSpacing: 1,
-                  }}>{move.name}</div>
-                  <div style={{
-                    textAlign: 'center',
-                    background: 'rgba(0,255,255,0.08)',
-                    border: '1px solid rgba(0,255,255,0.15)',
-                    borderRadius: 3,
-                    color: '#00ffff',
-                    fontFamily: "'Orbitron', monospace",
-                    fontSize: 10,
-                    fontWeight: 900,
-                    padding: '2px 4px',
-                  }}>{move.p1}</div>
-                  <div style={{
-                    textAlign: 'center',
-                    background: 'rgba(255,100,100,0.08)',
-                    border: '1px solid rgba(255,100,100,0.15)',
-                    borderRadius: 3,
-                    color: '#ff6666',
-                    fontFamily: "'Orbitron', monospace",
-                    fontSize: 10,
-                    fontWeight: 900,
-                    padding: '2px 4px',
-                  }}>{move.p2}</div>
-                </div>
-              ))}
+              {cat.moves.map((move, mi) => {
+                // Find character-specific ability name for attack moves
+                let abilityName: string | null = null;
+                let abilityColor: string | null = null;
+                if (cat.category === 'ATAQUES' && charMoves.length > 0) {
+                  const cm = charMoves[0]; // Use P1's character
+                  if (move.name === 'Especial' && cm.spec) {
+                    abilityName = cm.spec.name;
+                    abilityColor = '#00ff66';
+                  } else if (move.name === 'Super' && cm.sup) {
+                    abilityName = cm.sup.name;
+                    abilityColor = '#ffcc33';
+                  } else if (move.name === 'Ultra' && cm.ultra) {
+                    abilityName = cm.ultra.name;
+                    abilityColor = '#ff4444';
+                  }
+                }
+
+                return (
+                  <div key={mi} style={{
+                    display: 'grid',
+                    gridTemplateColumns: '1fr 60px 60px',
+                    gap: 4,
+                    padding: '4px 0',
+                    borderBottom: '1px solid rgba(255,255,255,0.03)',
+                    animation: `itemCascade 0.3s cubic-bezier(0.16,1,0.3,1) ${(ci * 5 + mi) * 0.04}s both`,
+                  }}>
+                    <div>
+                      <div style={{
+                        color: '#ccdde8',
+                        fontFamily: "'Orbitron', monospace",
+                        fontSize: 10,
+                        letterSpacing: 1,
+                      }}>{move.name}</div>
+                      {abilityName && (
+                        <div style={{
+                          color: abilityColor || '#aaa',
+                          fontFamily: "'Orbitron', monospace",
+                          fontSize: 7,
+                          letterSpacing: 1,
+                          marginTop: 1,
+                          opacity: 0.9,
+                        }}>» {abilityName}</div>
+                      )}
+                    </div>
+                    <div style={{
+                      textAlign: 'center',
+                      background: 'rgba(0,255,255,0.08)',
+                      border: '1px solid rgba(0,255,255,0.15)',
+                      borderRadius: 3,
+                      color: '#00ffff',
+                      fontFamily: "'Orbitron', monospace",
+                      fontSize: 10,
+                      fontWeight: 900,
+                      padding: '2px 4px',
+                    }}>{move.p1}</div>
+                    <div style={{
+                      textAlign: 'center',
+                      background: 'rgba(255,100,100,0.08)',
+                      border: '1px solid rgba(255,100,100,0.15)',
+                      borderRadius: 3,
+                      color: '#ff6666',
+                      fontFamily: "'Orbitron', monospace",
+                      fontSize: 10,
+                      fontWeight: 900,
+                      padding: '2px 4px',
+                    }}>{move.p2}</div>
+                  </div>
+                );
+              })}
             </div>
           ))}
 

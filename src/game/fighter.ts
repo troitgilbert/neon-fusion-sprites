@@ -183,11 +183,11 @@ export class Fighter {
       }
     }
 
-    // Directional hits for Edowado
+    // Directional hits for all characters
     if (justPressed[c.hit]) {
-      if (this.charIdx === 0 && !this.customData && keys[c.down]) {
+      if (!this.customData && keys[c.down]) {
         this.attack('hook_down', game);
-      } else if (this.charIdx === 0 && !this.customData && keys[c.up]) {
+      } else if (!this.customData && keys[c.up]) {
         this.attack('uppercut', game);
       } else {
         this.attack('hit', game);

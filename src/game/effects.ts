@@ -121,7 +121,7 @@ export class GiantFist {
   size: number; hit: boolean; owner: any;
   constructor(x: number, y: number, side: number, diagonal: number, color: string, size: number, owner: any) {
     this.x = x + side * 15; this.y = y;
-    this.targetX = x + side * 60; this.targetY = y + diagonal * 30;
+    this.targetX = x + side * 45; this.targetY = y + diagonal * 22;
     this.side = side; this.diagonal = diagonal;
     this.color = color; this.size = size;
     this.life = 16; this.maxLife = 16;

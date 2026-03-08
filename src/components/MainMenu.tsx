@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { useGame } from '../game/GameContext';
 import { MODE_INFO } from '../game/constants';
+import titleLogo from '../assets/title-logo.png';
 
 interface MenuItem {
   label: string;
@@ -133,7 +134,7 @@ const MainMenu: React.FC = () => {
       {/* ══════ ROW 1: TITLE (fixed height) ══════ */}
       <div style={{
         flexShrink: 0,
-        height: 'clamp(80px, 15vh, 140px)',
+        height: 'clamp(90px, 18vh, 160px)',
         display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
         opacity: phase >= 1 ? 1 : 0,
         transform: phase >= 1 ? 'translateY(0) scale(1)' : 'translateY(-30px) scale(0.9)',
@@ -141,24 +142,26 @@ const MainMenu: React.FC = () => {
         position: 'relative', zIndex: 2,
       }}>
         {/* Dragon line */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 4 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 6 }}>
           <div style={{ width: 'clamp(30px, 8vw, 80px)', height: 1, background: 'linear-gradient(90deg, transparent, rgba(200,50,0,0.6), rgba(255,180,50,0.4))' }} />
           <span style={{ fontSize: 'clamp(12px, 1.8vw, 20px)', filter: 'drop-shadow(0 0 6px rgba(255,80,0,0.5))' }}>🐉</span>
           <div style={{ width: 'clamp(30px, 8vw, 80px)', height: 1, background: 'linear-gradient(270deg, transparent, rgba(200,50,0,0.6), rgba(255,180,50,0.4))' }} />
         </div>
 
-        <h1 style={{
-          fontSize: 'clamp(20px, 3.5vw, 48px)', fontWeight: 900,
-          fontFamily: "'Orbitron', serif", letterSpacing: 'clamp(3px, 0.8vw, 10px)', lineHeight: 1,
-          color: '#e8d5a3',
-          textShadow: '0 0 15px rgba(255,80,0,0.6), 0 0 40px rgba(200,30,0,0.3), 0 2px 0 #8b6914, 0 4px 6px rgba(0,0,0,0.8)',
-          animation: 'mk9TitlePulse 4s ease-in-out infinite',
-          margin: 0,
-        }}>
-          RELIQUIA DEL VACÍO
-        </h1>
+        {/* Title logo image */}
+        <img
+          src={titleLogo}
+          alt="Jinsei No Sakoru"
+          style={{
+            height: 'clamp(36px, 6vw, 72px)',
+            width: 'auto',
+            objectFit: 'contain',
+            filter: 'drop-shadow(0 0 20px rgba(255,120,0,0.5)) drop-shadow(0 0 50px rgba(255,60,0,0.3)) drop-shadow(0 4px 2px rgba(0,0,0,0.9))',
+            animation: 'titleGlow 4s ease-in-out infinite',
+          }}
+        />
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 6 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 8 }}>
           <div style={{ width: 'clamp(20px, 5vw, 50px)', height: 1, background: 'linear-gradient(90deg, transparent, #8b3a0e, #d4a037)' }} />
           <span style={{ fontSize: 'clamp(6px, 0.7vw, 8px)', letterSpacing: 5, color: 'rgba(200,160,80,0.4)', fontFamily: "'Orbitron', monospace" }}>
             KOMBATE KÓSMICO

@@ -62,12 +62,12 @@ export function preloadSprites(): Promise<void> {
 // Animation config - idle cycles through 6 frames for fluid breathing
 const SPRITE_FRAMES: Record<SpriteState, { keys: string[]; speed: number }> = {
   idle:   { keys: ['idle'], speed: 0.03 },
-  walk:   { keys: ['walk1', 'walk2', 'walk3', 'walk4', 'walk5', 'walk6', 'walk7', 'walk8'], speed: 0.15 },
-  attack: { keys: ['attack'],  speed: 0.2 },
-  jump:   { keys: ['jump'],    speed: 0.1 },
-  fly:    { keys: ['fly'],     speed: 0.08 },
-  block:  { keys: ['block'],   speed: 0.08 },
-  hurt:   { keys: ['hurt'],    speed: 0.15 },
+  walk:   { keys: ['idle'], speed: 0.15 },
+  attack: { keys: ['idle'], speed: 0.2 },
+  jump:   { keys: ['idle'], speed: 0.1 },
+  fly:    { keys: ['idle'], speed: 0.08 },
+  block:  { keys: ['idle'], speed: 0.08 },
+  hurt:   { keys: ['idle'], speed: 0.15 },
 };
 
 /**

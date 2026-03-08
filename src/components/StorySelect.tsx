@@ -1,29 +1,196 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useGame } from '../game/GameContext';
 import { playSelectSound, playConfirmSound } from '../game/audio';
+
+interface StoryChar {
+  skinColor: string; hairColor: string; clothesColor: string;
+  pantsColor: string; shoesColor: string; handsColor: string; eyeColor: string;
+}
+
+const CHAR_EDOWADO: StoryChar = {
+  skinColor: '#f5deb3', hairColor: '#8B4513', clothesColor: '#b00000',
+  pantsColor: '#1a1a2e', shoesColor: '#333', handsColor: '#f5deb3', eyeColor: '#00ffff',
+};
+const CHAR_KAITO: StoryChar = {
+  skinColor: '#fff', hairColor: '#fff', clothesColor: '#222',
+  pantsColor: '#111', shoesColor: '#444', handsColor: '#fff', eyeColor: '#ffff00',
+};
 
 const STORIES = [
   {
     id: 'complete', name: 'HISTORIA COMPLETA', color: '#ffcc33', accent: '#ff8800',
     description: 'Vive la historia completa del universo. Todos los capítulos, todos los personajes, todos los secretos revelados en un épico viaje sin interrupciones.',
     icon: '⚔️', chapters: 24, difficulty: 'ÉPICA',
+    chars: [CHAR_EDOWADO, CHAR_KAITO],
   },
   {
     id: 'edowado', name: 'EDOWADO', color: '#00ddff', accent: '#0088cc',
     description: 'La historia de un guerrero que busca proteger lo que queda del universo. Su poder interior despierta ante las amenazas del vacío.',
-    icon: '🔥', chapters: 8, difficulty: 'DIFÍCIL', skinColor: '#8B4513', eyeColor: '#00ddff',
+    icon: '🔥', chapters: 8, difficulty: 'DIFÍCIL',
+    chars: [CHAR_EDOWADO],
   },
   {
     id: 'kaito', name: 'KAITO', color: '#ffee44', accent: '#ccaa00',
     description: 'Un luchador veloz con un pasado oscuro. Su camino lo lleva a confrontar la verdad sobre su propia existencia.',
-    icon: '⚡', chapters: 8, difficulty: 'NORMAL', skinColor: '#ffffff', eyeColor: '#ffee44',
+    icon: '⚡', chapters: 8, difficulty: 'NORMAL',
+    chars: [CHAR_KAITO],
   },
   {
     id: 'custom', name: 'PERSONALIZADO', color: '#dd44ff', accent: '#9900cc',
     description: 'Crea tu propia historia. Elige tu personaje personalizado y forja un camino único a través del universo.',
     icon: '✦', chapters: 6, difficulty: 'VARIABLE',
+    chars: null,
   },
 ];
+
+// Draw a fighter character on canvas
+function drawChar(ctx: CanvasRenderingContext2D, cx: number, cy: number, c: StoryChar, scale: number, time: number) {
+  const s = scale;
+  const r = 25 * s;
+  const handSwing = Math.sin(time * 0.03) * 5 * s;
+
+  // Shadow
+  ctx.save();
+  ctx.globalAlpha = 0.3;
+  ctx.fillStyle = '#000';
+  ctx.beginPath();
+  ctx.ellipse(cx, cy + r * 1.1, r * 0.7, r * 0.15, 0, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.restore();
+
+  // Shoes
+  ctx.fillStyle = c.shoesColor;
+  ctx.strokeStyle = '#000'; ctx.lineWidth = 1.5 * s;
+  ctx.beginPath(); ctx.arc(cx - r * 0.4, cy + r * 0.85, r * 0.22, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+  ctx.beginPath(); ctx.arc(cx + r * 0.4, cy + r * 0.85, r * 0.22, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+
+  // Pants
+  ctx.save(); ctx.translate(cx, cy + r * 0.44); ctx.scale(1, 0.6);
+  ctx.beginPath(); ctx.arc(0, 0, r * 0.9, 0, Math.PI);
+  ctx.fillStyle = c.pantsColor; ctx.fill();
+  ctx.strokeStyle = '#000'; ctx.lineWidth = 1.5 * s; ctx.stroke(); ctx.restore();
+
+  // Body (skin)
+  ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI * 2);
+  ctx.fillStyle = c.skinColor; ctx.fill();
+  ctx.strokeStyle = '#000'; ctx.lineWidth = 2 * s; ctx.stroke();
+
+  // Clothes (torso)
+  ctx.beginPath();
+  ctx.rect(cx - r, cy, r * 2, r * 0.44);
+  ctx.fillStyle = c.clothesColor; ctx.fill();
+  ctx.strokeStyle = '#000'; ctx.lineWidth = 1.5 * s; ctx.stroke();
+
+  // Hands
+  ctx.fillStyle = c.handsColor;
+  ctx.strokeStyle = '#000'; ctx.lineWidth = 1.5 * s;
+  // Left hand
+  ctx.beginPath(); ctx.arc(cx - r * 1.2, cy + handSwing, r * 0.2, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+  // Right hand
+  ctx.beginPath(); ctx.arc(cx + r * 1.2, cy - handSwing, r * 0.2, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+
+  // Hair
+  ctx.save(); ctx.translate(cx, cy - 10 * s); ctx.scale(1, 0.7);
+  ctx.beginPath(); ctx.arc(0, 0, 22 * s, Math.PI, 0);
+  ctx.fillStyle = c.hairColor; ctx.fill();
+  ctx.strokeStyle = '#000'; ctx.lineWidth = 1.5 * s; ctx.stroke(); ctx.restore();
+
+  // Eyes
+  ctx.fillStyle = c.eyeColor;
+  const eyeX = cx + 6 * s;
+  ctx.beginPath(); ctx.arc(eyeX - 4 * s, cy - 6 * s, 3 * s, 0, Math.PI * 2);
+  ctx.strokeStyle = '#000'; ctx.lineWidth = 1.5 * s; ctx.stroke(); ctx.fill();
+  ctx.beginPath(); ctx.arc(eyeX + 4 * s, cy - 6 * s, 3 * s, 0, Math.PI * 2); ctx.stroke(); ctx.fill();
+
+  // Eye glow
+  ctx.save();
+  ctx.globalAlpha = 0.4;
+  const glow = ctx.createRadialGradient(eyeX, cy - 6 * s, 0, eyeX, cy - 6 * s, 12 * s);
+  glow.addColorStop(0, c.eyeColor);
+  glow.addColorStop(1, 'transparent');
+  ctx.fillStyle = glow;
+  ctx.fillRect(eyeX - 12 * s, cy - 18 * s, 24 * s, 24 * s);
+  ctx.restore();
+}
+
+const CharacterPreview: React.FC<{ chars: StoryChar[] | null; color: string; accent: string; id: string }> = ({ chars, color, accent, id }) => {
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const timeRef = useRef(0);
+
+  const draw = useCallback(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    const w = 200, h = 200;
+    canvas.width = w * dpr;
+    canvas.height = h * dpr;
+    canvas.style.width = `${w}px`;
+    canvas.style.height = `${h}px`;
+    ctx.scale(dpr, dpr);
+
+    ctx.clearRect(0, 0, w, h);
+    timeRef.current++;
+    const t = timeRef.current;
+
+    if (chars && chars.length > 0) {
+      if (chars.length === 1) {
+        drawChar(ctx, w / 2, h / 2 + 10, chars[0], 2.2, t);
+      } else {
+        drawChar(ctx, w / 2 - 35, h / 2 + 10, chars[0], 1.6, t);
+        drawChar(ctx, w / 2 + 35, h / 2 + 10, chars[1], 1.6, t + 50);
+      }
+    } else {
+      // Custom: question mark
+      ctx.fillStyle = color;
+      ctx.font = 'bold 60px Orbitron, monospace';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.globalAlpha = 0.7 + Math.sin(t * 0.05) * 0.3;
+      ctx.fillText('?', w / 2, h / 2);
+      ctx.globalAlpha = 1;
+    }
+
+    requestAnimationFrame(draw);
+  }, [chars, color]);
+
+  useEffect(() => {
+    const id = requestAnimationFrame(draw);
+    return () => cancelAnimationFrame(id);
+  }, [draw]);
+
+  return (
+    <div style={{
+      width: 200, height: 200,
+      borderRadius: '50%',
+      overflow: 'hidden',
+      border: `3px solid ${color}60`,
+      boxShadow: `0 0 40px ${color}25, 0 0 80px ${color}10, inset 0 0 30px ${color}15`,
+      marginBottom: 'clamp(16px, 2.5vh, 30px)',
+      position: 'relative',
+      background: `radial-gradient(circle at 35% 35%, ${color}20, rgba(10,5,20,0.95))`,
+    }}>
+      {/* Orbital ring */}
+      <div style={{
+        position: 'absolute', inset: -12,
+        border: `1px solid ${color}20`,
+        borderRadius: '50%',
+        animation: 'storyOrbit 8s linear infinite',
+        pointerEvents: 'none',
+      }}>
+        <div style={{
+          position: 'absolute', top: -3, left: '50%', transform: 'translateX(-50%)',
+          width: 6, height: 6, borderRadius: '50%',
+          background: color,
+          boxShadow: `0 0 10px ${color}`,
+        }} />
+      </div>
+      <canvas ref={canvasRef} style={{ width: '100%', height: '100%' }} />
+    </div>
+  );
+};
 
 const StorySelect: React.FC = () => {
   const { setGameState } = useGame();
@@ -237,59 +404,8 @@ const StorySelect: React.FC = () => {
           justifyContent: 'center',
           alignItems: 'center',
         }}>
-          {/* Character visual */}
-          <div style={{
-            width: 'clamp(120px, 14vw, 200px)',
-            height: 'clamp(120px, 14vw, 200px)',
-            borderRadius: '50%',
-            background: selected.id === 'custom'
-              ? `radial-gradient(circle at 35% 35%, ${selected.color}40, ${selected.accent}20, rgba(10,5,20,0.9))`
-              : `radial-gradient(circle at 35% 35%, ${selected.color}30, rgba(10,5,20,0.95))`,
-            border: `3px solid ${selected.color}60`,
-            boxShadow: `0 0 40px ${selected.color}25, 0 0 80px ${selected.color}10, inset 0 0 30px ${selected.color}15`,
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            marginBottom: 'clamp(16px, 2.5vh, 30px)',
-            animation: 'storyPulseGlow 3s ease-in-out infinite',
-            transition: 'all 0.5s',
-            position: 'relative',
-          }}>
-            {/* Orbital ring */}
-            <div style={{
-              position: 'absolute', inset: -12,
-              border: `1px solid ${selected.color}20`,
-              borderRadius: '50%',
-              animation: 'storyOrbit 8s linear infinite',
-            }}>
-              <div style={{
-                position: 'absolute', top: -3, left: '50%', transform: 'translateX(-50%)',
-                width: 6, height: 6, borderRadius: '50%',
-                background: selected.color,
-                boxShadow: `0 0 10px ${selected.color}`,
-              }} />
-            </div>
-
-            {selected.id !== 'custom' ? (
-              <>
-                {/* Face */}
-                <div style={{
-                  width: '60%', height: '60%', borderRadius: '50%',
-                  background: (selected as any).skinColor || '#ccc',
-                  position: 'relative',
-                  boxShadow: `inset -10px -5px 20px rgba(0,0,0,0.3), 0 0 20px ${selected.color}20`,
-                }}>
-                  <div style={{ position: 'absolute', top: '38%', left: '25%', width: '12%', height: '12%', borderRadius: '50%', background: selected.color, boxShadow: `0 0 8px ${selected.color}` }} />
-                  <div style={{ position: 'absolute', top: '38%', right: '25%', width: '12%', height: '12%', borderRadius: '50%', background: selected.color, boxShadow: `0 0 8px ${selected.color}` }} />
-                </div>
-              </>
-            ) : (
-              <span style={{
-                fontSize: 'clamp(40px, 5vw, 60px)', color: selected.color,
-                fontWeight: 900, fontFamily: "'Orbitron', monospace",
-                textShadow: `0 0 20px ${selected.color}`,
-                animation: 'storyPulseGlow 2s ease-in-out infinite',
-              }}>?</span>
-            )}
-          </div>
+          {/* Character canvas */}
+          <CharacterPreview chars={selected.chars} color={selected.color} accent={selected.accent} id={selected.id} />
 
           {/* Story name */}
           <h2 style={{

@@ -261,6 +261,215 @@ const CanvasPortrait: React.FC<{
   return <canvas ref={canvasRef} style={{ display: 'block' }} />;
 };
 
+// ===== Draw in-game style fighter (exact match to fighter.ts _drawBody + _drawHands idle) =====
+function drawGameSprite(
+  ctx: CanvasRenderingContext2D,
+  x: number, y: number,
+  charIdx: number, char: CharRenderData | null, customChar: CustomCharData | null,
+  side: number, time: number, scale: number
+) {
+  const s = scale;
+  ctx.save();
+  ctx.translate(x, y);
+  ctx.scale(side * s, s);
+  // Breathing
+  const breath = Math.sin(time * 0.1) * 0.03;
+  ctx.scale(1, 1 + breath);
+  ctx.translate(-x / (side * s), -y / s);
+
+  const skinC = customChar ? customChar.skinColor : (charIdx === 0 ? '#f5deb3' : '#f5d1ad');
+  const clothC = customChar ? customChar.clothesColor : (charIdx === 0 ? '#b00000' : '#ffffff');
+  const pantsC = customChar ? (customChar.pantsColor || '#000') : '#000';
+  const hairC = customChar ? (customChar.hairColor || customChar.clothesColor) : (charIdx === 0 ? '#5a3a1a' : '#ffffff');
+  const eyeC = customChar ? customChar.eyesColor : (charIdx === 0 ? '#00ffff' : '#ffff00');
+  const handC = customChar ? customChar.handsColor : (charIdx === 0 ? '#d4af37' : '#f5d1ad');
+  const cx = x / (side * s);
+  const cy = y / s;
+
+  // Body sphere
+  ctx.beginPath(); ctx.arc(cx, cy, 25, 0, Math.PI * 2);
+  ctx.fillStyle = skinC; ctx.fill();
+  ctx.strokeStyle = '#000'; ctx.lineWidth = 2; ctx.stroke();
+  // Clothes
+  ctx.beginPath(); (ctx as any).roundRect(cx - 25, cy, 50, 11, 0);
+  ctx.fillStyle = clothC; ctx.fill(); ctx.stroke();
+  // Pants
+  ctx.save(); ctx.translate(cx, cy + 11); ctx.scale(1, 0.6);
+  ctx.beginPath(); ctx.arc(0, 0, 23, 0, Math.PI);
+  ctx.fillStyle = pantsC; ctx.fill(); ctx.stroke(); ctx.restore();
+  // Hair
+  ctx.save(); ctx.translate(cx, cy - 10); ctx.scale(1, 0.7);
+  ctx.beginPath(); ctx.arc(0, 0, 22, Math.PI, 0);
+  ctx.fillStyle = hairC; ctx.fill(); ctx.stroke(); ctx.restore();
+  // Eyes
+  ctx.fillStyle = eyeC;
+  const ex = cx + 6;
+  ctx.beginPath(); ctx.arc(ex - 4, cy - 6, 3, 0, Math.PI * 2);
+  ctx.strokeStyle = '#000'; ctx.lineWidth = 1.5; ctx.stroke(); ctx.fill();
+  ctx.beginPath(); ctx.arc(ex + 4, cy - 6, 3, 0, Math.PI * 2); ctx.stroke(); ctx.fill();
+  // Hands (idle swing)
+  const handPhase = time * 0.08;
+  const swing = Math.sin(handPhase) * 6;
+  const lx = cx + 18 + swing;
+  const rx = cx + 30 - swing;
+  const ly = cy + 8 + Math.cos(handPhase * 1.3) * 3;
+  const ry = cy + 8 + Math.sin(handPhase * 1.1) * 3;
+  ctx.fillStyle = handC;
+  ctx.strokeStyle = '#000'; ctx.lineWidth = 1.5;
+  ctx.beginPath(); ctx.arc(lx, ly, 6, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+  ctx.beginPath(); ctx.arc(rx, ry, 6, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+
+  ctx.restore();
+}
+
+// ===== Center stage canvas - shows fighters in game style =====
+const StageCanvas: React.FC<{
+  p1Char: CharRenderData | null;
+  p2Char: CharRenderData | null;
+  p1Custom: CustomCharData | null;
+}> = ({ p1Char, p2Char, p1Custom }) => {
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const animRef = useRef<number>(0);
+  const frameRef = useRef(0);
+
+  const draw = useCallback(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+    const W = canvas.parentElement?.clientWidth || 500;
+    const H = canvas.parentElement?.clientHeight || 300;
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    canvas.width = W * dpr;
+    canvas.height = H * dpr;
+    canvas.style.width = `${W}px`;
+    canvas.style.height = `${H}px`;
+    ctx.scale(dpr, dpr);
+    ctx.clearRect(0, 0, W, H);
+    frameRef.current++;
+    const t = frameRef.current;
+
+    // Stage background - dark arena with grid floor
+    const floorY = H * 0.72;
+
+    // Floor grid perspective
+    ctx.save();
+    ctx.globalAlpha = 0.08;
+    ctx.strokeStyle = '#ffcc33';
+    ctx.lineWidth = 0.5;
+    for (let i = -10; i <= 10; i++) {
+      const x1 = W / 2 + i * 30;
+      const x2 = W / 2 + i * 80;
+      ctx.beginPath();
+      ctx.moveTo(x1, floorY);
+      ctx.lineTo(x2, H);
+      ctx.stroke();
+    }
+    for (let j = 0; j < 5; j++) {
+      const yy = floorY + j * (H - floorY) / 4;
+      ctx.beginPath();
+      ctx.moveTo(0, yy);
+      ctx.lineTo(W, yy);
+      ctx.stroke();
+    }
+    ctx.restore();
+
+    // Floor line glow
+    ctx.save();
+    ctx.globalAlpha = 0.3;
+    const floorGrad = ctx.createLinearGradient(W * 0.1, floorY, W * 0.9, floorY);
+    floorGrad.addColorStop(0, 'transparent');
+    floorGrad.addColorStop(0.3, '#ffcc3360');
+    floorGrad.addColorStop(0.5, '#ffcc3380');
+    floorGrad.addColorStop(0.7, '#ffcc3360');
+    floorGrad.addColorStop(1, 'transparent');
+    ctx.fillStyle = floorGrad;
+    ctx.fillRect(0, floorY - 1, W, 3);
+    ctx.restore();
+
+    // Spotlight from above on each character position
+    if (p1Char || p1Custom) {
+      ctx.save();
+      ctx.globalAlpha = 0.04;
+      const spotGrad = ctx.createRadialGradient(W * 0.3, floorY - 30, 0, W * 0.3, floorY - 30, H * 0.5);
+      spotGrad.addColorStop(0, (p1Custom ? p1Custom.eyesColor : p1Char?.eyeColor) || '#00ffff');
+      spotGrad.addColorStop(1, 'transparent');
+      ctx.fillStyle = spotGrad;
+      ctx.fillRect(0, 0, W * 0.6, H);
+      ctx.restore();
+    }
+    if (p2Char) {
+      ctx.save();
+      ctx.globalAlpha = 0.04;
+      const spotGrad = ctx.createRadialGradient(W * 0.7, floorY - 30, 0, W * 0.7, floorY - 30, H * 0.5);
+      spotGrad.addColorStop(0, p2Char.eyeColor);
+      spotGrad.addColorStop(1, 'transparent');
+      ctx.fillStyle = spotGrad;
+      ctx.fillRect(W * 0.4, 0, W * 0.6, H);
+      ctx.restore();
+    }
+
+    // Draw P1 fighter sprite
+    const spriteScale = Math.min(W / 350, H / 200, 2.2);
+    if (p1Char || p1Custom) {
+      const charIdx = p1Custom ? -1 : p1Char!.idx;
+      // Shadow
+      ctx.save();
+      ctx.globalAlpha = 0.2;
+      ctx.fillStyle = '#000';
+      ctx.beginPath();
+      ctx.ellipse(W * 0.3, floorY + 5, 30 * spriteScale, 6 * spriteScale, 0, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.restore();
+      drawGameSprite(ctx, W * 0.3, floorY - 25 * spriteScale, charIdx, p1Char, p1Custom, 1, t, spriteScale);
+    }
+
+    // Draw P2 fighter sprite
+    if (p2Char) {
+      ctx.save();
+      ctx.globalAlpha = 0.2;
+      ctx.fillStyle = '#000';
+      ctx.beginPath();
+      ctx.ellipse(W * 0.7, floorY + 5, 30 * spriteScale, 6 * spriteScale, 0, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.restore();
+      drawGameSprite(ctx, W * 0.7, floorY - 25 * spriteScale, p2Char.idx, p2Char, null, -1, t, spriteScale);
+    }
+
+    // VS text in center if both selected
+    if ((p1Char || p1Custom) && p2Char) {
+      ctx.save();
+      const pulse = 0.8 + Math.sin(t * 0.06) * 0.2;
+      ctx.globalAlpha = 0.15 * pulse;
+      ctx.font = `bold ${40 * spriteScale}px Orbitron, monospace`;
+      ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+      ctx.fillStyle = '#ffcc33';
+      ctx.fillText('VS', W / 2, floorY - 20 * spriteScale);
+      ctx.restore();
+    }
+
+    // Floating particles
+    ctx.globalAlpha = 0.4;
+    for (let i = 0; i < 8; i++) {
+      const px = (W * 0.15 + ((t * 0.5 + i * 137) % (W * 0.7)));
+      const py = H * 0.2 + Math.sin(t * 0.02 + i * 1.5) * H * 0.15;
+      const sz = 1 + Math.sin(t * 0.04 + i) * 0.8;
+      ctx.beginPath(); ctx.arc(px, py, sz, 0, Math.PI * 2);
+      ctx.fillStyle = i % 2 === 0 ? '#ffcc33' : '#ff880060';
+      ctx.fill();
+    }
+
+    animRef.current = requestAnimationFrame(draw);
+  }, [p1Char, p2Char, p1Custom]);
+
+  useEffect(() => {
+    animRef.current = requestAnimationFrame(draw);
+    return () => cancelAnimationFrame(animRef.current);
+  }, [draw]);
+
+  return <canvas ref={canvasRef} style={{ display: 'block', width: '100%', height: '100%' }} />;
+};
+
 // ===== Big animated portrait for P1/P2 =====
 const BigPortrait: React.FC<{
   char: CharRenderData | null;
@@ -298,59 +507,76 @@ const BigPortrait: React.FC<{
       const eyeC = customChar ? customChar.eyesColor : char!.eyeColor;
       const handC = customChar ? skinC : char!.handsColor;
 
-      // Background glow for character
+      // Dramatic background glow
       ctx.save();
-      ctx.globalAlpha = 0.08;
-      const bgGlow = ctx.createRadialGradient(W / 2, H * 0.45, 0, W / 2, H * 0.45, Math.min(W, H) * 0.6);
+      ctx.globalAlpha = 0.12;
+      const bgGlow = ctx.createRadialGradient(W / 2, H * 0.4, 0, W / 2, H * 0.4, Math.min(W, H) * 0.7);
       bgGlow.addColorStop(0, eyeC);
+      bgGlow.addColorStop(0.5, eyeC + '40');
       bgGlow.addColorStop(1, 'transparent');
       ctx.fillStyle = bgGlow;
       ctx.fillRect(0, 0, W, H);
       ctx.restore();
 
+      // Diagonal speed lines
+      ctx.save();
+      ctx.globalAlpha = 0.03;
+      for (let i = 0; i < 8; i++) {
+        const lineY = H * 0.1 + i * H * 0.1;
+        ctx.beginPath();
+        ctx.moveTo(facing > 0 ? 0 : W, lineY);
+        ctx.lineTo(facing > 0 ? W * 0.6 : W * 0.4, lineY + 20);
+        ctx.strokeStyle = eyeC;
+        ctx.lineWidth = 1;
+        ctx.stroke();
+      }
+      ctx.restore();
+
       // Breathing + idle sway
       const breathe = 1 + Math.sin(t * 0.04) * 0.02;
       const sway = Math.sin(t * 0.025) * 3;
-      const sc = Math.min(W, H) / 50;
+      const sc = Math.min(W, H) / 48;
 
       ctx.save();
-      ctx.translate(W / 2 + sway, H * 0.45);
+      ctx.translate(W / 2 + sway, H * 0.42);
       ctx.scale(breathe, breathe);
-      ctx.translate(0, 0);
 
       drawCharOnCanvas(ctx, 0, 0, skinC, hairC, clothC, pantsC, eyeC, handC, sc, t, facing);
 
       // Energy particles orbiting
       ctx.globalAlpha = 0.5;
-      for (let i = 0; i < 6; i++) {
-        const angle = (t * 0.018 + i * Math.PI / 3) % (Math.PI * 2);
-        const dist = sc * 35 + Math.sin(t * 0.04 + i) * sc * 5;
+      for (let i = 0; i < 8; i++) {
+        const angle = (t * 0.015 + i * Math.PI / 4) % (Math.PI * 2);
+        const dist = sc * 38 + Math.sin(t * 0.035 + i) * sc * 6;
         const px = Math.cos(angle) * dist;
         const py = Math.sin(angle) * dist;
-        const pSize = 1.5 + Math.sin(t * 0.06 + i * 2) * 1;
-        ctx.beginPath(); ctx.arc(px, py, pSize * sc * 0.1, 0, Math.PI * 2);
+        const pSize = 1.5 + Math.sin(t * 0.05 + i * 2) * 1;
+        ctx.beginPath(); ctx.arc(px, py, pSize * sc * 0.08, 0, Math.PI * 2);
         ctx.fillStyle = eyeC; ctx.fill();
       }
       ctx.restore();
 
-      // Ground circle/platform
+      // Ground platform glow
       ctx.save();
-      ctx.globalAlpha = 0.15;
+      ctx.globalAlpha = 0.2;
       ctx.beginPath();
-      ctx.ellipse(W / 2, H * 0.75, W * 0.25, H * 0.04, 0, 0, Math.PI * 2);
-      ctx.fillStyle = eyeC;
+      ctx.ellipse(W / 2, H * 0.78, W * 0.3, H * 0.03, 0, 0, Math.PI * 2);
+      const platGrad = ctx.createRadialGradient(W / 2, H * 0.78, 0, W / 2, H * 0.78, W * 0.3);
+      platGrad.addColorStop(0, eyeC);
+      platGrad.addColorStop(1, 'transparent');
+      ctx.fillStyle = platGrad;
       ctx.fill();
       ctx.restore();
     } else {
-      // Empty silhouette
-      ctx.globalAlpha = 0.08;
-      ctx.beginPath(); ctx.arc(W / 2, H * 0.45, Math.min(W, H) * 0.2, 0, Math.PI * 2);
+      // Empty silhouette with pulsing ? 
+      ctx.globalAlpha = 0.06;
+      ctx.beginPath(); ctx.arc(W / 2, H * 0.42, Math.min(W, H) * 0.22, 0, Math.PI * 2);
       ctx.fillStyle = color; ctx.fill();
-      ctx.globalAlpha = 0.25;
+      ctx.globalAlpha = 0.2 + Math.sin(t * 0.04) * 0.1;
       ctx.font = `bold ${Math.min(W, H) * 0.3}px Orbitron, monospace`;
       ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
       ctx.fillStyle = color;
-      ctx.fillText('?', W / 2, H * 0.45);
+      ctx.fillText('?', W / 2, H * 0.42);
     }
 
     animRef.current = requestAnimationFrame(draw);

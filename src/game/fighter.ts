@@ -434,10 +434,10 @@ export class Fighter {
   draw(ctx: CanvasRenderingContext2D, game: any) {
     ctx.save();
 
-    // Block shield
+    // Block shield (scaled to match smaller character)
     if (this.isBlocking) {
       ctx.strokeStyle = '#ffffff'; ctx.lineWidth = 3;
-      ctx.beginPath(); ctx.arc(this.x, this.y, 32, 0, Math.PI * 2); ctx.stroke();
+      ctx.beginPath(); ctx.arc(this.x, this.y, 22, 0, Math.PI * 2); ctx.stroke();
     }
     if (this.isDodging) ctx.globalAlpha = 0.5;
     if (this.isKaitoDemonio() && this.isIntangible) ctx.globalAlpha = 0.55;
@@ -455,6 +455,10 @@ export class Fighter {
     if (this.hitFlash > 0) { ctx.shadowBlur = 20; ctx.shadowColor = '#ffffff'; }
     if (game.timeStopped && game.timeStopper !== this) ctx.filter = 'grayscale(100%)';
 
+    // Scale characters 30% smaller around their center
+    ctx.translate(-this.x, -this.y);
+    ctx.translate(this.x, this.y);
+    ctx.scale(0.7, 0.7);
     ctx.translate(-this.x, -this.y);
 
     // Draw character

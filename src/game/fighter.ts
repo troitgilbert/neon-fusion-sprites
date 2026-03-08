@@ -748,10 +748,18 @@ export class Fighter {
     let ly = this.y + 8, ry = this.y + 8;
 
     if (this.handMode === 'normal') {
-      const swing = Math.sin(this.handPhase) * 6;
-      lx += swing; rx -= swing;
-      ly += Math.cos(this.handPhase * 1.3) * 3;
-      ry += Math.sin(this.handPhase * 1.1) * 3;
+      // Edowado boxing idle stance
+      if (this.charIdx === 0 && !this.customData && Math.abs(this.vx) < 2 && this.isGrounded) {
+        // Boxing guard position - fists up near face, slight bob
+        const bob = Math.sin(this.handPhase * 0.8) * 2;
+        lx = this.x + 14; ly = this.y - 8 + bob;
+        rx = this.x + 28; ry = this.y - 4 - bob * 0.5;
+      } else {
+        const swing = Math.sin(this.handPhase) * 6;
+        lx += swing; rx -= swing;
+        ly += Math.cos(this.handPhase * 1.3) * 3;
+        ry += Math.sin(this.handPhase * 1.1) * 3;
+      }
     } else if (this.handMode === 'together') {
       lx = this.x + 22; rx = this.x + 28; ly = this.y + 2; ry = this.y + 10;
     } else if (this.handMode === 'strike') {

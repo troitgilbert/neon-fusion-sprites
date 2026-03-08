@@ -730,9 +730,9 @@ const BgCanvas: React.FC = () => {
       // Ringed planet (center-right)
       const p4x = W * 0.72, p4y = H * 0.65, p4r = W * 0.04;
       const p4bod = ctx.createRadialGradient(p4x - p4r * 0.25, p4y - p4r * 0.25, p4r * 0.05, p4x, p4y, p4r);
-      p4bod.addColorStop(0, 'rgba(220,180,120,0.45)');
-      p4bod.addColorStop(0.6, 'rgba(160,110,50,0.3)');
-      p4bod.addColorStop(1, 'rgba(80,50,20,0.12)');
+      p4bod.addColorStop(0, 'rgba(200,200,210,0.45)');
+      p4bod.addColorStop(0.6, 'rgba(140,140,150,0.3)');
+      p4bod.addColorStop(1, 'rgba(70,70,80,0.12)');
       ctx.beginPath(); ctx.arc(p4x, p4y, p4r, 0, Math.PI * 2); ctx.fillStyle = p4bod; ctx.fill();
       ctx.save();
       ctx.translate(p4x, p4y); ctx.scale(1, 0.3);

@@ -1076,102 +1076,31 @@ const CharacterSelect: React.FC = () => {
         </div>
       </div>
 
-      {/* === MAIN AREA: PORTRAITS + STAGE + ROSTER === */}
+      {/* === MAIN AREA: SPRITES TOP | ROSTER MIDDLE | PORTRAITS BOTTOM === */}
       <div style={{ flex: 1, display: 'flex', flexDirection: 'column', position: 'relative', zIndex: 2, minHeight: 0 }}>
 
-        {/* TOP HALF: P1 Portrait | Stage Preview | P2 Portrait */}
+        {/* TOP: Idle sprites facing each other */}
         <div style={{
-          flex: '0 0 48%', display: 'flex', position: 'relative',
+          flex: '0 0 30%', position: 'relative', overflow: 'hidden',
           borderBottom: '2px solid rgba(255,204,51,0.15)',
         }}>
-          {/* P1 Portrait - floating, no box */}
+          <StageCanvas
+            p1Char={displayP1 || null}
+            p2Char={displayP2 || null}
+            p1Custom={p1Custom}
+          />
           <div style={{
-            position: 'absolute', left: 0, top: 0, bottom: 0,
-            width: 'clamp(180px, 28vw, 380px)', zIndex: 5,
-            pointerEvents: 'none',
-          }}>
-            <BigPortrait
-              char={displayP1 || null}
-              customChar={p1Custom}
-              color="#00ffff"
-              facing={1}
-              label="P1"
-            />
-            {/* Name plate floating */}
-            <div style={{
-              position: 'absolute', bottom: 10, left: 15, right: 15,
-              pointerEvents: 'none',
-            }}>
-              <div style={{
-                color: '#ffcc33', fontFamily: "'Orbitron', monospace",
-                fontSize: 'clamp(16px, 2.8vw, 28px)', fontWeight: 900,
-                letterSpacing: 3, textShadow: '0 0 15px #ffcc3360, 0 2px 8px rgba(0,0,0,0.8)',
-              }}>
-                {p1Name}
-              </div>
-              {displayP1 && (
-                <div style={{ marginTop: 4, display: 'flex', gap: 10, maxWidth: 200 }}>
-                  <StatBar label="VEL" value={displayP1.speed / 10} color="#ffcc33" />
-                  <StatBar label="POD" value={displayP1.weight} color="#ff6600" />
-                </div>
-              )}
-            </div>
-          </div>
-
-          {/* Center stage - full width behind portraits */}
-          <div style={{ flex: 1, position: 'relative', overflow: 'hidden' }}>
-            <StageCanvas
-              p1Char={displayP1 || null}
-              p2Char={displayP2 || null}
-              p1Custom={p1Custom}
-            />
-            {/* VS watermark */}
-            <div style={{
-              position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)',
-              fontSize: 'clamp(50px, 10vw, 100px)', fontFamily: "'Orbitron', monospace", fontWeight: 900,
-              color: 'rgba(255,204,51,0.04)', letterSpacing: 10, pointerEvents: 'none',
-            }}>VS</div>
-          </div>
-
-          {/* P2 Portrait - floating, no box */}
-          <div style={{
-            position: 'absolute', right: 0, top: 0, bottom: 0,
-            width: 'clamp(180px, 28vw, 380px)', zIndex: 5,
-            pointerEvents: 'none',
-          }}>
-            <BigPortrait
-              char={displayP2 || null}
-              customChar={null}
-              color="#ff8c00"
-              facing={-1}
-              label="P2"
-            />
-            <div style={{
-              position: 'absolute', bottom: 10, left: 15, right: 15, textAlign: 'right',
-              pointerEvents: 'none',
-            }}>
-              <div style={{
-                color: '#ffcc33', fontFamily: "'Orbitron', monospace",
-                fontSize: 'clamp(16px, 2.8vw, 28px)', fontWeight: 900,
-                letterSpacing: 3, textShadow: '0 0 15px #ffcc3360, 0 2px 8px rgba(0,0,0,0.8)',
-              }}>
-                {p2Name}
-              </div>
-              {displayP2 && (
-                <div style={{ marginTop: 4, display: 'flex', gap: 10, justifyContent: 'flex-end', maxWidth: 200, marginLeft: 'auto' }}>
-                  <StatBar label="VEL" value={displayP2.speed / 10} color="#ffcc33" />
-                  <StatBar label="POD" value={displayP2.weight} color="#ff6600" />
-                </div>
-              )}
-            </div>
-          </div>
+            position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)',
+            fontSize: 'clamp(40px, 8vw, 80px)', fontFamily: "'Orbitron', monospace", fontWeight: 900,
+            color: 'rgba(255,204,51,0.04)', letterSpacing: 10, pointerEvents: 'none',
+          }}>VS</div>
         </div>
 
-        {/* BOTTOM HALF: Hexagonal roster grid */}
+        {/* MIDDLE: Roster grid */}
         <div style={{
-          flex: 1, display: 'flex', flexDirection: 'column',
+          flex: '0 0 auto', display: 'flex', flexDirection: 'column',
           alignItems: 'center', justifyContent: 'center',
-          position: 'relative', padding: '8px 0',
+          position: 'relative', padding: '12px 0', zIndex: 10,
         }}>
           {/* Hex grid */}
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 0 }}>

@@ -252,7 +252,8 @@ const MainMenu: React.FC = () => {
                       : 'inset 0 1px 0 rgba(255,255,255,0.03), inset 0 -1px 0 rgba(0,0,0,0.3)',
                     position: 'relative',
                     overflow: 'hidden',
-                    transition: 'all 0.2s',
+                    transition: 'all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1)',
+                    animation: active ? 'mk9ActivePulse 2s ease-in-out infinite' : 'none',
                   }}>
                     {/* Metallic sheen overlay */}
                     <div style={{

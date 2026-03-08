@@ -255,73 +255,8 @@ const StorySelect: React.FC = () => {
           justifyContent: 'center',
           alignItems: 'center',
         }}>
-          {/* Character visual */}
-          <div style={{
-            width: 'clamp(120px, 14vw, 200px)',
-            height: 'clamp(120px, 14vw, 200px)',
-            borderRadius: '50%',
-            background: selected.id === 'custom'
-              ? `radial-gradient(circle at 35% 35%, ${selected.color}40, ${selected.accent}20, rgba(10,5,20,0.9))`
-              : `radial-gradient(circle at 35% 35%, ${selected.color}30, rgba(10,5,20,0.95))`,
-            border: `3px solid ${selected.color}60`,
-            boxShadow: `0 0 40px ${selected.color}25, 0 0 80px ${selected.color}10, inset 0 0 30px ${selected.color}15`,
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            marginBottom: 'clamp(16px, 2.5vh, 30px)',
-            animation: 'storyPulseGlow 3s ease-in-out infinite',
-            transition: 'all 0.5s',
-            position: 'relative',
-          }}>
-            {/* Orbital ring */}
-            <div style={{
-              position: 'absolute', inset: -12,
-              border: `1px solid ${selected.color}20`,
-              borderRadius: '50%',
-              animation: 'storyOrbit 8s linear infinite',
-            }}>
-              <div style={{
-                position: 'absolute', top: -3, left: '50%', transform: 'translateX(-50%)',
-                width: 6, height: 6, borderRadius: '50%',
-                background: selected.color,
-                boxShadow: `0 0 10px ${selected.color}`,
-              }} />
-            </div>
-
-            {selected.id !== 'custom' ? (
-              <>
-                {/* Face */}
-                <div style={{
-                  width: '60%', height: '60%', borderRadius: '50%',
-                  background: (selected as any).skinColor || '#ccc',
-                  position: 'relative',
-                  boxShadow: `inset -10px -5px 20px rgba(0,0,0,0.3), 0 0 20px ${selected.color}20`,
-                }}>
-                  <div style={{ position: 'absolute', top: '38%', left: '25%', width: '12%', height: '12%', borderRadius: '50%', background: selected.color, boxShadow: `0 0 8px ${selected.color}` }} />
-                  <div style={{ position: 'absolute', top: '38%', right: '25%', width: '12%', height: '12%', borderRadius: '50%', background: selected.color, boxShadow: `0 0 8px ${selected.color}` }} />
-                </div>
-              </>
-            ) : (
-              <span style={{
-                fontSize: 'clamp(40px, 5vw, 60px)', color: selected.color,
-                fontWeight: 900, fontFamily: "'Orbitron', monospace",
-                textShadow: `0 0 20px ${selected.color}`,
-                animation: 'storyPulseGlow 2s ease-in-out infinite',
-              }}>?</span>
-            )}
-          </div>
-
-          {/* Story name */}
-          <h2 style={{
-            fontFamily: "'Orbitron', serif",
-            fontSize: 'clamp(22px, 3vw, 38px)',
-            fontWeight: 900,
-            letterSpacing: 'clamp(4px, 0.8vw, 10px)',
-            color: selected.color,
-            textShadow: `0 0 20px ${selected.color}60, 0 0 50px ${selected.accent}30`,
-            marginBottom: 8,
-            transition: 'all 0.4s',
-          }}>
-            {selected.name}
-          </h2>
+          {/* Character canvas */}
+          <CharacterPreview chars={selected.chars} color={selected.color} accent={selected.accent} id={selected.id} />
 
           {/* Stats row */}
           <div style={{

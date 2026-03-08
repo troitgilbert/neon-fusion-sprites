@@ -186,6 +186,10 @@ const GameApp: React.FC = () => {
           from { transform: translateX(120%); opacity: 0; }
           to { transform: translateX(0); opacity: 1; }
         }
+        @keyframes crystalPulse {
+          0%, 100% { filter: drop-shadow(0 0 8px #00bfff) drop-shadow(0 0 3px #0066ff); transform: scale(1); }
+          50% { filter: drop-shadow(0 0 14px #00dfff) drop-shadow(0 0 6px #0088ff); transform: scale(1.08); }
+        }
       `}</style>
     </div>
   );

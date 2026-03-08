@@ -53,6 +53,7 @@ export const MODE_INFO: Record<string, string> = {
   "TIENDA": "Compra personajes, skins y mejoras usando cristales.",
   "DOCUMENTOS": "Consulta información del mundo, historia y guías internas.",
   "LOGROS": "Revisa tus hazañas y desafíos completados durante el juego.",
+  "ONLINE": "Conéctate con otro jugador en línea para combatir en modo versus desde diferentes dispositivos.",
   "CONFIGURACIÓN": "Ajusta controles, sonido, gráficos y opciones generales.",
   "SALIR": "Cierra el juego.",
   "PERSONALIZABLE": "Selecciona o crea un personaje completamente personalizado.",

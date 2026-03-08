@@ -55,6 +55,7 @@ const MainMenu: React.FC = () => {
         { label: 'LOGROS', action: () => setGameState('ACHIEVEMENTS'), className: 'logros' },
       ]
     },
+    { label: 'ONLINE', action: () => setGameState('ONLINE') },
     { label: 'CONFIGURACIÓN', action: () => setGameState('CONFIG') },
     { label: 'SALIR', action: () => {} },
   ], [setGameState]);

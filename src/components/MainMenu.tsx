@@ -195,68 +195,120 @@ const MainMenu: React.FC = () => {
                   style={{
                     position: 'relative',
                     width: '100%',
-                    padding: 'clamp(6px, 0.9vh, 11px) 16px',
-                    margin: '1px 0',
+                    padding: 'clamp(8px, 1.1vh, 14px) 20px',
+                    margin: '2px 0',
                     fontSize: 'clamp(11px, 1.3vw, 16px)',
                     textAlign: 'left',
                     fontFamily: "'Orbitron', serif",
-                    fontWeight: active ? 800 : 500,
-                    letterSpacing: active ? 5 : 2,
+                    fontWeight: active ? 900 : 500,
+                    letterSpacing: active ? 6 : 2,
                     cursor: 'pointer',
                     border: 'none',
                     borderRadius: 0,
                     overflow: 'hidden',
-                    color: active ? '#fff' : 'rgba(180,160,130,0.5)',
+                    color: active ? '#ffe8c2' : 'rgba(180,160,130,0.45)',
                     background: active
-                      ? 'linear-gradient(90deg, rgba(200,40,0,0.3) 0%, rgba(255,120,0,0.12) 60%, transparent 100%)'
-                      : 'transparent',
+                      ? 'linear-gradient(90deg, rgba(200,40,0,0.45) 0%, rgba(255,120,0,0.2) 40%, rgba(255,80,0,0.08) 70%, transparent 100%)'
+                      : 'linear-gradient(90deg, rgba(40,20,10,0.3) 0%, transparent 80%)',
                     textShadow: active
-                      ? '0 0 15px rgba(255,100,0,0.6), 0 0 30px rgba(200,30,0,0.25), 0 1px 2px rgba(0,0,0,0.8)'
-                      : '0 1px 2px rgba(0,0,0,0.4)',
-                    transform: active ? 'translateX(8px)' : 'translateX(0)',
-                    transition: 'all 0.2s cubic-bezier(0.16, 1, 0.3, 1)',
+                      ? '0 0 20px rgba(255,120,0,0.8), 0 0 40px rgba(255,60,0,0.35), 0 0 60px rgba(200,30,0,0.15), 0 1px 3px rgba(0,0,0,0.9)'
+                      : '0 1px 2px rgba(0,0,0,0.5)',
+                    transform: active ? 'translateX(12px) scale(1.04)' : 'translateX(0) scale(1)',
+                    transition: 'all 0.25s cubic-bezier(0.16, 1, 0.3, 1)',
+                    animation: `mk9ItemIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) ${0.05 * i}s both`,
                   }}
                 >
-                  {/* Left accent bar */}
+                  {/* Left accent bar - thicker, gradient with glow */}
                   <div style={{
-                    position: 'absolute', left: 0, top: '15%', bottom: '15%',
-                    width: active ? 3 : 1,
-                    background: active ? 'linear-gradient(180deg, #ffcc33, #ff6600)' : 'rgba(180,120,60,0.15)',
-                    boxShadow: active ? '0 0 8px rgba(255,100,0,0.4), 3px 0 15px rgba(255,80,0,0.1)' : 'none',
-                    transition: 'all 0.2s',
+                    position: 'absolute', left: 0, top: 0, bottom: 0,
+                    width: active ? 4 : 1,
+                    background: active
+                      ? 'linear-gradient(180deg, #ffcc33, #ff6600, #cc2200)'
+                      : 'linear-gradient(180deg, transparent, rgba(180,120,60,0.12), transparent)',
+                    boxShadow: active ? '0 0 12px rgba(255,100,0,0.6), 4px 0 20px rgba(255,80,0,0.2)' : 'none',
+                    transition: 'all 0.25s',
                   }} />
 
+                  {/* Right edge accent */}
+                  {active && <div style={{
+                    position: 'absolute', right: 0, top: '20%', bottom: '20%',
+                    width: 1,
+                    background: 'linear-gradient(180deg, transparent, rgba(255,140,0,0.3), transparent)',
+                  }} />}
+
                   {active && <>
+                    {/* Top border line with glow */}
                     <div style={{
-                      position: 'absolute', top: 0, left: 0, right: '30%', height: 1,
-                      background: 'linear-gradient(90deg, rgba(255,120,0,0.7), rgba(255,80,0,0.3), transparent)',
+                      position: 'absolute', top: 0, left: 0, right: '20%', height: 1,
+                      background: 'linear-gradient(90deg, rgba(255,180,50,0.9), rgba(255,120,0,0.5), rgba(255,80,0,0.2), transparent)',
+                      boxShadow: '0 0 8px rgba(255,140,0,0.4)',
                     }} />
+                    {/* Bottom border line */}
                     <div style={{
-                      position: 'absolute', bottom: 0, left: 0, right: '50%', height: 1,
-                      background: 'linear-gradient(90deg, rgba(255,120,0,0.5), transparent)',
+                      position: 'absolute', bottom: 0, left: 0, right: '40%', height: 1,
+                      background: 'linear-gradient(90deg, rgba(255,140,0,0.7), rgba(255,80,0,0.3), transparent)',
+                      boxShadow: '0 0 6px rgba(255,100,0,0.2)',
                     }} />
+                    {/* Inner glow overlay */}
                     <div style={{
                       position: 'absolute', inset: 0,
-                      background: 'linear-gradient(90deg, transparent 30%, rgba(255,200,100,0.04) 50%, transparent 70%)',
+                      background: 'radial-gradient(ellipse at 20% 50%, rgba(255,100,0,0.08) 0%, transparent 60%)',
+                      pointerEvents: 'none',
+                    }} />
+                    {/* Sweep animation */}
+                    <div style={{
+                      position: 'absolute', inset: 0,
+                      background: 'linear-gradient(90deg, transparent 20%, rgba(255,220,150,0.06) 45%, rgba(255,180,100,0.03) 55%, transparent 80%)',
                       animation: 'sweepRight 2.5s ease-in-out infinite',
                       pointerEvents: 'none',
                     }} />
+                    {/* Corner decorations */}
+                    <div style={{
+                      position: 'absolute', top: -1, left: -1,
+                      width: 8, height: 8,
+                      borderTop: '2px solid rgba(255,180,50,0.7)',
+                      borderLeft: '2px solid rgba(255,180,50,0.7)',
+                      boxShadow: '-2px -2px 6px rgba(255,140,0,0.2)',
+                    }} />
+                    <div style={{
+                      position: 'absolute', bottom: -1, left: -1,
+                      width: 8, height: 8,
+                      borderBottom: '2px solid rgba(255,140,0,0.5)',
+                      borderLeft: '2px solid rgba(255,140,0,0.5)',
+                    }} />
+                    {/* Active indicator diamond */}
+                    <div style={{
+                      position: 'absolute', right: 16, top: '50%', transform: 'translateY(-50%) rotate(45deg)',
+                      width: 5, height: 5,
+                      background: 'linear-gradient(135deg, #ffcc33, #ff6600)',
+                      boxShadow: '0 0 10px rgba(255,140,0,0.6), 0 0 20px rgba(255,80,0,0.3)',
+                      animation: 'crystalPulse 1.5s ease-in-out infinite',
+                    }} />
                   </>}
 
-                  <span style={{ position: 'relative', zIndex: 1, display: 'flex', alignItems: 'center', gap: 8 }}>
+                  {/* Inactive hover hint line */}
+                  {!active && <div style={{
+                    position: 'absolute', bottom: 0, left: 0, right: '70%', height: 1,
+                    background: 'linear-gradient(90deg, rgba(120,80,40,0.15), transparent)',
+                  }} />}
+
+                  <span style={{ position: 'relative', zIndex: 1, display: 'flex', alignItems: 'center', gap: 10 }}>
+                    {active && <span style={{
+                      fontSize: 7, color: '#ff8c00', marginRight: 2,
+                      filter: 'drop-shadow(0 0 4px rgba(255,140,0,0.5))',
+                    }}>◆</span>}
                     {item.label}
                     {item.hasSub && (
                       <span style={{
-                        fontSize: 8, opacity: 0.45,
+                        fontSize: 9, opacity: active ? 0.7 : 0.35,
                         color: active ? '#ff8c00' : '#8b7355',
                         transform: openSubMenu === i ? 'rotate(90deg)' : 'none',
                         transition: 'transform 0.3s', marginLeft: 4,
+                        filter: active ? 'drop-shadow(0 0 4px rgba(255,140,0,0.4))' : 'none',
                       }}>▶</span>
                     )}
                   </span>
                 </button>
-
-                {/* No inline sub menu - handled by overlay */}
               </React.Fragment>
             );
           })}

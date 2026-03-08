@@ -781,6 +781,7 @@ const CharacterSelect: React.FC = () => {
   const { engine, setGameState } = useGame();
   const [skinSelectFor, setSkinSelectFor] = useState<{ charIdx: number; pNum: number } | null>(null);
   const [hoveredIdx, setHoveredIdx] = useState<number | null>(null);
+  const [cursorIdx, setCursorIdx] = useState(0);
   const [showCustomMenu, setShowCustomMenu] = useState(false);
   const [customChars, setCustomChars] = useState<(CustomCharData | null)[]>([null, null, null, null, null, null]);
   const [konamiProgress, setKonamiProgress] = useState(0);
@@ -788,6 +789,68 @@ const CharacterSelect: React.FC = () => {
   const [selectFlash, setSelectFlash] = useState<number | null>(null);
 
   const charRenderData = getCharRenderData();
+
+  // Build flat list of all grid items for navigation
+  const allGridItems = React.useMemo(() => {
+    const items: { type: 'char' | 'custom' | 'random'; idx: number }[] = [
+      ...charRenderData.map((_, i) => ({ type: 'char' as const, idx: i })),
+      { type: 'custom' as const, idx: -1 },
+      { type: 'random' as const, idx: -2 },
+    ];
+    return items;
+  }, [charRenderData]);
+
+  const GRID_COLS = Math.min(allGridItems.length, 4);
+
+  // WASD navigation
+  React.useEffect(() => {
+    if (skinSelectFor || showCustomMenu) return;
+    const handler = (e: KeyboardEvent) => {
+      const totalItems = allGridItems.length;
+      const rows = Math.ceil(totalItems / GRID_COLS);
+      const curRow = Math.floor(cursorIdx / GRID_COLS);
+      const curCol = cursorIdx % GRID_COLS;
+
+      let newIdx = cursorIdx;
+      switch (e.code) {
+        case 'KeyW': {
+          const nr = (curRow - 1 + rows) % rows;
+          newIdx = Math.min(nr * GRID_COLS + curCol, totalItems - 1);
+          break;
+        }
+        case 'KeyS': {
+          const nr = (curRow + 1) % rows;
+          newIdx = Math.min(nr * GRID_COLS + curCol, totalItems - 1);
+          break;
+        }
+        case 'KeyA':
+          newIdx = cursorIdx > 0 ? cursorIdx - 1 : totalItems - 1;
+          break;
+        case 'KeyD':
+          newIdx = cursorIdx < totalItems - 1 ? cursorIdx + 1 : 0;
+          break;
+        case 'KeyF': {
+          // Confirm selection
+          const item = allGridItems[cursorIdx];
+          if (item.type === 'char') handleSelect(item.idx);
+          else if (item.type === 'custom') { setShowCustomMenu(true); playConfirmSound(); }
+          else if (item.type === 'random') handleRandomSelect();
+          return;
+        }
+        default: return;
+      }
+      if (newIdx !== cursorIdx) {
+        setCursorIdx(newIdx);
+        const item = allGridItems[newIdx];
+        if (item.type === 'char') setHoveredIdx(item.idx);
+        else setHoveredIdx(null);
+        playSelectSound();
+      }
+    };
+    window.addEventListener('keydown', handler);
+    return () => window.removeEventListener('keydown', handler);
+  }, [cursorIdx, allGridItems, GRID_COLS, skinSelectFor, showCustomMenu]);
+
 
   React.useEffect(() => {
     try {
@@ -1021,16 +1084,12 @@ const CharacterSelect: React.FC = () => {
           flex: '0 0 48%', display: 'flex', position: 'relative',
           borderBottom: '2px solid rgba(255,204,51,0.15)',
         }}>
-          {/* P1 Portrait area */}
+          {/* P1 Portrait - floating, no box */}
           <div style={{
-            width: 'clamp(140px, 22vw, 300px)', position: 'relative', overflow: 'hidden',
-            borderRight: '2px solid rgba(255,204,51,0.15)',
+            position: 'absolute', left: 0, top: 0, bottom: 0,
+            width: 'clamp(180px, 28vw, 380px)', zIndex: 5,
+            pointerEvents: 'none',
           }}>
-            {/* Diagonal color wash */}
-            <div style={{
-              position: 'absolute', inset: 0,
-              background: `linear-gradient(135deg, ${displayP1 ? displayP1.eyeColor + '15' : 'transparent'} 0%, transparent 60%)`,
-            }} />
             <BigPortrait
               char={displayP1 || null}
               customChar={p1Custom}
@@ -1038,21 +1097,20 @@ const CharacterSelect: React.FC = () => {
               facing={1}
               label="P1"
             />
-            {/* Name plate */}
+            {/* Name plate floating */}
             <div style={{
-              position: 'absolute', bottom: 0, left: 0, right: 0,
-              padding: '8px 15px',
-              background: 'linear-gradient(0deg, rgba(0,0,0,0.9) 0%, transparent 100%)',
+              position: 'absolute', bottom: 10, left: 15, right: 15,
+              pointerEvents: 'none',
             }}>
               <div style={{
                 color: '#ffcc33', fontFamily: "'Orbitron', monospace",
-                fontSize: 'clamp(14px, 2.5vw, 24px)', fontWeight: 900,
-                letterSpacing: 3, textShadow: '0 0 15px #ffcc3360',
+                fontSize: 'clamp(16px, 2.8vw, 28px)', fontWeight: 900,
+                letterSpacing: 3, textShadow: '0 0 15px #ffcc3360, 0 2px 8px rgba(0,0,0,0.8)',
               }}>
                 {p1Name}
               </div>
               {displayP1 && (
-                <div style={{ marginTop: 4, display: 'flex', gap: 10 }}>
+                <div style={{ marginTop: 4, display: 'flex', gap: 10, maxWidth: 200 }}>
                   <StatBar label="VEL" value={displayP1.speed / 10} color="#ffcc33" />
                   <StatBar label="POD" value={displayP1.weight} color="#ff6600" />
                 </div>
@@ -1060,10 +1118,8 @@ const CharacterSelect: React.FC = () => {
             </div>
           </div>
 
-          {/* Center stage - characters in game style facing each other */}
-          <div style={{
-            flex: 1, position: 'relative', overflow: 'hidden',
-          }}>
+          {/* Center stage - full width behind portraits */}
+          <div style={{ flex: 1, position: 'relative', overflow: 'hidden' }}>
             <StageCanvas
               p1Char={displayP1 || null}
               p2Char={displayP2 || null}
@@ -1077,15 +1133,12 @@ const CharacterSelect: React.FC = () => {
             }}>VS</div>
           </div>
 
-          {/* P2 Portrait area */}
+          {/* P2 Portrait - floating, no box */}
           <div style={{
-            width: 'clamp(140px, 22vw, 300px)', position: 'relative', overflow: 'hidden',
-            borderLeft: '2px solid rgba(255,204,51,0.15)',
+            position: 'absolute', right: 0, top: 0, bottom: 0,
+            width: 'clamp(180px, 28vw, 380px)', zIndex: 5,
+            pointerEvents: 'none',
           }}>
-            <div style={{
-              position: 'absolute', inset: 0,
-              background: `linear-gradient(-135deg, ${displayP2 ? displayP2.eyeColor + '15' : 'transparent'} 0%, transparent 60%)`,
-            }} />
             <BigPortrait
               char={displayP2 || null}
               customChar={null}
@@ -1094,19 +1147,18 @@ const CharacterSelect: React.FC = () => {
               label="P2"
             />
             <div style={{
-              position: 'absolute', bottom: 0, left: 0, right: 0,
-              padding: '8px 15px', textAlign: 'right',
-              background: 'linear-gradient(0deg, rgba(0,0,0,0.9) 0%, transparent 100%)',
+              position: 'absolute', bottom: 10, left: 15, right: 15, textAlign: 'right',
+              pointerEvents: 'none',
             }}>
               <div style={{
                 color: '#ffcc33', fontFamily: "'Orbitron', monospace",
-                fontSize: 'clamp(14px, 2.5vw, 24px)', fontWeight: 900,
-                letterSpacing: 3, textShadow: '0 0 15px #ffcc3360',
+                fontSize: 'clamp(16px, 2.8vw, 28px)', fontWeight: 900,
+                letterSpacing: 3, textShadow: '0 0 15px #ffcc3360, 0 2px 8px rgba(0,0,0,0.8)',
               }}>
                 {p2Name}
               </div>
               {displayP2 && (
-                <div style={{ marginTop: 4, display: 'flex', gap: 10, justifyContent: 'flex-end' }}>
+                <div style={{ marginTop: 4, display: 'flex', gap: 10, justifyContent: 'flex-end', maxWidth: 200, marginLeft: 'auto' }}>
                   <StatBar label="VEL" value={displayP2.speed / 10} color="#ffcc33" />
                   <StatBar label="POD" value={displayP2.weight} color="#ff6600" />
                 </div>
@@ -1136,6 +1188,7 @@ const CharacterSelect: React.FC = () => {
               for (let r = 0; r < Math.ceil(allItems.length / cols); r++) {
                 rows.push(allItems.slice(r * cols, r * cols + cols));
               }
+              let flatIdx = 0;
               return rows.map((row, rIdx) => (
                 <div key={rIdx} style={{
                   display: 'flex', gap: 2, justifyContent: 'center',
@@ -1143,11 +1196,13 @@ const CharacterSelect: React.FC = () => {
                   marginLeft: rIdx % 2 !== 0 ? hexW * 0.52 : 0,
                 }}>
                   {row.map((item) => {
+                    const myFlatIdx = flatIdx++;
+                    const isCursor = cursorIdx === myFlatIdx;
                     if (item.type === 'char') {
                       const ch = item.ch!;
                       const i = item.i;
                       const isP1Selected = engine.p1Choice === i;
-                      const isHovered = hoveredIdx === i;
+                      const isHovered = hoveredIdx === i || isCursor;
                       const isFlashing = selectFlash === i;
                       return (
                         <div
@@ -1200,13 +1255,18 @@ const CharacterSelect: React.FC = () => {
                           key="custom"
                           onClick={() => { setShowCustomMenu(true); playConfirmSound(); }}
                           onMouseEnter={() => setHoveredIdx(null)}
-                          style={{
+                           style={{
                             width: hexW, height: hexH,
                             clipPath: 'polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%)',
                             cursor: 'pointer',
-                            background: 'linear-gradient(135deg, rgba(20,18,35,0.95), rgba(12,10,25,0.98))',
+                            background: isCursor
+                              ? 'linear-gradient(135deg, rgba(40,35,20,0.95), rgba(30,25,15,0.9))'
+                              : 'linear-gradient(135deg, rgba(20,18,35,0.95), rgba(12,10,25,0.98))',
                             display: 'flex', alignItems: 'center', justifyContent: 'center',
                             transition: 'all 0.2s',
+                            transform: isCursor ? 'scale(1.15)' : 'scale(1)',
+                            zIndex: isCursor ? 10 : 1,
+                            filter: isCursor ? 'drop-shadow(0 0 10px #ffcc3350)' : 'none',
                           }}
                         >
                           <span style={{ color: '#ffcc33', fontSize: hexW * 0.3, fontWeight: 900, fontFamily: "'Orbitron', monospace", textShadow: '0 0 10px #ffcc3340' }}>?</span>
@@ -1218,13 +1278,18 @@ const CharacterSelect: React.FC = () => {
                         key="random"
                         onClick={handleRandomSelect}
                         onMouseEnter={() => setHoveredIdx(null)}
-                        style={{
+                         style={{
                           width: hexW, height: hexH,
                           clipPath: 'polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%)',
                           cursor: 'pointer',
-                          background: 'linear-gradient(135deg, rgba(20,18,35,0.95), rgba(12,10,25,0.98))',
+                          background: isCursor
+                            ? 'linear-gradient(135deg, rgba(40,35,20,0.95), rgba(30,25,15,0.9))'
+                            : 'linear-gradient(135deg, rgba(20,18,35,0.95), rgba(12,10,25,0.98))',
                           display: 'flex', alignItems: 'center', justifyContent: 'center',
                           transition: 'all 0.2s',
+                          transform: isCursor ? 'scale(1.15)' : 'scale(1)',
+                          zIndex: isCursor ? 10 : 1,
+                          filter: isCursor ? 'drop-shadow(0 0 10px #ffcc3350)' : 'none',
                         }}
                       >
                         <span style={{ fontSize: hexW * 0.25 }}>🎲</span>

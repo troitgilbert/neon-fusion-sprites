@@ -161,13 +161,6 @@ const MainMenu: React.FC = () => {
           }}
         />
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 8 }}>
-          <div style={{ width: 'clamp(20px, 5vw, 50px)', height: 1, background: 'linear-gradient(90deg, transparent, #8b3a0e, #d4a037)' }} />
-          <span style={{ fontSize: 'clamp(6px, 0.7vw, 8px)', letterSpacing: 5, color: 'rgba(200,160,80,0.4)', fontFamily: "'Orbitron', monospace" }}>
-            KOMBATE KÓSMICO
-          </span>
-          <div style={{ width: 'clamp(20px, 5vw, 50px)', height: 1, background: 'linear-gradient(270deg, transparent, #8b3a0e, #d4a037)' }} />
-        </div>
       </div>
 
       {/* ══════ ROW 2: MENU (fills remaining space, left-aligned) ══════ */}

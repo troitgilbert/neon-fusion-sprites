@@ -1245,21 +1245,50 @@ const CharacterSelect: React.FC = () => {
   const p1Custom = engine.p1Choice !== null && engine.p1Choice >= 100 ? customChars[engine.p1Choice - 100] : null;
   const hoveredChar = hoveredIdx !== null && hoveredIdx < 100 ? charRenderData[hoveredIdx] : null;
 
+  // Apply confirmed skin colors to p1Char for display
+  const p1CharWithSkin = React.useMemo(() => {
+    if (!p1Char || !engine.selectedSkins.p1) return p1Char;
+    const overrides = SKIN_COLOR_MAP[p1Char.name]?.[engine.selectedSkins.p1];
+    if (!overrides) return p1Char;
+    return { ...p1Char, ...overrides };
+  }, [p1Char, engine.selectedSkins.p1]);
+
   // If skin selector is open, show the skin-altered character in the portrait
   const displayP1 = (skinSelectFor && skinSelectFor.pNum === 1 && skinPreviewChar)
     ? skinPreviewChar
-    : (p1Char || (!isP2Turn ? hoveredChar : null));
+    : (p1CharWithSkin || (!isP2Turn ? hoveredChar : null));
   const displayP2 = (skinSelectFor && skinSelectFor.pNum === 2 && skinPreviewChar)
     ? skinPreviewChar
     : (isP2Turn ? hoveredChar : null);
 
+  // Get skin display name
+  const getSkinDisplayName = (charIdx: number | null, skinId: string | null): string | null => {
+    if (charIdx === null || !skinId) return null;
+    const ch = CHAR_DATA[charIdx];
+    if (!ch) return null;
+    const catalog = SHOP_CATALOG[ch.name] || [];
+    const skin = catalog.find((s: any) => s.id === skinId);
+    return skin?.name || skinId;
+  };
+
   const skinSelectCharName = skinSelectFor ? CHAR_DATA[skinSelectFor.charIdx].name : null;
+  const skinSelectSkinName = skinSelectFor && previewSkinId
+    ? getSkinDisplayName(skinSelectFor.charIdx, previewSkinId)
+    : null;
+  const p1SkinName = getSkinDisplayName(engine.p1Choice, engine.selectedSkins.p1);
+  
   const p1Name = skinSelectFor && skinSelectFor.pNum === 1
     ? (skinSelectCharName || '???')
     : (p1Custom ? p1Custom.name : (displayP1 ? displayP1.name : '???'));
+  const p1SubName = skinSelectFor && skinSelectFor.pNum === 1
+    ? skinSelectSkinName
+    : p1SkinName;
   const p2Name = skinSelectFor && skinSelectFor.pNum === 2
     ? (skinSelectCharName || '???')
     : (displayP2 ? displayP2.name : (isP2Turn ? '???' : '---'));
+  const p2SubName = skinSelectFor && skinSelectFor.pNum === 2
+    ? skinSelectSkinName
+    : null;
 
   return (
     <div className="fixed inset-0 z-50 flex flex-col" style={{ overflow: 'hidden', animation: 'fadeIn 0.4s ease-out' }}>

@@ -36,19 +36,19 @@ const stageSymbols: Record<string, string> = {
   boss: '!!!',
 };
 
-// J-shape constellation positions (normalized 0-1, mapped to container)
-// The J goes: top-right vertical down, then curves left at bottom
+// J-shape constellation: serif top bar, straight vertical stem, curved hook bottom-left
+// Stage 10 (top-left of serif) → Stage 1 (tip of hook curl)
 const J_POSITIONS = [
-  { x: 0.72, y: 0.06 },  // 10 - BIG BANG (top of J)
-  { x: 0.72, y: 0.16 },  // 9
-  { x: 0.71, y: 0.27 },  // 8
-  { x: 0.70, y: 0.38 },  // 7
-  { x: 0.69, y: 0.49 },  // 6
-  { x: 0.67, y: 0.59 },  // 5
-  { x: 0.62, y: 0.69 },  // 4 - curve starts
-  { x: 0.52, y: 0.78 },  // 3
-  { x: 0.38, y: 0.84 },  // 2
-  { x: 0.24, y: 0.82 },  // 1 - bottom-left hook of J
+  { x: 0.38, y: 0.08 },  // 10 - BIG BANG (top-left serif bar)
+  { x: 0.58, y: 0.08 },  // 9  - top-right serif bar
+  { x: 0.58, y: 0.20 },  // 8  - stem top
+  { x: 0.58, y: 0.32 },  // 7  - stem
+  { x: 0.58, y: 0.44 },  // 6  - stem
+  { x: 0.58, y: 0.56 },  // 5  - stem
+  { x: 0.58, y: 0.68 },  // 4  - stem bottom
+  { x: 0.50, y: 0.80 },  // 3  - curve starts
+  { x: 0.36, y: 0.86 },  // 2  - bottom of curve
+  { x: 0.26, y: 0.78 },  // 1  - hook curl (goes back up)
 ];
 
 // Helper: draw chibi character (simplified version for preview)

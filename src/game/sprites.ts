@@ -1,7 +1,6 @@
 // Image-based sprite system for Edowado
 // Uses high-quality anime-style sprites
 
-import idleImg from '@/assets/edowado-idle.png';
 import idle2Img from '@/assets/edowado-idle2.png';
 import idle3Img from '@/assets/edowado-idle3.png';
 import idle4Img from '@/assets/edowado-idle4.png';

@@ -3,6 +3,12 @@
 
 import idleImg from '@/assets/edowado-idle.png';
 import idle2Img from '@/assets/edowado-idle2.png';
+import idle3Img from '@/assets/edowado-idle3.png';
+import idle4Img from '@/assets/edowado-idle4.png';
+import idle5Img from '@/assets/edowado-idle5.png';
+import idle6Img from '@/assets/edowado-idle6.png';
+import idle7Img from '@/assets/edowado-idle7.png';
+import idle8Img from '@/assets/edowado-idle8.png';
 import walk1Img from '@/assets/edowado-walk1.png';
 import walk2Img from '@/assets/edowado-walk2.png';
 import walk3Img from '@/assets/edowado-walk3.png';
@@ -26,6 +32,12 @@ let imagesLoaded = false;
 const SPRITE_SOURCES: Record<string, string> = {
   idle1: idleImg,
   idle2: idle2Img,
+  idle3: idle3Img,
+  idle4: idle4Img,
+  idle5: idle5Img,
+  idle6: idle6Img,
+  idle7: idle7Img,
+  idle8: idle8Img,
   walk1: walk1Img,
   walk2: walk2Img,
   walk3: walk3Img,
@@ -63,7 +75,7 @@ export function preloadSprites(): Promise<void> {
 
 // Animation config
 const SPRITE_FRAMES: Record<SpriteState, { keys: string[]; speed: number }> = {
-  idle:   { keys: ['idle1', 'idle2'], speed: 0.025 },
+  idle:   { keys: ['idle1', 'idle2', 'idle3', 'idle4', 'idle5', 'idle6', 'idle7', 'idle8'], speed: 0.08 },
   walk:   { keys: ['walk1', 'walk2', 'walk3', 'walk4', 'walk5', 'walk6', 'walk7', 'walk8'], speed: 0.15 },
   attack: { keys: ['attack'],  speed: 0.2 },
   jump:   { keys: ['jump'],    speed: 0.1 },
@@ -88,57 +100,6 @@ export function drawEdowadoSprite(
 
   const { keys, speed } = data;
 
-  // For idle: smooth crossfade between frames for fluid hand movement
-  if (state === 'idle' && keys.length === 2) {
-    const img1 = imageCache.get(keys[0]);
-    const img2 = imageCache.get(keys[1]);
-
-    if (!img1 && !img2) {
-      ctx.save();
-      ctx.fillStyle = '#c02020';
-      ctx.fillRect(x - 15 * scale, y - 40 * scale, 30 * scale, 45 * scale);
-      ctx.restore();
-      return;
-    }
-
-    // Use a sine wave for smooth 0→1→0 blend (period ~120 frames ≈ 2s at 60fps)
-    const blend = (Math.sin(frame * 0.04) + 1) / 2; // 0..1 smoothly
-
-    const refImg = img1 || img2!;
-    const targetHeight = 85 * scale;
-    const aspect = refImg.width / refImg.height;
-    const targetWidth = targetHeight * aspect;
-
-    const breathScale = 1 + Math.sin(frame * 0.06) * 0.012;
-    const breathY = Math.sin(frame * 0.06) * 1.5;
-
-    ctx.save();
-    ctx.imageSmoothingEnabled = true;
-    ctx.imageSmoothingQuality = 'high';
-    ctx.translate(x, y);
-    ctx.scale(side, 1);
-
-    const dx = -targetWidth / 2;
-    const dy = -targetHeight + 15 - breathY;
-    const dw = targetWidth * breathScale;
-    const dh = targetHeight * breathScale;
-
-    // Draw frame 1 with (1 - blend) opacity
-    if (img1) {
-      ctx.globalAlpha = 1 - blend;
-      ctx.drawImage(img1, dx, dy, dw, dh);
-    }
-    // Draw frame 2 with blend opacity
-    if (img2) {
-      ctx.globalAlpha = blend;
-      ctx.drawImage(img2, dx, dy, dw, dh);
-    }
-
-    ctx.globalAlpha = 1;
-    ctx.restore();
-    return;
-  }
-
   const frameIdx = Math.floor(frame * speed) % keys.length;
   const img = imageCache.get(keys[frameIdx]);
 
@@ -160,12 +121,16 @@ export function drawEdowadoSprite(
   ctx.translate(x, y);
   ctx.scale(side, 1);
 
+  // Breathing effect for idle
+  const breathScale = state === 'idle' ? 1 + Math.sin(frame * 0.06) * 0.012 : 1;
+  const breathY = state === 'idle' ? Math.sin(frame * 0.06) * 1.5 : 0;
+
   ctx.drawImage(
     img,
     -targetWidth / 2,
-    -targetHeight + 15,
-    targetWidth,
-    targetHeight
+    -targetHeight + 15 - breathY,
+    targetWidth * breathScale,
+    targetHeight * breathScale
   );
 
   ctx.restore();

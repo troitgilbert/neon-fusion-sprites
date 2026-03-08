@@ -89,6 +89,72 @@ const NebulaBackground: React.FC = () => {
         ctx.fillRect(0, 0, w, h);
       }
 
+      // ══════ PLANETS ══════
+      // Large planet (bottom-right, partially visible)
+      const p1x = w * 0.85, p1y = h * 0.82, p1r = w * 0.12;
+      const p1grad = ctx.createRadialGradient(p1x - p1r * 0.3, p1y - p1r * 0.3, p1r * 0.1, p1x, p1y, p1r);
+      p1grad.addColorStop(0, 'rgba(60,120,200,0.5)');
+      p1grad.addColorStop(0.4, 'rgba(30,70,140,0.4)');
+      p1grad.addColorStop(0.7, 'rgba(15,40,90,0.3)');
+      p1grad.addColorStop(1, 'rgba(5,15,40,0.15)');
+      ctx.beginPath(); ctx.arc(p1x, p1y, p1r, 0, Math.PI * 2); ctx.fillStyle = p1grad; ctx.fill();
+      // Atmosphere ring
+      const p1atm = ctx.createRadialGradient(p1x, p1y, p1r * 0.95, p1x, p1y, p1r * 1.15);
+      p1atm.addColorStop(0, 'rgba(80,160,255,0.15)');
+      p1atm.addColorStop(0.5, 'rgba(40,100,200,0.06)');
+      p1atm.addColorStop(1, 'transparent');
+      ctx.beginPath(); ctx.arc(p1x, p1y, p1r * 1.15, 0, Math.PI * 2); ctx.fillStyle = p1atm; ctx.fill();
+
+      // Small planet (top-right)
+      const p2x = w * 0.78, p2y = h * 0.15, p2r = w * 0.035;
+      const p2grad = ctx.createRadialGradient(p2x - p2r * 0.3, p2y - p2r * 0.3, p2r * 0.05, p2x, p2y, p2r);
+      p2grad.addColorStop(0, 'rgba(255,180,80,0.7)');
+      p2grad.addColorStop(0.5, 'rgba(200,100,30,0.5)');
+      p2grad.addColorStop(1, 'rgba(120,50,10,0.25)');
+      ctx.beginPath(); ctx.arc(p2x, p2y, p2r, 0, Math.PI * 2); ctx.fillStyle = p2grad; ctx.fill();
+
+      // Tiny distant planet (left)
+      const p3x = w * 0.15, p3y = h * 0.35, p3r = w * 0.018;
+      const p3grad = ctx.createRadialGradient(p3x - p3r * 0.2, p3y - p3r * 0.2, p3r * 0.05, p3x, p3y, p3r);
+      p3grad.addColorStop(0, 'rgba(200,160,220,0.6)');
+      p3grad.addColorStop(0.6, 'rgba(120,80,160,0.35)');
+      p3grad.addColorStop(1, 'rgba(60,30,90,0.15)');
+      ctx.beginPath(); ctx.arc(p3x, p3y, p3r, 0, Math.PI * 2); ctx.fillStyle = p3grad; ctx.fill();
+
+      // Ringed planet (center-right area)
+      const p4x = w * 0.62, p4y = h * 0.68, p4r = w * 0.05;
+      const p4bod = ctx.createRadialGradient(p4x - p4r * 0.25, p4y - p4r * 0.25, p4r * 0.05, p4x, p4y, p4r);
+      p4bod.addColorStop(0, 'rgba(220,180,120,0.5)');
+      p4bod.addColorStop(0.6, 'rgba(160,110,50,0.35)');
+      p4bod.addColorStop(1, 'rgba(80,50,20,0.15)');
+      ctx.beginPath(); ctx.arc(p4x, p4y, p4r, 0, Math.PI * 2); ctx.fillStyle = p4bod; ctx.fill();
+      // Ring
+      ctx.save();
+      ctx.translate(p4x, p4y);
+      ctx.scale(1, 0.3);
+      ctx.beginPath(); ctx.arc(0, 0, p4r * 1.8, 0, Math.PI * 2);
+      ctx.strokeStyle = 'rgba(220,180,120,0.2)'; ctx.lineWidth = p4r * 0.15; ctx.stroke();
+      ctx.beginPath(); ctx.arc(0, 0, p4r * 2.1, 0, Math.PI * 2);
+      ctx.strokeStyle = 'rgba(180,140,80,0.1)'; ctx.lineWidth = p4r * 0.08; ctx.stroke();
+      ctx.restore();
+
+      // ══════ BLUE BOTTOM GLOW ══════
+      const blueBot = ctx.createLinearGradient(0, h * 0.65, 0, h);
+      blueBot.addColorStop(0, 'transparent');
+      blueBot.addColorStop(0.4, 'rgba(0,40,120,0.08)');
+      blueBot.addColorStop(0.7, 'rgba(0,60,180,0.15)');
+      blueBot.addColorStop(1, 'rgba(0,30,100,0.25)');
+      ctx.fillStyle = blueBot;
+      ctx.fillRect(0, h * 0.65, w, h * 0.35);
+
+      // Blue radial at bottom center
+      const blueCtr = ctx.createRadialGradient(w * 0.5, h * 1.05, 0, w * 0.5, h * 1.05, w * 0.6);
+      blueCtr.addColorStop(0, 'rgba(0,80,200,0.18)');
+      blueCtr.addColorStop(0.5, 'rgba(0,50,150,0.08)');
+      blueCtr.addColorStop(1, 'transparent');
+      ctx.fillStyle = blueCtr;
+      ctx.fillRect(0, h * 0.5, w, h * 0.5);
+
       // Cosmic dust band
       ctx.save();
       ctx.globalAlpha = 0.015 + Math.sin(time * 0.0005) * 0.005;

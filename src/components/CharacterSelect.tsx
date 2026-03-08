@@ -396,7 +396,7 @@ const BgCanvas: React.FC = () => {
         x: Math.random() * window.innerWidth,
         y: Math.random() * window.innerHeight,
         r: 100 + Math.random() * 200,
-        color: ['#00ffff', '#ff8c00', '#8800ff', '#ff0066', '#0044ff'][i],
+        color: ['#ffcc33', '#ff8800', '#8844ff', '#ff4400', '#ffaa00'][i],
         speed: (Math.random() - 0.5) * 0.3,
       });
     }

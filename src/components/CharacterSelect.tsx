@@ -345,22 +345,34 @@ const BigPortrait: React.FC<{
 const BgCanvas: React.FC = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const animRef = useRef<number>(0);
-  const particlesRef = useRef<{ x: number; y: number; vx: number; vy: number; size: number; color: string; alpha: number }[]>([]);
 
   useEffect(() => {
-    const particles: typeof particlesRef.current = [];
-    for (let i = 0; i < 60; i++) {
+    // Particles
+    const particles: { x: number; y: number; vx: number; vy: number; size: number; color: string; alpha: number; life: number }[] = [];
+    for (let i = 0; i < 80; i++) {
       particles.push({
         x: Math.random() * window.innerWidth,
         y: Math.random() * window.innerHeight,
-        vx: (Math.random() - 0.5) * 0.8,
-        vy: -Math.random() * 0.5 - 0.2,
-        size: Math.random() * 2.5 + 0.5,
-        color: ['#00ffff', '#ff8c00', '#ffff00', '#ff00ff'][Math.floor(Math.random() * 4)],
-        alpha: Math.random() * 0.5 + 0.2,
+        vx: (Math.random() - 0.5) * 0.6,
+        vy: -Math.random() * 0.4 - 0.15,
+        size: Math.random() * 2.5 + 0.3,
+        color: ['#00ffff', '#ff8c00', '#ffff00', '#ff00ff', '#00ff88'][Math.floor(Math.random() * 5)],
+        alpha: Math.random() * 0.6 + 0.1,
+        life: Math.random() * 1000,
       });
     }
-    particlesRef.current = particles;
+
+    // Nebula clouds
+    const nebulas: { x: number; y: number; r: number; color: string; speed: number }[] = [];
+    for (let i = 0; i < 5; i++) {
+      nebulas.push({
+        x: Math.random() * window.innerWidth,
+        y: Math.random() * window.innerHeight,
+        r: 100 + Math.random() * 200,
+        color: ['#00ffff', '#ff8c00', '#8800ff', '#ff0066', '#0044ff'][i],
+        speed: (Math.random() - 0.5) * 0.3,
+      });
+    }
 
     let frame = 0;
     const draw = () => {
@@ -368,57 +380,120 @@ const BgCanvas: React.FC = () => {
       if (!canvas) return;
       const ctx = canvas.getContext('2d');
       if (!ctx) return;
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
+      const W = window.innerWidth;
+      const H = window.innerHeight;
+      canvas.width = W;
+      canvas.height = H;
       frame++;
 
-      // Dark gradient bg
-      const bg = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
-      bg.addColorStop(0, '#050520');
-      bg.addColorStop(0.3, '#0a0a35');
-      bg.addColorStop(0.6, '#120828');
-      bg.addColorStop(1, '#050520');
+      // Deep space gradient
+      const bg = ctx.createRadialGradient(W * 0.5, H * 0.5, 0, W * 0.5, H * 0.5, Math.max(W, H) * 0.8);
+      bg.addColorStop(0, '#0c0c30');
+      bg.addColorStop(0.4, '#080822');
+      bg.addColorStop(0.7, '#050518');
+      bg.addColorStop(1, '#020210');
       ctx.fillStyle = bg;
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.fillRect(0, 0, W, H);
 
-      // Central VS energy line
-      const centerX = canvas.width / 2;
+      // Nebula clouds (soft glowing blobs)
+      nebulas.forEach(n => {
+        n.x += n.speed;
+        if (n.x < -n.r) n.x = W + n.r;
+        if (n.x > W + n.r) n.x = -n.r;
+        ctx.save();
+        ctx.globalAlpha = 0.04 + Math.sin(frame * 0.008 + n.y) * 0.015;
+        const ng = ctx.createRadialGradient(n.x, n.y, 0, n.x, n.y, n.r);
+        ng.addColorStop(0, n.color);
+        ng.addColorStop(0.5, n.color + '40');
+        ng.addColorStop(1, 'transparent');
+        ctx.fillStyle = ng;
+        ctx.fillRect(n.x - n.r, n.y - n.r, n.r * 2, n.r * 2);
+        ctx.restore();
+      });
+
+      // Hexagonal grid pattern (faint)
       ctx.save();
-      ctx.globalAlpha = 0.08 + Math.sin(frame * 0.03) * 0.04;
-      const lineGrad = ctx.createLinearGradient(centerX - 2, 0, centerX + 2, 0);
-      lineGrad.addColorStop(0, 'transparent');
-      lineGrad.addColorStop(0.5, '#ff8c00');
-      lineGrad.addColorStop(1, 'transparent');
-      ctx.fillStyle = lineGrad;
-      ctx.fillRect(centerX - 40, 0, 80, canvas.height);
+      ctx.globalAlpha = 0.025;
+      ctx.strokeStyle = '#4488aa';
+      ctx.lineWidth = 0.5;
+      const hexSize = 40;
+      const hexH = hexSize * Math.sqrt(3);
+      for (let row = -1; row < H / hexH + 1; row++) {
+        for (let col = -1; col < W / (hexSize * 1.5) + 1; col++) {
+          const cx = col * hexSize * 1.5;
+          const cy = row * hexH + (col % 2 ? hexH / 2 : 0);
+          ctx.beginPath();
+          for (let a = 0; a < 6; a++) {
+            const angle = Math.PI / 3 * a + Math.PI / 6;
+            const px = cx + hexSize * 0.5 * Math.cos(angle);
+            const py = cy + hexSize * 0.5 * Math.sin(angle);
+            a === 0 ? ctx.moveTo(px, py) : ctx.lineTo(px, py);
+          }
+          ctx.closePath(); ctx.stroke();
+        }
+      }
       ctx.restore();
 
-      // Grid lines
+      // Central energy column
+      const centerX = W / 2;
       ctx.save();
-      ctx.globalAlpha = 0.03;
-      ctx.strokeStyle = '#00ffff';
-      ctx.lineWidth = 0.5;
-      for (let x = 0; x < canvas.width; x += 60) {
-        ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, canvas.height); ctx.stroke();
-      }
-      for (let y = 0; y < canvas.height; y += 60) {
-        ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(canvas.width, y); ctx.stroke();
-      }
+      ctx.globalAlpha = 0.06 + Math.sin(frame * 0.025) * 0.03;
+      const colGrad = ctx.createLinearGradient(centerX - 80, 0, centerX + 80, 0);
+      colGrad.addColorStop(0, 'transparent');
+      colGrad.addColorStop(0.3, '#ff8c0015');
+      colGrad.addColorStop(0.5, '#ff8c0040');
+      colGrad.addColorStop(0.7, '#ff8c0015');
+      colGrad.addColorStop(1, 'transparent');
+      ctx.fillStyle = colGrad;
+      ctx.fillRect(centerX - 80, 0, 160, H);
+      ctx.restore();
+
+      // P1 side glow (cyan, left)
+      ctx.save();
+      ctx.globalAlpha = 0.035;
+      const p1Glow = ctx.createRadialGradient(0, H * 0.5, 0, 0, H * 0.5, W * 0.4);
+      p1Glow.addColorStop(0, '#00ffff');
+      p1Glow.addColorStop(1, 'transparent');
+      ctx.fillStyle = p1Glow;
+      ctx.fillRect(0, 0, W * 0.5, H);
+      ctx.restore();
+
+      // P2 side glow (orange, right)
+      ctx.save();
+      ctx.globalAlpha = 0.035;
+      const p2Glow = ctx.createRadialGradient(W, H * 0.5, 0, W, H * 0.5, W * 0.4);
+      p2Glow.addColorStop(0, '#ff8c00');
+      p2Glow.addColorStop(1, 'transparent');
+      ctx.fillStyle = p2Glow;
+      ctx.fillRect(W * 0.5, 0, W * 0.5, H);
       ctx.restore();
 
       // Particles
       particles.forEach(p => {
         p.x += p.vx;
         p.y += p.vy;
-        if (p.y < -10) { p.y = canvas.height + 10; p.x = Math.random() * canvas.width; }
-        if (p.x < -10) p.x = canvas.width + 10;
-        if (p.x > canvas.width + 10) p.x = -10;
+        p.life++;
+        if (p.y < -10) { p.y = H + 10; p.x = Math.random() * W; }
+        if (p.x < -10) p.x = W + 10;
+        if (p.x > W + 10) p.x = -10;
         ctx.save();
-        ctx.globalAlpha = p.alpha * (0.5 + Math.sin(frame * 0.05 + p.x) * 0.5);
+        ctx.globalAlpha = p.alpha * (0.4 + Math.sin(p.life * 0.04) * 0.6);
         ctx.beginPath(); ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
-        ctx.fillStyle = p.color; ctx.fill();
+        const pg = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, p.size * 2);
+        pg.addColorStop(0, p.color);
+        pg.addColorStop(1, 'transparent');
+        ctx.fillStyle = pg; ctx.fill();
         ctx.restore();
       });
+
+      // Scanlines (very subtle)
+      ctx.save();
+      ctx.globalAlpha = 0.015;
+      for (let y = 0; y < H; y += 3) {
+        ctx.fillStyle = '#000';
+        ctx.fillRect(0, y, W, 1);
+      }
+      ctx.restore();
 
       animRef.current = requestAnimationFrame(draw);
     };
@@ -736,8 +811,8 @@ const CharacterSelect: React.FC = () => {
 
         {/* Center roster grid */}
         <div style={{
-          flex: 1, maxWidth: 520, display: 'flex', flexDirection: 'column',
-          alignItems: 'center', justifyContent: 'center', gap: 12, padding: '0 10px',
+          flex: 1, maxWidth: 600, display: 'flex', flexDirection: 'column',
+          alignItems: 'center', justifyContent: 'center', gap: 0, padding: '0 10px',
         }}>
           {/* VS emblem */}
           <div style={{
@@ -746,147 +821,167 @@ const CharacterSelect: React.FC = () => {
             color: 'rgba(255,140,0,0.04)', letterSpacing: 20, pointerEvents: 'none', zIndex: 0,
           }}>VS</div>
 
-          <div style={{
-            display: 'grid',
-            gridTemplateColumns: `repeat(${Math.min(CHAR_DATA.length + 2, 4)}, 1fr)`,
-            gap: 'clamp(8px, 1.5vw, 16px)', justifyContent: 'center',
-            position: 'relative', zIndex: 1,
-          }}>
-            {/* Base characters */}
-            {charRenderData.map((ch, i) => {
-              const isP1Selected = engine.p1Choice === i;
-              const isHovered = hoveredIdx === i;
-              const isFlashing = selectFlash === i;
-              return (
-                <div
-                  key={ch.name}
-                  onClick={() => handleSelect(i)}
-                  onMouseEnter={() => { setHoveredIdx(i); playSelectSound(); }}
-                  onMouseLeave={() => setHoveredIdx(null)}
-                  style={{
-                    width: 'clamp(80px, 12vw, 120px)',
-                    height: 'clamp(100px, 15vw, 150px)',
-                    cursor: 'pointer', position: 'relative',
-                    background: isFlashing
-                      ? `linear-gradient(135deg, ${ch.eyeColor}40, ${ch.eyeColor}10)`
-                      : isP1Selected
-                        ? 'linear-gradient(135deg, rgba(0,255,255,0.15), rgba(0,255,255,0.05))'
-                        : isHovered
-                          ? 'linear-gradient(135deg, rgba(255,255,255,0.08), rgba(255,255,255,0.02))'
-                          : 'linear-gradient(135deg, rgba(15,15,40,0.9), rgba(10,10,30,0.95))',
-                    border: isP1Selected
-                      ? '2px solid #00ffff'
-                      : isHovered
-                        ? `2px solid ${ch.eyeColor}80`
-                        : '1px solid rgba(255,255,255,0.08)',
-                    boxShadow: isP1Selected
-                      ? `0 0 30px #00ffff40, inset 0 0 20px #00ffff10`
-                      : isHovered
-                        ? `0 0 20px ${ch.eyeColor}30`
-                        : '0 2px 10px rgba(0,0,0,0.3)',
-                    transition: 'all 0.25s ease-out',
-                    transform: isHovered ? 'scale(1.08) translateY(-4px)' : 'scale(1)',
-                    display: 'flex', flexDirection: 'column', alignItems: 'center',
-                    justifyContent: 'center', gap: 6,
-                    overflow: 'hidden',
-                  }}
-                >
-                  {/* Top accent line */}
-                  <div style={{
-                    position: 'absolute', top: 0, left: '10%', right: '10%', height: 2,
-                    background: isP1Selected ? '#00ffff' : isHovered ? ch.eyeColor : 'transparent',
-                    boxShadow: isP1Selected ? '0 0 10px #00ffff' : isHovered ? `0 0 8px ${ch.eyeColor}` : 'none',
-                    transition: 'all 0.25s',
-                  }} />
-
-                  <CanvasPortrait
-                    char={ch}
-                    size={Math.min(window.innerWidth * 0.06, 70)}
-                    isSelected={isP1Selected}
-                    isHovered={isHovered}
-                    facing={1}
-                  />
-
-                  <div style={{
-                    color: isP1Selected ? '#00ffff' : isHovered ? ch.eyeColor : 'rgba(255,255,255,0.6)',
-                    fontFamily: "'Orbitron', monospace",
-                    fontSize: 'clamp(8px, 1.2vw, 11px)',
-                    letterSpacing: 2, fontWeight: 900,
-                    textShadow: isP1Selected ? '0 0 10px #00ffff' : isHovered ? `0 0 8px ${ch.eyeColor}60` : 'none',
-                    transition: 'all 0.25s',
-                  }}>
-                    {ch.name}
-                  </div>
-
-                  {isP1Selected && (
-                    <div style={{
-                      position: 'absolute', bottom: 4,
-                      color: '#00ffff', fontSize: 8, fontFamily: "'Orbitron', monospace",
-                      fontWeight: 900, textShadow: '0 0 5px #00ffff', letterSpacing: 2,
-                    }}>● P1</div>
-                  )}
+          {/* Hexagonal grid - honeycomb layout */}
+          <div style={{ position: 'relative', zIndex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 0 }}>
+            {(() => {
+              const allItems = [
+                ...charRenderData.map((ch, i) => ({ type: 'char' as const, ch, i })),
+                { type: 'custom' as const, ch: null, i: -1 },
+                { type: 'random' as const, ch: null, i: -2 },
+              ];
+              const cols = Math.min(allItems.length, 4);
+              const hexW = Math.min(window.innerWidth * 0.11, 100);
+              const hexH = hexW * 1.155;
+              const rows: (typeof allItems[number])[][] = [];
+              for (let r = 0; r < Math.ceil(allItems.length / cols); r++) {
+                rows.push(allItems.slice(r * cols, r * cols + cols));
+              }
+              return rows.map((row, rIdx) => (
+                <div key={rIdx} style={{
+                  display: 'flex', gap: 0, justifyContent: 'center',
+                  marginTop: rIdx > 0 ? -hexH * 0.13 : 0,
+                  marginLeft: rIdx % 2 !== 0 ? hexW * 0.52 : 0,
+                }}>
+                  {row.map((item) => {
+                    if (item.type === 'char') {
+                      const ch = item.ch!;
+                      const i = item.i;
+                      const isP1Selected = engine.p1Choice === i;
+                      const isHovered = hoveredIdx === i;
+                      const isFlashing = selectFlash === i;
+                      const borderColor = isP1Selected ? '#00ffff' : isHovered ? ch.eyeColor : 'rgba(80,80,120,0.6)';
+                      return (
+                        <div
+                          key={ch.name}
+                          onClick={() => handleSelect(i)}
+                          onMouseEnter={() => { setHoveredIdx(i); playSelectSound(); }}
+                          onMouseLeave={() => setHoveredIdx(null)}
+                          style={{
+                            width: hexW, height: hexH,
+                            clipPath: 'polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%)',
+                            cursor: 'pointer', position: 'relative',
+                            background: isFlashing
+                              ? `linear-gradient(135deg, ${ch.eyeColor}50, ${ch.eyeColor}15)`
+                              : isP1Selected
+                                ? 'linear-gradient(135deg, rgba(0,255,255,0.2), rgba(0,100,150,0.15))'
+                                : isHovered
+                                  ? `linear-gradient(135deg, rgba(30,30,70,0.95), rgba(20,20,50,0.9))`
+                                  : 'linear-gradient(135deg, rgba(18,18,50,0.95), rgba(10,10,35,0.98))',
+                            display: 'flex', alignItems: 'center', justifyContent: 'center',
+                            transition: 'all 0.2s ease-out',
+                            transform: isHovered ? 'scale(1.12)' : 'scale(1)',
+                            zIndex: isHovered ? 10 : 1,
+                            filter: isHovered ? `drop-shadow(0 0 12px ${ch.eyeColor}60)` : isP1Selected ? 'drop-shadow(0 0 10px #00ffff50)' : 'none',
+                          }}
+                        >
+                          {/* Inner hex border */}
+                          <div style={{
+                            position: 'absolute', inset: 2,
+                            clipPath: 'polygon(50% 1%, 99% 25.5%, 99% 74.5%, 50% 99%, 1% 74.5%, 1% 25.5%)',
+                            border: 'none',
+                            background: isP1Selected
+                              ? 'rgba(0,255,255,0.08)'
+                              : 'transparent',
+                          }} />
+                          {/* Border overlay */}
+                          <div style={{
+                            position: 'absolute', inset: 0,
+                            clipPath: 'polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%)',
+                            background: 'transparent',
+                            boxShadow: `inset 0 0 0 2px ${borderColor}`,
+                            pointerEvents: 'none',
+                          }} />
+                          <CanvasPortrait
+                            char={ch}
+                            size={Math.min(hexW * 0.55, 55)}
+                            isSelected={isP1Selected}
+                            isHovered={isHovered}
+                            facing={1}
+                          />
+                          {isP1Selected && (
+                            <div style={{
+                              position: 'absolute', bottom: '12%',
+                              color: '#00ffff', fontSize: 7, fontFamily: "'Orbitron', monospace",
+                              fontWeight: 900, textShadow: '0 0 5px #00ffff', letterSpacing: 2,
+                            }}>P1</div>
+                          )}
+                        </div>
+                      );
+                    }
+                    if (item.type === 'custom') {
+                      return (
+                        <div
+                          key="custom"
+                          onClick={() => { setShowCustomMenu(true); playConfirmSound(); }}
+                          onMouseEnter={() => setHoveredIdx(null)}
+                          style={{
+                            width: hexW, height: hexH,
+                            clipPath: 'polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%)',
+                            cursor: 'pointer',
+                            background: 'linear-gradient(135deg, rgba(18,18,50,0.95), rgba(10,10,35,0.98))',
+                            display: 'flex', alignItems: 'center', justifyContent: 'center',
+                            transition: 'all 0.2s',
+                          }}
+                        >
+                          <div style={{
+                            width: hexW * 0.4, height: hexW * 0.4, borderRadius: '50%',
+                            background: 'linear-gradient(135deg, #33333380, #55555580)',
+                            border: '2px solid #ffff0060', boxShadow: '0 0 15px #ffff0020',
+                            display: 'flex', alignItems: 'center', justifyContent: 'center',
+                          }}>
+                            <span style={{ color: '#ffff00', fontSize: hexW * 0.25, fontWeight: 900, fontFamily: "'Orbitron', monospace" }}>?</span>
+                          </div>
+                        </div>
+                      );
+                    }
+                    // random
+                    return (
+                      <div
+                        key="random"
+                        onClick={handleRandomSelect}
+                        onMouseEnter={() => setHoveredIdx(null)}
+                        style={{
+                          width: hexW, height: hexH,
+                          clipPath: 'polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%)',
+                          cursor: 'pointer',
+                          background: 'linear-gradient(135deg, rgba(18,18,50,0.95), rgba(10,10,35,0.98))',
+                          display: 'flex', alignItems: 'center', justifyContent: 'center',
+                          transition: 'all 0.2s',
+                        }}
+                      >
+                        <div style={{
+                          width: hexW * 0.4, height: hexW * 0.4, borderRadius: '50%',
+                          background: 'linear-gradient(135deg, #ff008860, #00ffff60, #ffff0060)',
+                          border: '2px solid #ffffff30', boxShadow: '0 0 12px #ffffff15',
+                          display: 'flex', alignItems: 'center', justifyContent: 'center',
+                        }}>
+                          <span style={{ fontSize: hexW * 0.2 }}>🎲</span>
+                        </div>
+                      </div>
+                    );
+                  })}
                 </div>
-              );
-            })}
+              ));
+            })()}
+          </div>
 
-            {/* Custom character slot */}
-            <div
-              onClick={() => { setShowCustomMenu(true); playConfirmSound(); }}
-              onMouseEnter={() => setHoveredIdx(null)}
-              style={{
-                width: 'clamp(80px, 12vw, 120px)',
-                height: 'clamp(100px, 15vw, 150px)',
-                cursor: 'pointer', position: 'relative',
-                background: 'linear-gradient(135deg, rgba(15,15,40,0.9), rgba(10,10,30,0.95))',
-                border: '1px solid rgba(255,255,0,0.15)',
-                display: 'flex', flexDirection: 'column', alignItems: 'center',
-                justifyContent: 'center', gap: 6, transition: 'all 0.25s',
-              }}
-              
-            >
-              <div style={{
-                width: 'clamp(35px, 5vw, 55px)', height: 'clamp(35px, 5vw, 55px)', borderRadius: '50%',
-                background: 'linear-gradient(135deg, #33333380, #55555580)',
-                border: '2px solid #ffff0060',
-                boxShadow: '0 0 20px #ffff0020',
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-              }}>
-                <span style={{ color: '#ffff00', fontSize: 'clamp(16px, 3vw, 28px)', fontWeight: 900, fontFamily: "'Orbitron', monospace" }}>?</span>
-              </div>
-              <div style={{
-                color: 'rgba(255,255,0,0.6)', fontFamily: "'Orbitron', monospace",
-                fontSize: 'clamp(6px, 0.9vw, 9px)', letterSpacing: 2,
-              }}>CUSTOM</div>
-            </div>
-
-            {/* Random selector */}
-            <div
-              onClick={handleRandomSelect}
-              onMouseEnter={() => setHoveredIdx(null)}
-              style={{
-                width: 'clamp(80px, 12vw, 120px)',
-                height: 'clamp(100px, 15vw, 150px)',
-                cursor: 'pointer', position: 'relative',
-                background: 'linear-gradient(135deg, rgba(15,15,40,0.9), rgba(10,10,30,0.95))',
-                border: '1px solid rgba(255,255,255,0.08)',
-                display: 'flex', flexDirection: 'column', alignItems: 'center',
-                justifyContent: 'center', gap: 6, transition: 'all 0.25s',
-              }}
-            >
-              <div style={{
-                width: 'clamp(35px, 5vw, 55px)', height: 'clamp(35px, 5vw, 55px)', borderRadius: '50%',
-                background: 'linear-gradient(135deg, #ff008880, #00ffff80, #ffff0080)',
-                border: '2px solid #ffffff40',
-                boxShadow: '0 0 15px #ffffff20',
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-              }}>
-                <span style={{ fontSize: 'clamp(14px, 2.5vw, 22px)' }}>🎲</span>
-              </div>
-              <div style={{
-                color: 'rgba(255,255,255,0.5)', fontFamily: "'Orbitron', monospace",
-                fontSize: 'clamp(6px, 0.9vw, 9px)', letterSpacing: 2,
-              }}>RANDOM</div>
-            </div>
+          {/* Character name below grid */}
+          <div style={{
+            marginTop: 18, height: 30,
+            color: hoveredIdx !== null && hoveredIdx >= 0 && hoveredIdx < charRenderData.length
+              ? charRenderData[hoveredIdx].eyeColor
+              : 'rgba(255,255,255,0.3)',
+            fontFamily: "'Orbitron', monospace",
+            fontSize: 'clamp(14px, 2.2vw, 22px)',
+            letterSpacing: 5, fontWeight: 900,
+            textShadow: hoveredIdx !== null && hoveredIdx >= 0 && hoveredIdx < charRenderData.length
+              ? `0 0 20px ${charRenderData[hoveredIdx].eyeColor}60`
+              : 'none',
+            transition: 'all 0.2s',
+          }}>
+            {hoveredIdx !== null && hoveredIdx >= 0 && hoveredIdx < charRenderData.length
+              ? charRenderData[hoveredIdx].name
+              : ''}
           </div>
         </div>
 

@@ -45,8 +45,40 @@ export class Projectile {
     ctx.rotate(this.angle);
     ctx.shadowBlur = 15; ctx.shadowColor = this.color; ctx.fillStyle = this.color;
     if (this.type === 'rhombus') {
-      ctx.beginPath(); ctx.moveTo(0, -12); ctx.lineTo(18, 0);
-      ctx.lineTo(0, 12); ctx.lineTo(-18, 0); ctx.fill();
+      // Crystal gem shape (horizontal, like a brilliant)
+      const s = 14;
+      // Main body - hexagonal crystal rotated 90 degrees (horizontal)
+      const grad = ctx.createLinearGradient(-s * 1.3, 0, s * 1.3, 0);
+      grad.addColorStop(0, '#6688ff');
+      grad.addColorStop(0.3, '#00ddff');
+      grad.addColorStop(0.5, '#aaeeff');
+      grad.addColorStop(0.7, '#00ccff');
+      grad.addColorStop(1, '#4466ee');
+      ctx.fillStyle = grad;
+      // Left point → top-left facet → top-right facet → right point → bottom-right → bottom-left
+      ctx.beginPath();
+      ctx.moveTo(-s * 1.3, 0);         // left tip
+      ctx.lineTo(-s * 0.5, -s * 0.7);  // upper-left
+      ctx.lineTo(s * 0.5, -s * 0.7);   // upper-right
+      ctx.lineTo(s * 1.3, 0);          // right tip
+      ctx.lineTo(s * 0.5, s * 0.7);    // lower-right
+      ctx.lineTo(-s * 0.5, s * 0.7);   // lower-left
+      ctx.closePath();
+      ctx.fill();
+      // Facet lines
+      ctx.strokeStyle = 'rgba(255,255,255,0.4)'; ctx.lineWidth = 1;
+      ctx.beginPath(); ctx.moveTo(-s * 1.3, 0); ctx.lineTo(0, -s * 0.3); ctx.lineTo(s * 1.3, 0); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(-s * 1.3, 0); ctx.lineTo(0, s * 0.3); ctx.lineTo(s * 1.3, 0); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(0, -s * 0.7); ctx.lineTo(0, s * 0.7); ctx.stroke();
+      // Highlight
+      ctx.globalAlpha = 0.5;
+      ctx.fillStyle = '#ffffff';
+      ctx.beginPath(); ctx.moveTo(-s * 0.5, -s * 0.7); ctx.lineTo(0, -s * 0.3); ctx.lineTo(s * 0.5, -s * 0.7); ctx.closePath(); ctx.fill();
+      // Outer glow
+      ctx.globalAlpha = 0.25;
+      ctx.fillStyle = '#00ccff';
+      ctx.beginPath(); ctx.arc(0, 0, s * 1.8, 0, Math.PI * 2); ctx.fill();
+      ctx.globalAlpha = 1;
     } else {
       ctx.beginPath(); ctx.arc(0, 0, 10, 0, Math.PI * 2); ctx.fill();
       ctx.fillStyle = '#fff'; ctx.beginPath(); ctx.arc(-3, -3, 3, 0, Math.PI * 2); ctx.fill();

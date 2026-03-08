@@ -1639,121 +1639,107 @@ const CharacterSelect: React.FC = () => {
         const ch = CHAR_DATA[skinSelectFor.charIdx];
         return (
           <div style={{
-            position: 'fixed', top: 0, right: 0, bottom: 0, width: 'clamp(280px, 30vw, 400px)',
-            zIndex: 60, display: 'flex', flexDirection: 'column',
-            background: 'linear-gradient(180deg, rgba(4,10,30,0.97), rgba(2,6,20,0.99))',
-            borderLeft: '2px solid rgba(80,160,255,0.3)',
-            boxShadow: '-10px 0 40px rgba(0,0,0,0.5), -2px 0 20px rgba(60,140,255,0.1)',
-            animation: 'skinPanelSlide 0.4s cubic-bezier(0.16,1,0.3,1)',
+            position: 'fixed', inset: 0, zIndex: 60,
+            display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+            background: 'rgba(0,0,0,0.92)',
             backdropFilter: 'blur(20px)',
+            animation: 'fadeIn 0.3s ease-out',
           }}>
-            {/* Panel header */}
-            <div style={{
-              padding: '20px 20px 12px', borderBottom: '1px solid rgba(80,160,255,0.15)',
-            }}>
+            {/* Header */}
+            <div style={{ textAlign: 'center', marginBottom: 24 }}>
               <div style={{
                 fontFamily: "'Orbitron', monospace", fontSize: 10, letterSpacing: 4,
                 color: 'rgba(100,180,255,0.5)', marginBottom: 6,
               }}>▸ PLAYER {skinSelectFor.pNum}</div>
               <h2 style={{
                 fontFamily: "'Orbitron', monospace",
-                fontSize: 'clamp(16px, 2.5vw, 22px)', fontWeight: 900, letterSpacing: 6,
-                background: 'linear-gradient(180deg, #e8f4ff, #5a9ae0 70%)',
-                WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
-                filter: 'drop-shadow(0 0 8px rgba(80,160,255,0.3))',
-                marginBottom: 2,
+                fontSize: 'clamp(18px, 3vw, 28px)', fontWeight: 900, letterSpacing: 6,
+                color: '#7ab8ff',
+                textShadow: '0 0 20px rgba(80,160,255,0.4)',
+                marginBottom: 4,
               }}>SELECCIONAR ESTILO</h2>
               <div style={{
-                fontFamily: "'Orbitron', monospace", fontSize: 12, letterSpacing: 2,
-                color: '#7ab8ff', marginBottom: 8,
+                fontFamily: "'Orbitron', monospace", fontSize: 14, letterSpacing: 3,
+                color: '#aad4ff',
               }}>{ch.name}</div>
               <div style={{
-                width: 80, height: 2,
-                background: 'linear-gradient(90deg, rgba(100,180,255,0.6), transparent)',
+                margin: '8px auto 0', width: 80, height: 2,
+                background: 'linear-gradient(90deg, transparent, rgba(100,180,255,0.6), transparent)',
               }} />
             </div>
 
             {/* Skin list */}
-            <div style={{ flex: 1, overflowY: 'auto', padding: '12px 16px' }}>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-                {skins.map((skin, idx) => {
-                  const renderCh = charRenderData[skinSelectFor.charIdx];
-                  const overrides = skin.id ? SKIN_COLOR_MAP[ch.name]?.[skin.id] : null;
-                  const previewData = overrides ? { ...renderCh, ...overrides } : renderCh;
-                  const isActive = previewSkinId === skin.id;
-                  const isSpecial = !!skin.id;
-                  return (
-                    <button key={skin.id || 'original'} onClick={() => handleSkinConfirm(skin.id)}
-                      style={{
-                        display: 'flex', alignItems: 'center', gap: 12,
-                        border: `2px solid ${isActive ? '#7ab8ff' : 'rgba(80,150,255,0.12)'}`,
-                        background: isActive
-                          ? 'linear-gradient(135deg, rgba(20,40,80,0.95), rgba(15,30,60,0.95))'
-                          : 'linear-gradient(135deg, rgba(8,18,40,0.85), rgba(4,12,30,0.92))',
-                        padding: '8px 12px', cursor: 'pointer',
-                        fontFamily: "'Orbitron', monospace",
-                        transition: 'all 0.3s cubic-bezier(0.16,1,0.3,1)',
-                        textAlign: 'left', width: '100%', borderRadius: 3,
-                        boxShadow: isActive ? '0 0 20px rgba(60,140,255,0.15)' : 'none',
-                        
-                      }}
-                      onMouseEnter={e => {
-                        if (!isActive) {
-                          e.currentTarget.style.borderColor = 'rgba(100,180,255,0.5)';
-                          e.currentTarget.style.transform = 'translateX(-4px)';
-                        }
-                      }}
-                      onMouseLeave={e => {
-                        if (!isActive) {
-                          e.currentTarget.style.borderColor = 'rgba(80,150,255,0.12)';
-                          e.currentTarget.style.transform = 'translateX(0)';
-                        }
-                      }}
-                    >
+            <div style={{ maxWidth: 500, width: '90%', maxHeight: '50vh', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: 8 }}>
+              {skins.map((skin) => {
+                const renderCh = charRenderData[skinSelectFor.charIdx];
+                const overrides = skin.id ? SKIN_COLOR_MAP[ch.name]?.[skin.id] : null;
+                const previewData = overrides ? { ...renderCh, ...overrides } : renderCh;
+                const isActive = previewSkinId === skin.id;
+                const isSpecial = !!skin.id;
+                return (
+                  <button key={skin.id || 'original'} onClick={() => handleSkinConfirm(skin.id)}
+                    style={{
+                      display: 'flex', alignItems: 'center', gap: 14,
+                      border: `2px solid ${isActive ? '#7ab8ff' : 'rgba(80,150,255,0.15)'}`,
+                      background: isActive
+                        ? 'linear-gradient(135deg, rgba(20,40,80,0.95), rgba(15,30,60,0.95))'
+                        : 'linear-gradient(135deg, rgba(8,18,40,0.85), rgba(4,12,30,0.92))',
+                      padding: '10px 16px', cursor: 'pointer',
+                      fontFamily: "'Orbitron', monospace",
+                      transition: 'all 0.3s',
+                      textAlign: 'left', width: '100%', borderRadius: 4,
+                      boxShadow: isActive ? '0 0 25px rgba(60,140,255,0.2)' : 'none',
+                    }}
+                    onMouseEnter={e => {
+                      if (!isActive) {
+                        e.currentTarget.style.borderColor = 'rgba(100,180,255,0.5)';
+                        e.currentTarget.style.transform = 'scale(1.02)';
+                      }
+                    }}
+                    onMouseLeave={e => {
+                      if (!isActive) {
+                        e.currentTarget.style.borderColor = 'rgba(80,150,255,0.15)';
+                        e.currentTarget.style.transform = 'scale(1)';
+                      }
+                    }}
+                  >
+                    <div style={{
+                      flexShrink: 0, border: `1px solid ${isActive ? 'rgba(120,180,255,0.3)' : 'rgba(60,100,180,0.1)'}`,
+                      display: 'flex', alignItems: 'center', justifyContent: 'center',
+                      padding: 3, borderRadius: 4,
+                      background: 'radial-gradient(circle, rgba(30,60,120,0.2), transparent)',
+                    }}>
+                      <CanvasPortrait char={previewData} size={50} isSelected={isActive} facing={1} />
+                    </div>
+                    <div style={{ flex: 1, minWidth: 0 }}>
                       <div style={{
-                        flexShrink: 0, border: `1px solid ${isActive ? 'rgba(120,180,255,0.2)' : 'rgba(60,100,180,0.1)'}`,
-                        display: 'flex', alignItems: 'center', justifyContent: 'center',
-                        padding: 2, borderRadius: 4,
-                        background: 'radial-gradient(circle, rgba(30,60,120,0.2), transparent)',
-                      }}>
-                        <CanvasPortrait char={previewData} size={50} isSelected={isActive} facing={1} />
-                      </div>
-                      <div style={{ flex: 1, minWidth: 0 }}>
-                        <div style={{
-                          fontSize: 13, letterSpacing: 2, fontWeight: 800,
-                          background: isActive
-                            ? 'linear-gradient(135deg, #ffffff, #a0d0ff)'
-                            : isSpecial
-                              ? 'linear-gradient(135deg, #ffffff, #90c8ff)'
-                              : 'linear-gradient(180deg, #c0d8f0, #7aa0c8)',
-                          WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
-                        }}>{skin.name}</div>
-                        <span style={{
-                          fontSize: 8, letterSpacing: 2, fontWeight: 600,
-                          color: isSpecial ? '#5a9ae0' : '#3a5a7a',
-                        }}>{isSpecial ? 'ESPECIAL' : 'BASE'}</span>
-                      </div>
-                      {isActive && <span style={{ color: '#7ab8ff', fontSize: 14, fontWeight: 900 }}>✓</span>}
-                    </button>
-                  );
-                })}
-              </div>
+                        fontSize: 14, letterSpacing: 2, fontWeight: 800,
+                        color: isActive ? '#ffffff' : isSpecial ? '#c0d8ff' : '#8aaac8',
+                      }}>{skin.name}</div>
+                      <span style={{
+                        fontSize: 9, letterSpacing: 2, fontWeight: 600,
+                        color: isSpecial ? '#5a9ae0' : '#3a5a7a',
+                      }}>{isSpecial ? 'ESPECIAL' : 'BASE'}</span>
+                    </div>
+                    {isActive && <span style={{ color: '#7ab8ff', fontSize: 16, fontWeight: 900 }}>✓</span>}
+                  </button>
+                );
+              })}
             </div>
 
-            {/* Panel actions */}
+            {/* Actions */}
             <div style={{
-              padding: '12px 16px', borderTop: '1px solid rgba(80,160,255,0.15)',
-              display: 'flex', gap: 10, justifyContent: 'flex-end',
+              marginTop: 24, display: 'flex', gap: 14, justifyContent: 'center',
             }}>
               <button onClick={handleSkinCancel} style={{
-                padding: '7px 20px', background: 'rgba(180,40,40,0.08)',
-                border: '1px solid rgba(255,70,70,0.2)', color: '#cc5555',
+                padding: '9px 28px', background: 'rgba(180,40,40,0.1)',
+                border: '2px solid rgba(255,70,70,0.3)', color: '#cc5555',
                 cursor: 'pointer', fontFamily: "'Orbitron', monospace",
-                fontSize: 10, fontWeight: 700, letterSpacing: 3, borderRadius: 2,
+                fontSize: 11, fontWeight: 700, letterSpacing: 3, borderRadius: 3,
                 transition: 'all 0.3s',
               }}
-              onMouseEnter={e => { e.currentTarget.style.background = 'rgba(200,40,40,0.15)'; e.currentTarget.style.borderColor = 'rgba(255,80,80,0.45)'; }}
-              onMouseLeave={e => { e.currentTarget.style.background = 'rgba(180,40,40,0.08)'; e.currentTarget.style.borderColor = 'rgba(255,70,70,0.2)'; }}
+              onMouseEnter={e => { e.currentTarget.style.background = 'rgba(200,40,40,0.2)'; e.currentTarget.style.borderColor = 'rgba(255,80,80,0.5)'; }}
+              onMouseLeave={e => { e.currentTarget.style.background = 'rgba(180,40,40,0.1)'; e.currentTarget.style.borderColor = 'rgba(255,70,70,0.3)'; }}
               >CANCELAR</button>
               <button onClick={() => {
                 playConfirmSound();
@@ -1763,24 +1749,21 @@ const CharacterSelect: React.FC = () => {
                 setSkinSelectFor(null);
                 setPreviewSkinId(null);
               }} style={{
-                padding: '7px 20px',
-                background: 'linear-gradient(135deg, rgba(40,100,200,0.15), rgba(30,80,160,0.1))',
-                border: '1px solid rgba(80,160,255,0.4)', color: '#7ab8ff',
+                padding: '9px 28px',
+                background: 'linear-gradient(135deg, rgba(40,100,200,0.2), rgba(30,80,160,0.12))',
+                border: '2px solid rgba(80,160,255,0.5)', color: '#7ab8ff',
                 cursor: 'pointer', fontFamily: "'Orbitron', monospace",
-                fontSize: 10, fontWeight: 700, letterSpacing: 3, borderRadius: 2,
+                fontSize: 11, fontWeight: 700, letterSpacing: 3, borderRadius: 3,
                 transition: 'all 0.3s',
               }}
-              onMouseEnter={e => { e.currentTarget.style.background = 'linear-gradient(135deg, rgba(40,100,200,0.3), rgba(30,80,160,0.2))'; e.currentTarget.style.borderColor = 'rgba(100,180,255,0.7)'; }}
-              onMouseLeave={e => { e.currentTarget.style.background = 'linear-gradient(135deg, rgba(40,100,200,0.15), rgba(30,80,160,0.1))'; e.currentTarget.style.borderColor = 'rgba(80,160,255,0.4)'; }}
+              onMouseEnter={e => { e.currentTarget.style.background = 'linear-gradient(135deg, rgba(40,100,200,0.35), rgba(30,80,160,0.25))'; e.currentTarget.style.borderColor = 'rgba(100,180,255,0.8)'; }}
+              onMouseLeave={e => { e.currentTarget.style.background = 'linear-gradient(135deg, rgba(40,100,200,0.2), rgba(30,80,160,0.12))'; e.currentTarget.style.borderColor = 'rgba(80,160,255,0.5)'; }}
               >CONFIRMAR</button>
             </div>
           </div>
         );
       })()}
 
-      <style>{`
-        @keyframes skinPanelSlide { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
-      `}</style>
 
       {/* === BOTTOM BAR === */}
       <div style={{

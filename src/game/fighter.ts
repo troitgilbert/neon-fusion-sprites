@@ -38,6 +38,10 @@ export class Fighter {
   _agarreVy: number;
   _agarreBounces: number;
   _pendingCohete: boolean;
+  // Animation states
+  introAnim: number; // 0 = done, >0 = frames remaining
+  resultAnim: number; // 0 = none, >0 = frames
+  resultType: 'win' | 'lose' | 'draw' | null;
   constructor(id: number, charIdx: number, x: number, side: number, controls: Controls, isAI = false, skinId: string | null = null, customData: CustomCharData | null = null) {
     this.id = id; this.charIdx = charIdx;
     this.customData = customData;
@@ -76,6 +80,9 @@ export class Fighter {
     this._agarreVy = 0;
     this._agarreBounces = 0;
     this._pendingCohete = false;
+    this.introAnim = 90; // 1.5 seconds at 60fps
+    this.resultAnim = 0;
+    this.resultType = null;
   }
 
   reset(x: number, side: number) {
@@ -89,6 +96,9 @@ export class Fighter {
     this.isCrouching = false; this.emoteTimer = 0;
     this._invocationActive = false; this._pendingImpactoCristalico = false;
     this._agarreActive = false; this._agarreVx = 0; this._agarreVy = 0; this._agarreBounces = 0;
+    this.introAnim = 90;
+    this.resultAnim = 0;
+    this.resultType = null;
     this._pendingCohete = false;
   }
 
@@ -1014,6 +1024,20 @@ export class Fighter {
   }
 
   draw(ctx: CanvasRenderingContext2D, game: any) {
+    // Handle intro animation for Edowado
+    if (this.introAnim > 0 && this.charIdx === 0 && !this.customData) {
+      this._drawIntroAnimation(ctx, game);
+      this.introAnim--;
+      return;
+    }
+
+    // Handle result animations
+    if (this.resultAnim > 0 && this.charIdx === 0 && !this.customData) {
+      this._drawResultAnimation(ctx, game);
+      this.resultAnim--;
+      return;
+    }
+
     ctx.save();
 
     // Block shield (scaled to match smaller character)
@@ -1062,6 +1086,317 @@ export class Fighter {
     if (this.emoteTimer > 0) {
       this._drawEmote(ctx);
     }
+  }
+
+  _drawIntroAnimation(ctx: CanvasRenderingContext2D, game: any) {
+    const progress = 1 - (this.introAnim / 90); // 0 to 1
+    ctx.save();
+
+    // Edowado intro: Falls from above with golden aura, lands with impact pose
+    const startY = -100;
+    const endY = this.y;
+    const fallProgress = Math.min(1, progress * 1.8); // Fast fall
+    const currentY = startY + (endY - startY) * this._easeOutBounce(fallProgress);
+    
+    // Golden energy trail during fall
+    if (progress < 0.6) {
+      ctx.globalAlpha = 0.4 * (1 - progress);
+      for (let i = 0; i < 5; i++) {
+        const trailY = currentY - i * 20 - 10;
+        if (trailY > startY) {
+          const glow = ctx.createRadialGradient(this.x, trailY, 0, this.x, trailY, 25 - i * 4);
+          glow.addColorStop(0, '#ffd700');
+          glow.addColorStop(0.5, '#ff8800');
+          glow.addColorStop(1, 'transparent');
+          ctx.fillStyle = glow;
+          ctx.fillRect(this.x - 30, trailY - 30, 60, 60);
+        }
+      }
+    }
+
+    // Landing impact effects
+    if (progress > 0.5 && progress < 0.7) {
+      const impactProgress = (progress - 0.5) / 0.2;
+      ctx.globalAlpha = 1 - impactProgress;
+      ctx.strokeStyle = '#ffd700';
+      ctx.lineWidth = 3;
+      ctx.beginPath();
+      ctx.arc(this.x, endY + 15, 30 + impactProgress * 50, 0, Math.PI * 2);
+      ctx.stroke();
+      // Ground crack lines
+      for (let i = 0; i < 6; i++) {
+        const angle = (i / 6) * Math.PI - Math.PI / 2;
+        const len = 20 + impactProgress * 40;
+        ctx.beginPath();
+        ctx.moveTo(this.x, endY + 15);
+        ctx.lineTo(this.x + Math.cos(angle) * len, endY + 15 + Math.sin(angle) * len * 0.3);
+        ctx.stroke();
+      }
+    }
+
+    // Draw character
+    ctx.globalAlpha = 1;
+    ctx.translate(this.x, currentY);
+    ctx.scale(this.side * 0.7, 0.7);
+    
+    // Squash on landing
+    if (progress > 0.5 && progress < 0.65) {
+      ctx.scale(1.3, 0.7);
+    } else if (progress > 0.65 && progress < 0.8) {
+      ctx.scale(0.9, 1.1);
+    }
+
+    ctx.translate(-this.x, -currentY);
+
+    // Draw body
+    this._drawEdowadoIntroBody(ctx, currentY, progress);
+
+    ctx.restore();
+  }
+
+  _drawEdowadoIntroBody(ctx: CanvasRenderingContext2D, y: number, progress: number) {
+    // Golden aura
+    ctx.save();
+    ctx.globalAlpha = 0.3 + Math.sin(this.animTimer * 0.15) * 0.15;
+    const aura = ctx.createRadialGradient(this.x, y, 0, this.x, y, 45);
+    aura.addColorStop(0, 'rgba(255, 215, 0, 0.6)');
+    aura.addColorStop(0.5, 'rgba(255, 140, 0, 0.3)');
+    aura.addColorStop(1, 'transparent');
+    ctx.fillStyle = aura;
+    ctx.beginPath(); ctx.arc(this.x, y, 45, 0, Math.PI * 2); ctx.fill();
+    ctx.restore();
+
+    // Body
+    ctx.beginPath(); ctx.arc(this.x, y, 25, 0, Math.PI * 2);
+    ctx.fillStyle = '#d4af37'; ctx.fill();
+    ctx.strokeStyle = '#222222'; ctx.lineWidth = 2; ctx.stroke();
+
+    // Clothes
+    ctx.beginPath(); (ctx as any).roundRect(this.x - 25, y, 50, 11, 0);
+    ctx.fillStyle = '#1a1a2e'; ctx.fill(); ctx.stroke();
+
+    // Pants
+    ctx.save(); ctx.translate(this.x, y + 11); ctx.scale(1, 0.6);
+    ctx.beginPath(); ctx.arc(0, 0, 23, 0, Math.PI);
+    ctx.fillStyle = '#0f0f1a'; ctx.fill(); ctx.stroke(); ctx.restore();
+
+    // Hair
+    ctx.save(); ctx.translate(this.x, y - 10); ctx.scale(1, 0.7);
+    ctx.beginPath(); ctx.arc(0, 0, 22, Math.PI, 0);
+    ctx.fillStyle = '#222222'; ctx.fill(); ctx.stroke(); ctx.restore();
+
+    // Eyes - intense golden glow
+    ctx.fillStyle = '#ffd700';
+    ctx.shadowBlur = 10; ctx.shadowColor = '#ffd700';
+    ctx.beginPath(); ctx.arc(this.x + 6, y - 6, 3, 0, Math.PI * 2); ctx.fill();
+    ctx.beginPath(); ctx.arc(this.x + 14, y - 6, 3, 0, Math.PI * 2); ctx.fill();
+    ctx.shadowBlur = 0;
+
+    // Hands - raised fist pose during fall, impact pose on land
+    const handColor = '#d4af37';
+    ctx.fillStyle = handColor;
+    ctx.strokeStyle = '#222222'; ctx.lineWidth = 2;
+    
+    if (progress < 0.5) {
+      // Falling - both fists up
+      ctx.beginPath(); ctx.arc(this.x - 20, y - 25, 6, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+      ctx.beginPath(); ctx.arc(this.x + 20, y - 25, 6, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+    } else {
+      // Landing - one fist down, one raised
+      ctx.beginPath(); ctx.arc(this.x - 25, y + 10, 6, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+      ctx.beginPath(); ctx.arc(this.x + 30, y - 20, 6, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+    }
+  }
+
+  _drawResultAnimation(ctx: CanvasRenderingContext2D, game: any) {
+    const progress = 1 - (this.resultAnim / 120); // 0 to 1
+    ctx.save();
+
+    if (this.resultType === 'win') {
+      this._drawWinAnimation(ctx, progress);
+    } else if (this.resultType === 'lose') {
+      this._drawLoseAnimation(ctx, progress);
+    } else if (this.resultType === 'draw') {
+      this._drawDrawAnimation(ctx, progress);
+    }
+
+    ctx.restore();
+  }
+
+  _drawWinAnimation(ctx: CanvasRenderingContext2D, progress: number) {
+    // Victory pose: Edowado raises both fists, golden explosion around him
+    const bounce = Math.sin(progress * Math.PI * 4) * 5 * (1 - progress);
+    const y = this.y - bounce;
+
+    // Expanding golden rings
+    for (let i = 0; i < 3; i++) {
+      const ringProgress = (progress + i * 0.2) % 1;
+      ctx.globalAlpha = 0.5 * (1 - ringProgress);
+      ctx.strokeStyle = '#ffd700';
+      ctx.lineWidth = 4 - ringProgress * 3;
+      ctx.beginPath();
+      ctx.arc(this.x, y, 30 + ringProgress * 80, 0, Math.PI * 2);
+      ctx.stroke();
+    }
+
+    // Sparkles
+    ctx.globalAlpha = 1;
+    for (let i = 0; i < 12; i++) {
+      const angle = (i / 12) * Math.PI * 2 + progress * 3;
+      const dist = 40 + Math.sin(progress * 8 + i) * 20;
+      const sx = this.x + Math.cos(angle) * dist;
+      const sy = y + Math.sin(angle) * dist * 0.6;
+      ctx.fillStyle = i % 2 === 0 ? '#ffd700' : '#ffffff';
+      ctx.beginPath(); ctx.arc(sx, sy, 2 + Math.random() * 2, 0, Math.PI * 2); ctx.fill();
+    }
+
+    // Body with victory stretch
+    ctx.translate(this.x, y);
+    ctx.scale(this.side * 0.7, 0.7 * (1 + Math.sin(progress * Math.PI) * 0.1));
+    ctx.translate(-this.x, -y);
+
+    // Body
+    ctx.beginPath(); ctx.arc(this.x, y, 25, 0, Math.PI * 2);
+    ctx.fillStyle = '#d4af37'; ctx.fill();
+    ctx.strokeStyle = '#222222'; ctx.lineWidth = 2; ctx.stroke();
+
+    // Clothes & pants
+    ctx.beginPath(); (ctx as any).roundRect(this.x - 25, y, 50, 11, 0);
+    ctx.fillStyle = '#1a1a2e'; ctx.fill(); ctx.stroke();
+    ctx.save(); ctx.translate(this.x, y + 11); ctx.scale(1, 0.6);
+    ctx.beginPath(); ctx.arc(0, 0, 23, 0, Math.PI);
+    ctx.fillStyle = '#0f0f1a'; ctx.fill(); ctx.stroke(); ctx.restore();
+
+    // Hair
+    ctx.save(); ctx.translate(this.x, y - 10); ctx.scale(1, 0.7);
+    ctx.beginPath(); ctx.arc(0, 0, 22, Math.PI, 0);
+    ctx.fillStyle = '#222222'; ctx.fill(); ctx.stroke(); ctx.restore();
+
+    // Happy eyes - closed in smile
+    ctx.strokeStyle = '#ffd700'; ctx.lineWidth = 2;
+    ctx.beginPath(); ctx.arc(this.x + 6, y - 6, 4, Math.PI, 0); ctx.stroke();
+    ctx.beginPath(); ctx.arc(this.x + 14, y - 6, 4, Math.PI, 0); ctx.stroke();
+
+    // Both fists raised high
+    ctx.fillStyle = '#d4af37';
+    ctx.strokeStyle = '#222222'; ctx.lineWidth = 2;
+    const fistY = y - 35 - Math.sin(progress * Math.PI * 6) * 5;
+    ctx.beginPath(); ctx.arc(this.x - 25, fistY, 7, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+    ctx.beginPath(); ctx.arc(this.x + 25, fistY, 7, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+  }
+
+  _drawLoseAnimation(ctx: CanvasRenderingContext2D, progress: number) {
+    // Defeat: Edowado falls to knees, head down
+    const fallProgress = Math.min(1, progress * 2);
+    const kneelY = this.y + this._easeOutQuad(fallProgress) * 15;
+
+    // Dark aura fading
+    ctx.globalAlpha = 0.3 * (1 - progress);
+    const darkAura = ctx.createRadialGradient(this.x, kneelY, 0, this.x, kneelY, 50);
+    darkAura.addColorStop(0, 'rgba(50, 0, 0, 0.5)');
+    darkAura.addColorStop(1, 'transparent');
+    ctx.fillStyle = darkAura;
+    ctx.fillRect(this.x - 60, kneelY - 60, 120, 120);
+
+    ctx.globalAlpha = 1;
+    ctx.translate(this.x, kneelY);
+    ctx.scale(this.side * 0.7, 0.7 * (1 - fallProgress * 0.2)); // Squash down
+    ctx.translate(-this.x, -kneelY);
+
+    // Body - slightly grayed out
+    ctx.globalAlpha = 0.8;
+    ctx.beginPath(); ctx.arc(this.x, kneelY, 25, 0, Math.PI * 2);
+    ctx.fillStyle = '#a08020'; ctx.fill(); // Dimmed gold
+    ctx.strokeStyle = '#222222'; ctx.lineWidth = 2; ctx.stroke();
+
+    // Clothes
+    ctx.beginPath(); (ctx as any).roundRect(this.x - 25, kneelY, 50, 11, 0);
+    ctx.fillStyle = '#1a1a2e'; ctx.fill(); ctx.stroke();
+
+    // Collapsed pants
+    ctx.save(); ctx.translate(this.x, kneelY + 11); ctx.scale(1.2, 0.4);
+    ctx.beginPath(); ctx.arc(0, 0, 23, 0, Math.PI);
+    ctx.fillStyle = '#0f0f1a'; ctx.fill(); ctx.stroke(); ctx.restore();
+
+    // Hair - drooped
+    ctx.save(); ctx.translate(this.x, kneelY - 5); ctx.scale(1, 0.9);
+    ctx.beginPath(); ctx.arc(0, 0, 22, Math.PI, 0);
+    ctx.fillStyle = '#222222'; ctx.fill(); ctx.stroke(); ctx.restore();
+
+    // Closed/sad eyes
+    ctx.strokeStyle = '#996600'; ctx.lineWidth = 2;
+    ctx.beginPath(); ctx.arc(this.x + 6, kneelY - 4, 3, 0, Math.PI); ctx.stroke();
+    ctx.beginPath(); ctx.arc(this.x + 14, kneelY - 4, 3, 0, Math.PI); ctx.stroke();
+
+    // Hands on ground
+    ctx.fillStyle = '#a08020';
+    ctx.strokeStyle = '#222222'; ctx.lineWidth = 2;
+    ctx.beginPath(); ctx.arc(this.x - 30, kneelY + 20, 5, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+    ctx.beginPath(); ctx.arc(this.x + 30, kneelY + 20, 5, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+  }
+
+  _drawDrawAnimation(ctx: CanvasRenderingContext2D, progress: number) {
+    // Draw/tie: Arms crossed, neutral stance, fading gray effect
+    const pulse = Math.sin(progress * Math.PI * 4) * 0.1;
+
+    // Gray pulsing aura
+    ctx.globalAlpha = 0.2 + pulse;
+    const grayAura = ctx.createRadialGradient(this.x, this.y, 0, this.x, this.y, 50);
+    grayAura.addColorStop(0, 'rgba(150, 150, 150, 0.4)');
+    grayAura.addColorStop(1, 'transparent');
+    ctx.fillStyle = grayAura;
+    ctx.fillRect(this.x - 60, this.y - 60, 120, 120);
+
+    ctx.globalAlpha = 0.7 + progress * 0.3;
+    ctx.translate(this.x, this.y);
+    ctx.scale(this.side * 0.7, 0.7);
+    ctx.translate(-this.x, -this.y);
+
+    // Body - slightly desaturated
+    ctx.beginPath(); ctx.arc(this.x, this.y, 25, 0, Math.PI * 2);
+    ctx.fillStyle = '#b09940'; ctx.fill();
+    ctx.strokeStyle = '#222222'; ctx.lineWidth = 2; ctx.stroke();
+
+    // Clothes
+    ctx.beginPath(); (ctx as any).roundRect(this.x - 25, this.y, 50, 11, 0);
+    ctx.fillStyle = '#1a1a2e'; ctx.fill(); ctx.stroke();
+
+    // Pants
+    ctx.save(); ctx.translate(this.x, this.y + 11); ctx.scale(1, 0.6);
+    ctx.beginPath(); ctx.arc(0, 0, 23, 0, Math.PI);
+    ctx.fillStyle = '#0f0f1a'; ctx.fill(); ctx.stroke(); ctx.restore();
+
+    // Hair
+    ctx.save(); ctx.translate(this.x, this.y - 10); ctx.scale(1, 0.7);
+    ctx.beginPath(); ctx.arc(0, 0, 22, Math.PI, 0);
+    ctx.fillStyle = '#222222'; ctx.fill(); ctx.stroke(); ctx.restore();
+
+    // Neutral eyes - half closed
+    ctx.fillStyle = '#b09940';
+    ctx.beginPath(); ctx.arc(this.x + 6, this.y - 6, 3, 0, Math.PI * 2); ctx.fill();
+    ctx.beginPath(); ctx.arc(this.x + 14, this.y - 6, 3, 0, Math.PI * 2); ctx.fill();
+    // Eyelids half-closed
+    ctx.fillStyle = '#222222';
+    ctx.fillRect(this.x + 3, this.y - 10, 6, 4);
+    ctx.fillRect(this.x + 11, this.y - 10, 6, 4);
+
+    // Arms crossed
+    ctx.fillStyle = '#b09940';
+    ctx.strokeStyle = '#222222'; ctx.lineWidth = 2;
+    ctx.beginPath(); ctx.arc(this.x - 8, this.y + 5, 6, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+    ctx.beginPath(); ctx.arc(this.x + 8, this.y + 5, 6, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+  }
+
+  // Easing functions
+  _easeOutBounce(t: number): number {
+    if (t < 1 / 2.75) return 7.5625 * t * t;
+    if (t < 2 / 2.75) return 7.5625 * (t -= 1.5 / 2.75) * t + 0.75;
+    if (t < 2.5 / 2.75) return 7.5625 * (t -= 2.25 / 2.75) * t + 0.9375;
+    return 7.5625 * (t -= 2.625 / 2.75) * t + 0.984375;
+  }
+
+  _easeOutQuad(t: number): number {
+    return t * (2 - t);
   }
 
   _drawStageLighting(ctx: CanvasRenderingContext2D, game: any) {

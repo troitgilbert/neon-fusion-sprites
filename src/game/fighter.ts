@@ -1352,37 +1352,37 @@ export class Fighter {
     ctx.scale(this.side * 0.7, 0.7);
     ctx.translate(-this.x, -this.y);
 
-    // Body - slightly desaturated
+    // PIEL - slightly desaturated
     ctx.beginPath(); ctx.arc(this.x, this.y, 25, 0, Math.PI * 2);
-    ctx.fillStyle = '#b09940'; ctx.fill();
-    ctx.strokeStyle = '#222222'; ctx.lineWidth = 2; ctx.stroke();
+    ctx.fillStyle = '#e0d0a0'; ctx.fill();
+    ctx.strokeStyle = '#000'; ctx.lineWidth = 2; ctx.stroke();
 
-    // Clothes
+    // ROPA - dimmed red
     ctx.beginPath(); (ctx as any).roundRect(this.x - 25, this.y, 50, 11, 0);
-    ctx.fillStyle = '#1a1a2e'; ctx.fill(); ctx.stroke();
+    ctx.fillStyle = '#900000'; ctx.fill(); ctx.stroke();
 
-    // Pants
+    // PANTALONES
     ctx.save(); ctx.translate(this.x, this.y + 11); ctx.scale(1, 0.6);
     ctx.beginPath(); ctx.arc(0, 0, 23, 0, Math.PI);
-    ctx.fillStyle = '#0f0f1a'; ctx.fill(); ctx.stroke(); ctx.restore();
+    ctx.fillStyle = '#000'; ctx.fill(); ctx.stroke(); ctx.restore();
 
-    // Hair
+    // PELO
     ctx.save(); ctx.translate(this.x, this.y - 10); ctx.scale(1, 0.7);
     ctx.beginPath(); ctx.arc(0, 0, 22, Math.PI, 0);
-    ctx.fillStyle = '#222222'; ctx.fill(); ctx.stroke(); ctx.restore();
+    ctx.fillStyle = '#4a2a10'; ctx.fill(); ctx.stroke(); ctx.restore();
 
-    // Neutral eyes - half closed
-    ctx.fillStyle = '#b09940';
-    ctx.beginPath(); ctx.arc(this.x + 6, this.y - 6, 3, 0, Math.PI * 2); ctx.fill();
-    ctx.beginPath(); ctx.arc(this.x + 14, this.y - 6, 3, 0, Math.PI * 2); ctx.fill();
+    // Neutral eyes - half closed, dimmed cyan
+    ctx.fillStyle = '#009999';
+    ctx.beginPath(); ctx.arc(this.x + 2, this.y - 6, 3, 0, Math.PI * 2); ctx.fill();
+    ctx.beginPath(); ctx.arc(this.x + 10, this.y - 6, 3, 0, Math.PI * 2); ctx.fill();
     // Eyelids half-closed
-    ctx.fillStyle = '#222222';
-    ctx.fillRect(this.x + 3, this.y - 10, 6, 4);
-    ctx.fillRect(this.x + 11, this.y - 10, 6, 4);
+    ctx.fillStyle = '#4a2a10';
+    ctx.fillRect(this.x - 1, this.y - 10, 6, 4);
+    ctx.fillRect(this.x + 7, this.y - 10, 6, 4);
 
-    // Arms crossed
-    ctx.fillStyle = '#b09940';
-    ctx.strokeStyle = '#222222'; ctx.lineWidth = 2;
+    // Arms crossed - dimmed golden
+    ctx.fillStyle = '#c09030';
+    ctx.strokeStyle = '#000'; ctx.lineWidth = 2;
     ctx.beginPath(); ctx.arc(this.x - 8, this.y + 5, 6, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
     ctx.beginPath(); ctx.arc(this.x + 8, this.y + 5, 6, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
   }

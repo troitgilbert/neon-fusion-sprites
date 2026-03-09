@@ -97,6 +97,7 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
     announcerText,
     achievementPopup,
     cheatNotification,
+    gilbertUnlocked,
     setGameState
   };
 

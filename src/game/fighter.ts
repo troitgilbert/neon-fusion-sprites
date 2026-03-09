@@ -1303,34 +1303,34 @@ export class Fighter {
     ctx.scale(this.side * 0.7, 0.7 * (1 - fallProgress * 0.2)); // Squash down
     ctx.translate(-this.x, -kneelY);
 
-    // Body - slightly grayed out
+    // PIEL - slightly dimmed
     ctx.globalAlpha = 0.8;
     ctx.beginPath(); ctx.arc(this.x, kneelY, 25, 0, Math.PI * 2);
-    ctx.fillStyle = '#a08020'; ctx.fill(); // Dimmed gold
-    ctx.strokeStyle = '#222222'; ctx.lineWidth = 2; ctx.stroke();
+    ctx.fillStyle = '#d4c4a3'; ctx.fill(); // Dimmed skin
+    ctx.strokeStyle = '#000'; ctx.lineWidth = 2; ctx.stroke();
 
-    // Clothes
+    // ROPA - dimmed red
     ctx.beginPath(); (ctx as any).roundRect(this.x - 25, kneelY, 50, 11, 0);
-    ctx.fillStyle = '#1a1a2e'; ctx.fill(); ctx.stroke();
+    ctx.fillStyle = '#800000'; ctx.fill(); ctx.stroke();
 
-    // Collapsed pants
+    // PANTALONES collapsed
     ctx.save(); ctx.translate(this.x, kneelY + 11); ctx.scale(1.2, 0.4);
     ctx.beginPath(); ctx.arc(0, 0, 23, 0, Math.PI);
-    ctx.fillStyle = '#0f0f1a'; ctx.fill(); ctx.stroke(); ctx.restore();
+    ctx.fillStyle = '#000'; ctx.fill(); ctx.stroke(); ctx.restore();
 
-    // Hair - drooped
+    // PELO - drooped
     ctx.save(); ctx.translate(this.x, kneelY - 5); ctx.scale(1, 0.9);
     ctx.beginPath(); ctx.arc(0, 0, 22, Math.PI, 0);
-    ctx.fillStyle = '#222222'; ctx.fill(); ctx.stroke(); ctx.restore();
+    ctx.fillStyle = '#4a2a10'; ctx.fill(); ctx.stroke(); ctx.restore();
 
-    // Closed/sad eyes
-    ctx.strokeStyle = '#996600'; ctx.lineWidth = 2;
-    ctx.beginPath(); ctx.arc(this.x + 6, kneelY - 4, 3, 0, Math.PI); ctx.stroke();
-    ctx.beginPath(); ctx.arc(this.x + 14, kneelY - 4, 3, 0, Math.PI); ctx.stroke();
+    // Closed/sad eyes - dimmed cyan
+    ctx.strokeStyle = '#008888'; ctx.lineWidth = 2;
+    ctx.beginPath(); ctx.arc(this.x + 2, kneelY - 4, 3, 0, Math.PI); ctx.stroke();
+    ctx.beginPath(); ctx.arc(this.x + 10, kneelY - 4, 3, 0, Math.PI); ctx.stroke();
 
-    // Hands on ground
-    ctx.fillStyle = '#a08020';
-    ctx.strokeStyle = '#222222'; ctx.lineWidth = 2;
+    // MANOS on ground - dimmed golden
+    ctx.fillStyle = '#b09030';
+    ctx.strokeStyle = '#000'; ctx.lineWidth = 2;
     ctx.beginPath(); ctx.arc(this.x - 30, kneelY + 20, 5, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
     ctx.beginPath(); ctx.arc(this.x + 30, kneelY + 20, 5, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
   }

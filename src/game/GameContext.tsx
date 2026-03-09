@@ -75,8 +75,18 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
     engineRef.current.setState(s, mode);
   }, []);
 
+  const contextValue: GameContextType = {
+    engine: engineRef.current,
+    gameState,
+    coins,
+    announcerText,
+    achievementPopup,
+    cheatNotification,
+    setGameState
+  };
+
   return (
-    <GameCtx.Provider value={{ engine: engineRef.current, gameState, coins, announcerText, achievementPopup, cheatNotification, setGameState }}>
+    <GameCtx.Provider value={contextValue}>
       {children}
     </GameCtx.Provider>
   );

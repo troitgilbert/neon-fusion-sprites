@@ -9,6 +9,7 @@ interface GameContextType {
   announcerText: string;
   achievementPopup: Achievement | null;
   cheatNotification: string | null;
+  gilbertUnlocked: boolean;
   setGameState: (s: GameState, mode?: GameMode) => void;
 }
 

@@ -346,6 +346,16 @@ export class GameEngine {
     playKOSound();
     this.trackStat('totalKOs');
 
+    // Trigger result animations for Edowado
+    if (winner.charIdx === 0 && !winner.customData) {
+      winner.resultType = 'win';
+      winner.resultAnim = 120;
+    }
+    if (loser.charIdx === 0 && !loser.customData) {
+      loser.resultType = 'lose';
+      loser.resultAnim = 120;
+    }
+
     if (winner === this.p1 && this.p1!.hp >= 100) this.trackStat('perfectWins');
     if (this.mode === 'survival') this.trackStat('roundsSurvived', this.round);
 
@@ -388,6 +398,35 @@ export class GameEngine {
           this.round = this.p1!.rounds + this.p2!.rounds + 1;
           this.resetRound(); this.state = 'FIGHT';
         }
+      }
+    }, 2000);
+  }
+
+  // Handle draw/timeout
+  roundDraw() {
+    if (this.roundLocked) return;
+    this.roundLocked = true;
+    this.onAnnouncerText?.('EMPATE');
+    this.shake = 15;
+    this.state = 'ROUND_OVER';
+
+    // Trigger draw animations for Edowado
+    if (this.p1 && this.p1.charIdx === 0 && !this.p1.customData) {
+      this.p1.resultType = 'draw';
+      this.p1.resultAnim = 120;
+    }
+    if (this.p2 && this.p2.charIdx === 0 && !this.p2.customData) {
+      this.p2.resultType = 'draw';
+      this.p2.resultAnim = 120;
+    }
+
+    setTimeout(() => {
+      this.round++;
+      if (this.round > 3) {
+        this.onAnnouncerText?.('DOBLE K.O.');
+        setTimeout(() => { this.onAnnouncerText?.(''); stopAmbient(); this.setState('MENU'); }, 3000);
+      } else {
+        this.resetRound(); this.state = 'FIGHT';
       }
     }, 2000);
   }

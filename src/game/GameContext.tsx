@@ -52,8 +52,8 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const handleCheatKey = (e: KeyboardEvent) => {
       const key = e.key.toUpperCase();
       if (key.length === 1 && /[A-Z]/.test(key)) {
+        // DINERO cheat
         cheatBufferRef.current += key;
-        // Keep only last N chars
         if (cheatBufferRef.current.length > CHEAT_CODE.length) {
           cheatBufferRef.current = cheatBufferRef.current.slice(-CHEAT_CODE.length);
         }
@@ -63,6 +63,17 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
           localStorage.setItem('coins', '999999999');
           engine.onCoinsChange?.(999999999);
           setCheatNotification('¡CÓDIGO ACTIVADO!');
+          setTimeout(() => setCheatNotification(null), 3000);
+        }
+        // GILBERT secret
+        secretBufferRef.current += key;
+        if (secretBufferRef.current.length > SECRET_CODE.length) {
+          secretBufferRef.current = secretBufferRef.current.slice(-SECRET_CODE.length);
+        }
+        if (secretBufferRef.current === SECRET_CODE) {
+          secretBufferRef.current = '';
+          setGilbertUnlocked(true);
+          setCheatNotification('🔓 MODO DESARROLLADOR');
           setTimeout(() => setCheatNotification(null), 3000);
         }
       }

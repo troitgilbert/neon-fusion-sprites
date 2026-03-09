@@ -28,6 +28,7 @@ import MinigamesMenu from '../components/MinigamesMenu';
 import DifficultySelect from '../components/DifficultySelect';
 import AdventurePlay from '../components/AdventurePlay';
 import OnlineMenu from '../components/OnlineMenu';
+import DownloadGameButton from '../components/DownloadGameButton';
 import { getDifficultyColor } from '../game/achievements';
 import crystalIcon from '../assets/crystal-icon.png';
 

@@ -1155,47 +1155,47 @@ export class Fighter {
   }
 
   _drawEdowadoIntroBody(ctx: CanvasRenderingContext2D, y: number, progress: number) {
-    // Golden aura
+    // Golden aura effect
     ctx.save();
     ctx.globalAlpha = 0.3 + Math.sin(this.animTimer * 0.15) * 0.15;
     const aura = ctx.createRadialGradient(this.x, y, 0, this.x, y, 45);
-    aura.addColorStop(0, 'rgba(255, 215, 0, 0.6)');
-    aura.addColorStop(0.5, 'rgba(255, 140, 0, 0.3)');
+    aura.addColorStop(0, 'rgba(0, 255, 255, 0.4)');
+    aura.addColorStop(0.5, 'rgba(176, 0, 0, 0.2)');
     aura.addColorStop(1, 'transparent');
     ctx.fillStyle = aura;
     ctx.beginPath(); ctx.arc(this.x, y, 45, 0, Math.PI * 2); ctx.fill();
     ctx.restore();
 
-    // Body
+    // PIEL
     ctx.beginPath(); ctx.arc(this.x, y, 25, 0, Math.PI * 2);
-    ctx.fillStyle = '#d4af37'; ctx.fill();
-    ctx.strokeStyle = '#222222'; ctx.lineWidth = 2; ctx.stroke();
+    ctx.fillStyle = '#f5deb3'; ctx.fill();
+    ctx.strokeStyle = '#000'; ctx.lineWidth = 2; ctx.stroke();
 
-    // Clothes
+    // ROPA
     ctx.beginPath(); (ctx as any).roundRect(this.x - 25, y, 50, 11, 0);
-    ctx.fillStyle = '#1a1a2e'; ctx.fill(); ctx.stroke();
+    ctx.fillStyle = '#b00000'; ctx.fill(); ctx.stroke();
 
-    // Pants
+    // PANTALONES
     ctx.save(); ctx.translate(this.x, y + 11); ctx.scale(1, 0.6);
     ctx.beginPath(); ctx.arc(0, 0, 23, 0, Math.PI);
-    ctx.fillStyle = '#0f0f1a'; ctx.fill(); ctx.stroke(); ctx.restore();
+    ctx.fillStyle = '#000'; ctx.fill(); ctx.stroke(); ctx.restore();
 
-    // Hair
+    // PELO
     ctx.save(); ctx.translate(this.x, y - 10); ctx.scale(1, 0.7);
     ctx.beginPath(); ctx.arc(0, 0, 22, Math.PI, 0);
-    ctx.fillStyle = '#222222'; ctx.fill(); ctx.stroke(); ctx.restore();
+    ctx.fillStyle = '#5a3a1a'; ctx.fill(); ctx.stroke(); ctx.restore();
 
-    // Eyes - intense golden glow
-    ctx.fillStyle = '#ffd700';
-    ctx.shadowBlur = 10; ctx.shadowColor = '#ffd700';
-    ctx.beginPath(); ctx.arc(this.x + 6, y - 6, 3, 0, Math.PI * 2); ctx.fill();
-    ctx.beginPath(); ctx.arc(this.x + 14, y - 6, 3, 0, Math.PI * 2); ctx.fill();
+    // OJOS - cyan glow during intro
+    ctx.fillStyle = '#00ffff';
+    ctx.shadowBlur = 10; ctx.shadowColor = '#00ffff';
+    ctx.beginPath(); ctx.arc(this.x + 2, y - 6, 3, 0, Math.PI * 2); ctx.fill();
+    ctx.beginPath(); ctx.arc(this.x + 10, y - 6, 3, 0, Math.PI * 2); ctx.fill();
     ctx.shadowBlur = 0;
 
-    // Hands - raised fist pose during fall, impact pose on land
+    // MANOS - golden
     const handColor = '#d4af37';
     ctx.fillStyle = handColor;
-    ctx.strokeStyle = '#222222'; ctx.lineWidth = 2;
+    ctx.strokeStyle = '#000'; ctx.lineWidth = 2;
     
     if (progress < 0.5) {
       // Falling - both fists up
@@ -1224,15 +1224,15 @@ export class Fighter {
   }
 
   _drawWinAnimation(ctx: CanvasRenderingContext2D, progress: number) {
-    // Victory pose: Edowado raises both fists, golden explosion around him
+    // Victory pose: Edowado raises both fists, cyan energy around him
     const bounce = Math.sin(progress * Math.PI * 4) * 5 * (1 - progress);
     const y = this.y - bounce;
 
-    // Expanding golden rings
+    // Expanding cyan/red rings
     for (let i = 0; i < 3; i++) {
       const ringProgress = (progress + i * 0.2) % 1;
       ctx.globalAlpha = 0.5 * (1 - ringProgress);
-      ctx.strokeStyle = '#ffd700';
+      ctx.strokeStyle = i % 2 === 0 ? '#00ffff' : '#b00000';
       ctx.lineWidth = 4 - ringProgress * 3;
       ctx.beginPath();
       ctx.arc(this.x, y, 30 + ringProgress * 80, 0, Math.PI * 2);
@@ -1246,7 +1246,7 @@ export class Fighter {
       const dist = 40 + Math.sin(progress * 8 + i) * 20;
       const sx = this.x + Math.cos(angle) * dist;
       const sy = y + Math.sin(angle) * dist * 0.6;
-      ctx.fillStyle = i % 2 === 0 ? '#ffd700' : '#ffffff';
+      ctx.fillStyle = i % 2 === 0 ? '#00ffff' : '#ffffff';
       ctx.beginPath(); ctx.arc(sx, sy, 2 + Math.random() * 2, 0, Math.PI * 2); ctx.fill();
     }
 
@@ -1255,31 +1255,31 @@ export class Fighter {
     ctx.scale(this.side * 0.7, 0.7 * (1 + Math.sin(progress * Math.PI) * 0.1));
     ctx.translate(-this.x, -y);
 
-    // Body
+    // PIEL
     ctx.beginPath(); ctx.arc(this.x, y, 25, 0, Math.PI * 2);
-    ctx.fillStyle = '#d4af37'; ctx.fill();
-    ctx.strokeStyle = '#222222'; ctx.lineWidth = 2; ctx.stroke();
+    ctx.fillStyle = '#f5deb3'; ctx.fill();
+    ctx.strokeStyle = '#000'; ctx.lineWidth = 2; ctx.stroke();
 
-    // Clothes & pants
+    // ROPA & PANTALONES
     ctx.beginPath(); (ctx as any).roundRect(this.x - 25, y, 50, 11, 0);
-    ctx.fillStyle = '#1a1a2e'; ctx.fill(); ctx.stroke();
+    ctx.fillStyle = '#b00000'; ctx.fill(); ctx.stroke();
     ctx.save(); ctx.translate(this.x, y + 11); ctx.scale(1, 0.6);
     ctx.beginPath(); ctx.arc(0, 0, 23, 0, Math.PI);
-    ctx.fillStyle = '#0f0f1a'; ctx.fill(); ctx.stroke(); ctx.restore();
+    ctx.fillStyle = '#000'; ctx.fill(); ctx.stroke(); ctx.restore();
 
-    // Hair
+    // PELO
     ctx.save(); ctx.translate(this.x, y - 10); ctx.scale(1, 0.7);
     ctx.beginPath(); ctx.arc(0, 0, 22, Math.PI, 0);
-    ctx.fillStyle = '#222222'; ctx.fill(); ctx.stroke(); ctx.restore();
+    ctx.fillStyle = '#5a3a1a'; ctx.fill(); ctx.stroke(); ctx.restore();
 
-    // Happy eyes - closed in smile
-    ctx.strokeStyle = '#ffd700'; ctx.lineWidth = 2;
-    ctx.beginPath(); ctx.arc(this.x + 6, y - 6, 4, Math.PI, 0); ctx.stroke();
-    ctx.beginPath(); ctx.arc(this.x + 14, y - 6, 4, Math.PI, 0); ctx.stroke();
+    // Happy eyes - closed in smile, cyan
+    ctx.strokeStyle = '#00ffff'; ctx.lineWidth = 2;
+    ctx.beginPath(); ctx.arc(this.x + 2, y - 6, 4, Math.PI, 0); ctx.stroke();
+    ctx.beginPath(); ctx.arc(this.x + 10, y - 6, 4, Math.PI, 0); ctx.stroke();
 
-    // Both fists raised high
+    // Both fists raised high - golden
     ctx.fillStyle = '#d4af37';
-    ctx.strokeStyle = '#222222'; ctx.lineWidth = 2;
+    ctx.strokeStyle = '#000'; ctx.lineWidth = 2;
     const fistY = y - 35 - Math.sin(progress * Math.PI * 6) * 5;
     ctx.beginPath(); ctx.arc(this.x - 25, fistY, 7, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
     ctx.beginPath(); ctx.arc(this.x + 25, fistY, 7, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
@@ -1303,34 +1303,34 @@ export class Fighter {
     ctx.scale(this.side * 0.7, 0.7 * (1 - fallProgress * 0.2)); // Squash down
     ctx.translate(-this.x, -kneelY);
 
-    // Body - slightly grayed out
+    // PIEL - slightly dimmed
     ctx.globalAlpha = 0.8;
     ctx.beginPath(); ctx.arc(this.x, kneelY, 25, 0, Math.PI * 2);
-    ctx.fillStyle = '#a08020'; ctx.fill(); // Dimmed gold
-    ctx.strokeStyle = '#222222'; ctx.lineWidth = 2; ctx.stroke();
+    ctx.fillStyle = '#d4c4a3'; ctx.fill(); // Dimmed skin
+    ctx.strokeStyle = '#000'; ctx.lineWidth = 2; ctx.stroke();
 
-    // Clothes
+    // ROPA - dimmed red
     ctx.beginPath(); (ctx as any).roundRect(this.x - 25, kneelY, 50, 11, 0);
-    ctx.fillStyle = '#1a1a2e'; ctx.fill(); ctx.stroke();
+    ctx.fillStyle = '#800000'; ctx.fill(); ctx.stroke();
 
-    // Collapsed pants
+    // PANTALONES collapsed
     ctx.save(); ctx.translate(this.x, kneelY + 11); ctx.scale(1.2, 0.4);
     ctx.beginPath(); ctx.arc(0, 0, 23, 0, Math.PI);
-    ctx.fillStyle = '#0f0f1a'; ctx.fill(); ctx.stroke(); ctx.restore();
+    ctx.fillStyle = '#000'; ctx.fill(); ctx.stroke(); ctx.restore();
 
-    // Hair - drooped
+    // PELO - drooped
     ctx.save(); ctx.translate(this.x, kneelY - 5); ctx.scale(1, 0.9);
     ctx.beginPath(); ctx.arc(0, 0, 22, Math.PI, 0);
-    ctx.fillStyle = '#222222'; ctx.fill(); ctx.stroke(); ctx.restore();
+    ctx.fillStyle = '#4a2a10'; ctx.fill(); ctx.stroke(); ctx.restore();
 
-    // Closed/sad eyes
-    ctx.strokeStyle = '#996600'; ctx.lineWidth = 2;
-    ctx.beginPath(); ctx.arc(this.x + 6, kneelY - 4, 3, 0, Math.PI); ctx.stroke();
-    ctx.beginPath(); ctx.arc(this.x + 14, kneelY - 4, 3, 0, Math.PI); ctx.stroke();
+    // Closed/sad eyes - dimmed cyan
+    ctx.strokeStyle = '#008888'; ctx.lineWidth = 2;
+    ctx.beginPath(); ctx.arc(this.x + 2, kneelY - 4, 3, 0, Math.PI); ctx.stroke();
+    ctx.beginPath(); ctx.arc(this.x + 10, kneelY - 4, 3, 0, Math.PI); ctx.stroke();
 
-    // Hands on ground
-    ctx.fillStyle = '#a08020';
-    ctx.strokeStyle = '#222222'; ctx.lineWidth = 2;
+    // MANOS on ground - dimmed golden
+    ctx.fillStyle = '#b09030';
+    ctx.strokeStyle = '#000'; ctx.lineWidth = 2;
     ctx.beginPath(); ctx.arc(this.x - 30, kneelY + 20, 5, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
     ctx.beginPath(); ctx.arc(this.x + 30, kneelY + 20, 5, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
   }
@@ -1352,37 +1352,37 @@ export class Fighter {
     ctx.scale(this.side * 0.7, 0.7);
     ctx.translate(-this.x, -this.y);
 
-    // Body - slightly desaturated
+    // PIEL - slightly desaturated
     ctx.beginPath(); ctx.arc(this.x, this.y, 25, 0, Math.PI * 2);
-    ctx.fillStyle = '#b09940'; ctx.fill();
-    ctx.strokeStyle = '#222222'; ctx.lineWidth = 2; ctx.stroke();
+    ctx.fillStyle = '#e0d0a0'; ctx.fill();
+    ctx.strokeStyle = '#000'; ctx.lineWidth = 2; ctx.stroke();
 
-    // Clothes
+    // ROPA - dimmed red
     ctx.beginPath(); (ctx as any).roundRect(this.x - 25, this.y, 50, 11, 0);
-    ctx.fillStyle = '#1a1a2e'; ctx.fill(); ctx.stroke();
+    ctx.fillStyle = '#900000'; ctx.fill(); ctx.stroke();
 
-    // Pants
+    // PANTALONES
     ctx.save(); ctx.translate(this.x, this.y + 11); ctx.scale(1, 0.6);
     ctx.beginPath(); ctx.arc(0, 0, 23, 0, Math.PI);
-    ctx.fillStyle = '#0f0f1a'; ctx.fill(); ctx.stroke(); ctx.restore();
+    ctx.fillStyle = '#000'; ctx.fill(); ctx.stroke(); ctx.restore();
 
-    // Hair
+    // PELO
     ctx.save(); ctx.translate(this.x, this.y - 10); ctx.scale(1, 0.7);
     ctx.beginPath(); ctx.arc(0, 0, 22, Math.PI, 0);
-    ctx.fillStyle = '#222222'; ctx.fill(); ctx.stroke(); ctx.restore();
+    ctx.fillStyle = '#4a2a10'; ctx.fill(); ctx.stroke(); ctx.restore();
 
-    // Neutral eyes - half closed
-    ctx.fillStyle = '#b09940';
-    ctx.beginPath(); ctx.arc(this.x + 6, this.y - 6, 3, 0, Math.PI * 2); ctx.fill();
-    ctx.beginPath(); ctx.arc(this.x + 14, this.y - 6, 3, 0, Math.PI * 2); ctx.fill();
+    // Neutral eyes - half closed, dimmed cyan
+    ctx.fillStyle = '#009999';
+    ctx.beginPath(); ctx.arc(this.x + 2, this.y - 6, 3, 0, Math.PI * 2); ctx.fill();
+    ctx.beginPath(); ctx.arc(this.x + 10, this.y - 6, 3, 0, Math.PI * 2); ctx.fill();
     // Eyelids half-closed
-    ctx.fillStyle = '#222222';
-    ctx.fillRect(this.x + 3, this.y - 10, 6, 4);
-    ctx.fillRect(this.x + 11, this.y - 10, 6, 4);
+    ctx.fillStyle = '#4a2a10';
+    ctx.fillRect(this.x - 1, this.y - 10, 6, 4);
+    ctx.fillRect(this.x + 7, this.y - 10, 6, 4);
 
-    // Arms crossed
-    ctx.fillStyle = '#b09940';
-    ctx.strokeStyle = '#222222'; ctx.lineWidth = 2;
+    // Arms crossed - dimmed golden
+    ctx.fillStyle = '#c09030';
+    ctx.strokeStyle = '#000'; ctx.lineWidth = 2;
     ctx.beginPath(); ctx.arc(this.x - 8, this.y + 5, 6, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
     ctx.beginPath(); ctx.arc(this.x + 8, this.y + 5, 6, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
   }

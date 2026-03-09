@@ -24,6 +24,7 @@ export function useGame(): GameContextType {
 }
 
 const CHEAT_CODE = 'DINERO';
+const SECRET_CODE = 'GILBERT';
 
 export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const engineRef = useRef(new GameEngine());

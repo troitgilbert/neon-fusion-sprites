@@ -35,7 +35,7 @@ import crystalIcon from '../assets/crystal-icon.png';
 const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent) || window.innerWidth < 800;
 
 const GameApp: React.FC = () => {
-  const { gameState, coins, achievementPopup, cheatNotification, engine, setGameState } = useGame();
+  const { gameState, coins, achievementPopup, cheatNotification, gilbertUnlocked, engine, setGameState } = useGame();
   const inFight = gameState === 'FIGHT' || gameState === 'PAUSED' || gameState === 'ROUND_OVER';
   const showMenu = gameState === 'MENU';
   const showNebula = showMenu || gameState === 'SELECT' || gameState === 'SKIN_SELECT' || gameState === 'STAGE_SELECT' || gameState === 'VERSUS_TYPE' || gameState === 'SHOP' || gameState === 'CONFIG' || gameState === 'CREATOR' || gameState === 'ACHIEVEMENTS' || gameState === 'STORY_SELECT' || gameState === 'ARCADE_TOWER' || gameState === 'ADVENTURE_SELECT' || gameState === 'ADVENTURE_CHAR_SELECT' || gameState === 'MISSIONS' || gameState === 'EVENTS' || gameState === 'BOSS_RUSH' || gameState === 'BOSS_SELECT' || gameState === 'MIND_GAMES' || gameState === 'DATING' || gameState === 'DOCUMENTS' || gameState === 'MINIGAMES' || gameState === 'DIFFICULTY_SELECT' || gameState === 'ONLINE';

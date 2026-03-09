@@ -1146,8 +1146,13 @@ export class GameEngine {
     if (this.frameCount % 60 === 0 && this.timer > 0 && this.mode !== 'training' && this.mode !== 'survival') {
       this.timer--;
       if (this.timer === 0) {
-        if (this.p1!.hp > this.p2!.hp) this.roundEnd(this.p2!);
-        else this.roundEnd(this.p1!);
+        if (this.p1!.hp === this.p2!.hp) {
+          this.roundDraw();
+        } else if (this.p1!.hp > this.p2!.hp) {
+          this.roundEnd(this.p2!);
+        } else {
+          this.roundEnd(this.p1!);
+        }
       }
     }
 

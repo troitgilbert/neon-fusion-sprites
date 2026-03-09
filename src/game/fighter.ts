@@ -1286,7 +1286,6 @@ export class Fighter {
   }
 
   _drawLoseAnimation(ctx: CanvasRenderingContext2D, progress: number) {
-    // Defeat: Edowado falls to knees, head down
     const fallProgress = Math.min(1, progress * 2);
     const kneelY = this.y + this._easeOutQuad(fallProgress) * 15;
 
@@ -1300,43 +1299,41 @@ export class Fighter {
 
     ctx.globalAlpha = 1;
     ctx.translate(this.x, kneelY);
-    ctx.scale(this.side * 0.7, 0.7 * (1 - fallProgress * 0.2)); // Squash down
+    ctx.scale(this.side * 0.7, 0.7 * (1 - fallProgress * 0.2));
     ctx.translate(-this.x, -kneelY);
 
-    // PIEL - slightly dimmed
-    ctx.globalAlpha = 0.8;
+    // PIEL - exact same
     ctx.beginPath(); ctx.arc(this.x, kneelY, 25, 0, Math.PI * 2);
-    ctx.fillStyle = '#d4c4a3'; ctx.fill(); // Dimmed skin
+    ctx.fillStyle = '#f5deb3'; ctx.fill();
     ctx.strokeStyle = '#000'; ctx.lineWidth = 2; ctx.stroke();
 
-    // ROPA - dimmed red
+    // ROPA - exact same
     ctx.beginPath(); (ctx as any).roundRect(this.x - 25, kneelY, 50, 11, 0);
-    ctx.fillStyle = '#800000'; ctx.fill(); ctx.stroke();
+    ctx.fillStyle = '#b00000'; ctx.fill(); ctx.stroke();
 
-    // PANTALONES collapsed
+    // PANTALONES
     ctx.save(); ctx.translate(this.x, kneelY + 11); ctx.scale(1.2, 0.4);
     ctx.beginPath(); ctx.arc(0, 0, 23, 0, Math.PI);
     ctx.fillStyle = '#000'; ctx.fill(); ctx.stroke(); ctx.restore();
 
-    // PELO - drooped
+    // PELO
     ctx.save(); ctx.translate(this.x, kneelY - 5); ctx.scale(1, 0.9);
     ctx.beginPath(); ctx.arc(0, 0, 22, Math.PI, 0);
-    ctx.fillStyle = '#4a2a10'; ctx.fill(); ctx.stroke(); ctx.restore();
+    ctx.fillStyle = '#5a3a1a'; ctx.fill(); ctx.stroke(); ctx.restore();
 
-    // Closed/sad eyes - dimmed cyan
-    ctx.strokeStyle = '#008888'; ctx.lineWidth = 2;
+    // OJOS closed/sad - exact cyan
+    ctx.strokeStyle = '#00ffff'; ctx.lineWidth = 2;
     ctx.beginPath(); ctx.arc(this.x + 2, kneelY - 4, 3, 0, Math.PI); ctx.stroke();
     ctx.beginPath(); ctx.arc(this.x + 10, kneelY - 4, 3, 0, Math.PI); ctx.stroke();
 
-    // MANOS on ground - dimmed golden
-    ctx.fillStyle = '#b09030';
+    // MANOS - exact golden
+    ctx.fillStyle = '#d4af37';
     ctx.strokeStyle = '#000'; ctx.lineWidth = 2;
     ctx.beginPath(); ctx.arc(this.x - 30, kneelY + 20, 5, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
     ctx.beginPath(); ctx.arc(this.x + 30, kneelY + 20, 5, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
   }
 
   _drawDrawAnimation(ctx: CanvasRenderingContext2D, progress: number) {
-    // Draw/tie: Arms crossed, neutral stance, fading gray effect
     const pulse = Math.sin(progress * Math.PI * 4) * 0.1;
 
     // Gray pulsing aura
@@ -1347,19 +1344,19 @@ export class Fighter {
     ctx.fillStyle = grayAura;
     ctx.fillRect(this.x - 60, this.y - 60, 120, 120);
 
-    ctx.globalAlpha = 0.7 + progress * 0.3;
+    ctx.globalAlpha = 1;
     ctx.translate(this.x, this.y);
     ctx.scale(this.side * 0.7, 0.7);
     ctx.translate(-this.x, -this.y);
 
-    // PIEL - slightly desaturated
+    // PIEL - exact same
     ctx.beginPath(); ctx.arc(this.x, this.y, 25, 0, Math.PI * 2);
-    ctx.fillStyle = '#e0d0a0'; ctx.fill();
+    ctx.fillStyle = '#f5deb3'; ctx.fill();
     ctx.strokeStyle = '#000'; ctx.lineWidth = 2; ctx.stroke();
 
-    // ROPA - dimmed red
+    // ROPA - exact same
     ctx.beginPath(); (ctx as any).roundRect(this.x - 25, this.y, 50, 11, 0);
-    ctx.fillStyle = '#900000'; ctx.fill(); ctx.stroke();
+    ctx.fillStyle = '#b00000'; ctx.fill(); ctx.stroke();
 
     // PANTALONES
     ctx.save(); ctx.translate(this.x, this.y + 11); ctx.scale(1, 0.6);
@@ -1369,19 +1366,21 @@ export class Fighter {
     // PELO
     ctx.save(); ctx.translate(this.x, this.y - 10); ctx.scale(1, 0.7);
     ctx.beginPath(); ctx.arc(0, 0, 22, Math.PI, 0);
-    ctx.fillStyle = '#4a2a10'; ctx.fill(); ctx.stroke(); ctx.restore();
+    ctx.fillStyle = '#5a3a1a'; ctx.fill(); ctx.stroke(); ctx.restore();
 
-    // Neutral eyes - half closed, dimmed cyan
-    ctx.fillStyle = '#009999';
-    ctx.beginPath(); ctx.arc(this.x + 2, this.y - 6, 3, 0, Math.PI * 2); ctx.fill();
-    ctx.beginPath(); ctx.arc(this.x + 10, this.y - 6, 3, 0, Math.PI * 2); ctx.fill();
+    // OJOS half-closed - exact cyan
+    ctx.fillStyle = '#00ffff';
+    const eyeX = this.x + 6;
+    ctx.beginPath(); ctx.arc(eyeX - 4, this.y - 6, 3, 0, Math.PI * 2);
+    ctx.strokeStyle = '#000'; ctx.lineWidth = 1.5; ctx.stroke(); ctx.fill();
+    ctx.beginPath(); ctx.arc(eyeX + 4, this.y - 6, 3, 0, Math.PI * 2); ctx.stroke(); ctx.fill();
     // Eyelids half-closed
-    ctx.fillStyle = '#4a2a10';
-    ctx.fillRect(this.x - 1, this.y - 10, 6, 4);
-    ctx.fillRect(this.x + 7, this.y - 10, 6, 4);
+    ctx.fillStyle = '#5a3a1a';
+    ctx.fillRect(eyeX - 7, this.y - 10, 6, 4);
+    ctx.fillRect(eyeX + 1, this.y - 10, 6, 4);
 
-    // Arms crossed - dimmed golden
-    ctx.fillStyle = '#c09030';
+    // Arms crossed - exact golden
+    ctx.fillStyle = '#d4af37';
     ctx.strokeStyle = '#000'; ctx.lineWidth = 2;
     ctx.beginPath(); ctx.arc(this.x - 8, this.y + 5, 6, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
     ctx.beginPath(); ctx.arc(this.x + 8, this.y + 5, 6, 0, Math.PI * 2); ctx.fill(); ctx.stroke();

@@ -38,6 +38,10 @@ export class Fighter {
   _agarreVy: number;
   _agarreBounces: number;
   _pendingCohete: boolean;
+  // Animation states
+  introAnim: number; // 0 = done, >0 = frames remaining
+  resultAnim: number; // 0 = none, >0 = frames
+  resultType: 'win' | 'lose' | 'draw' | null;
   constructor(id: number, charIdx: number, x: number, side: number, controls: Controls, isAI = false, skinId: string | null = null, customData: CustomCharData | null = null) {
     this.id = id; this.charIdx = charIdx;
     this.customData = customData;

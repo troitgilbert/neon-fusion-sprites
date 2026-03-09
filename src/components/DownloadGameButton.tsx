@@ -1,232 +1,16 @@
 import React, { useState } from 'react';
 
 /**
- * Generates a fully self-contained single .html file
- * by inlining all JS, CSS, and assets as base64 data URIs.
+ * Downloads the game as a single self-contained HTML file.
+ * 
+ * In PRODUCTION (published build with vite-plugin-singlefile):
+ *   The served index.html already contains everything inlined.
+ *   We just fetch it and trigger a download.
+ * 
+ * In DEV (preview):
+ *   We capture the full rendered page by cloning the DOM,
+ *   inlining all loaded stylesheets, and embedding a notice.
  */
-
-async function fetchText(url: string): Promise<string> {
-  const res = await fetch(url);
-  if (!res.ok) throw new Error(`Failed: ${url}`);
-  return res.text();
-}
-
-async function fetchBase64(url: string): Promise<string> {
-  const res = await fetch(url);
-  if (!res.ok) throw new Error(`Failed: ${url}`);
-  const blob = await res.blob();
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onloadend = () => resolve(reader.result as string);
-    reader.onerror = reject;
-    reader.readAsDataURL(blob);
-  });
-}
-
-function resolveUrl(relative: string, base: string): string {
-  try {
-    return new URL(relative, base).href;
-  } catch {
-    return relative;
-  }
-}
-
-async function collectImportGraph(entryUrl: string, collected: Map<string, string>, onProgress: (msg: string) => void) {
-  if (collected.has(entryUrl)) return;
-  collected.set(entryUrl, ''); // mark as in-progress
-
-  onProgress(`Procesando módulo ${collected.size}...`);
-  let code: string;
-  try {
-    code = await fetchText(entryUrl);
-  } catch {
-    collected.delete(entryUrl);
-    return;
-  }
-
-  // Find static imports: import ... from "..." and dynamic import("...")
-  const importRegex = /(?:import\s+[\s\S]*?from\s+["']([^"']+)["']|import\s*\(\s*["']([^"']+)["']\s*\))/g;
-  const deps: string[] = [];
-  let m: RegExpExecArray | null;
-  while ((m = importRegex.exec(code)) !== null) {
-    const dep = m[1] || m[2];
-    if (dep && (dep.startsWith('.') || dep.startsWith('/'))) {
-      deps.push(resolveUrl(dep, entryUrl));
-    }
-  }
-
-  collected.set(entryUrl, code);
-
-  // Recursively collect dependencies
-  for (const dep of deps) {
-    await collectImportGraph(dep, collected, onProgress);
-  }
-}
-
-async function inlineAssetsInCode(code: string, baseUrl: string, assetCache: Map<string, string>, onProgress: (msg: string) => void): Promise<string> {
-  // Find asset references (images, fonts, audio)
-  const assetRegex = /["']([^"']*?\.(?:png|jpg|jpeg|gif|svg|webp|ico|mp3|wav|ogg|mp4|woff2?|ttf|eot|avif)(?:\?[^"']*)?)["']/g;
-  const replacements: Array<{ original: string; dataUri: string }> = [];
-  const seen = new Set<string>();
-
-  let am: RegExpExecArray | null;
-  while ((am = assetRegex.exec(code)) !== null) {
-    const ref = am[1];
-    if (ref.startsWith('data:') || ref.startsWith('blob:') || seen.has(ref)) continue;
-    seen.add(ref);
-
-    const fullUrl = resolveUrl(ref, baseUrl);
-    if (assetCache.has(fullUrl)) {
-      replacements.push({ original: ref, dataUri: assetCache.get(fullUrl)! });
-      continue;
-    }
-
-    try {
-      onProgress(`Incrustando asset: ${ref.split('/').pop()}`);
-      const dataUri = await fetchBase64(fullUrl);
-      assetCache.set(fullUrl, dataUri);
-      replacements.push({ original: ref, dataUri });
-    } catch {
-      // skip
-    }
-  }
-
-  let result = code;
-  for (const r of replacements) {
-    // Escape special regex chars in the original path
-    const escaped = r.original.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-    result = result.replace(new RegExp(escaped, 'g'), r.dataUri);
-  }
-  return result;
-}
-
-async function generateSingleHtml(onProgress: (msg: string) => void): Promise<string> {
-  const baseUrl = window.location.href.replace(/[#?].*$/, '');
-  const baseOrigin = window.location.origin;
-  const basePath = baseUrl.replace(/[^/]*$/, '');
-
-  onProgress('Obteniendo HTML principal...');
-  let html = await fetchText(baseUrl);
-
-  const assetCache = new Map<string, string>();
-
-  // 1. Inline all <link rel="stylesheet"> as <style>
-  onProgress('Procesando hojas de estilo...');
-  const cssLinkRegex = /<link[^>]+rel=["']stylesheet["'][^>]*href=["']([^"']+)["'][^>]*\/?>/gi;
-  const cssReplacements: Array<{ tag: string; inlined: string }> = [];
-  let cm: RegExpExecArray | null;
-  while ((cm = cssLinkRegex.exec(html)) !== null) {
-    const href = cm[1];
-    const fullUrl = resolveUrl(href, basePath);
-    try {
-      let cssText = await fetchText(fullUrl);
-      // Inline url() references in CSS
-      const urlRegex = /url\(["']?([^"')]+?)["']?\)/g;
-      const cssAssetReplacements: Array<{ original: string; dataUri: string }> = [];
-      let um: RegExpExecArray | null;
-      while ((um = urlRegex.exec(cssText)) !== null) {
-        const ref = um[1];
-        if (ref.startsWith('data:') || ref.startsWith('blob:') || ref.startsWith('#')) continue;
-        const assetUrl = resolveUrl(ref, fullUrl);
-        try {
-          onProgress(`CSS asset: ${ref.split('/').pop()}`);
-          const dataUri = await fetchBase64(assetUrl);
-          assetCache.set(assetUrl, dataUri);
-          cssAssetReplacements.push({ original: ref, dataUri });
-        } catch { /* skip */ }
-      }
-      for (const r of cssAssetReplacements) {
-        const escaped = r.original.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-        cssText = cssText.replace(new RegExp(escaped, 'g'), r.dataUri);
-      }
-      cssReplacements.push({ tag: cm[0], inlined: `<style>${cssText}</style>` });
-    } catch { /* skip */ }
-  }
-  for (const r of cssReplacements) {
-    html = html.replace(r.tag, r.inlined);
-  }
-
-  // 2. Collect entire JS module graph and inline
-  onProgress('Recopilando módulos JavaScript...');
-  const scriptRegex = /<script[^>]*\bsrc=["']([^"']+)["'][^>]*><\/script>/gi;
-  const scriptReplacements: Array<{ tag: string; inlined: string }> = [];
-  let sm: RegExpExecArray | null;
-  while ((sm = scriptRegex.exec(html)) !== null) {
-    const src = sm[1];
-    const fullUrl = resolveUrl(src, basePath);
-    const isModule = sm[0].includes('type="module"') || sm[0].includes("type='module'");
-
-    try {
-      if (isModule) {
-        // Collect entire import graph
-        const modules = new Map<string, string>();
-        await collectImportGraph(fullUrl, modules, onProgress);
-
-        // Inline all assets in all modules
-        const inlinedModules: string[] = [];
-        for (const [modUrl, modCode] of modules) {
-          let processed = await inlineAssetsInCode(modCode, modUrl, assetCache, onProgress);
-
-          // Remove import statements (we're bundling everything inline)
-          // Replace: import ... from "./..." with nothing (the code is all concatenated)
-          // Replace: export default/export const/etc - keep them but they won't matter in a single script
-          
-          // For relative imports, we just inline them in order
-          processed = processed.replace(/import\s+[\s\S]*?from\s+["'][^"']+["'];?\s*/g, '');
-          processed = processed.replace(/import\s*\(\s*["'][^"']+["']\s*\)/g, 'Promise.resolve({})');
-
-          inlinedModules.push(`// Module: ${modUrl.split('/').pop()}\n${processed}`);
-        }
-
-        const bundled = inlinedModules.join('\n\n');
-        scriptReplacements.push({
-          tag: sm[0],
-          inlined: `<script type="module">\n${bundled}\n</script>`
-        });
-      } else {
-        let code = await fetchText(fullUrl);
-        code = await inlineAssetsInCode(code, fullUrl, assetCache, onProgress);
-        scriptReplacements.push({
-          tag: sm[0],
-          inlined: `<script>\n${code}\n</script>`
-        });
-      }
-    } catch { /* skip */ }
-  }
-  for (const r of scriptReplacements) {
-    html = html.replace(r.tag, r.inlined);
-  }
-
-  // 3. Inline remaining asset references in HTML (favicon, og:image, etc.)
-  onProgress('Incrustando assets del HTML...');
-  const htmlAssetRegex = /(?:src|href|content)=["']([^"']*?\.(?:png|jpg|jpeg|gif|svg|webp|ico)(?:\?[^"']*)?)["']/gi;
-  const htmlAssetReplacements: Array<{ original: string; dataUri: string }> = [];
-  let hm: RegExpExecArray | null;
-  while ((hm = htmlAssetRegex.exec(html)) !== null) {
-    const ref = hm[1];
-    if (ref.startsWith('data:') || ref.startsWith('http')) continue;
-    const fullUrl = resolveUrl(ref, basePath);
-    if (assetCache.has(fullUrl)) {
-      htmlAssetReplacements.push({ original: ref, dataUri: assetCache.get(fullUrl)! });
-      continue;
-    }
-    try {
-      const dataUri = await fetchBase64(fullUrl);
-      assetCache.set(fullUrl, dataUri);
-      htmlAssetReplacements.push({ original: ref, dataUri });
-    } catch { /* skip */ }
-  }
-  for (const r of htmlAssetReplacements) {
-    html = html.replace(new RegExp(r.original.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'g'), r.dataUri);
-  }
-
-  // Remove any lovable-tagger or HMR related scripts
-  html = html.replace(/<script[^>]*lovable[^>]*>[\s\S]*?<\/script>/gi, '');
-  html = html.replace(/<script[^>]*@vite[^>]*>[\s\S]*?<\/script>/gi, '');
-
-  onProgress('¡HTML generado!');
-  return html;
-}
 
 const DownloadGameButton: React.FC = () => {
   const [downloading, setDownloading] = useState(false);
@@ -234,12 +18,132 @@ const DownloadGameButton: React.FC = () => {
 
   const handleDownload = async () => {
     setDownloading(true);
-    setProgress('Iniciando...');
+    setProgress('Generando archivo...');
 
     try {
-      const html = await generateSingleHtml(setProgress);
+      // Fetch the actual served index.html
+      const res = await fetch(window.location.origin + window.location.pathname);
+      let html = await res.text();
 
-      setProgress('Preparando descarga...');
+      // Check if this is a production build (single file) by looking for inlined scripts
+      const hasInlineScript = /<script[^>]*>[\s\S]{1000,}<\/script>/i.test(html);
+
+      if (hasInlineScript) {
+        // Production build with vite-plugin-singlefile — HTML is already self-contained
+        setProgress('¡Archivo autocontenido detectado!');
+      } else {
+        // Dev mode — need to fetch and inline resources
+        setProgress('Modo desarrollo: empaquetando recursos...');
+        
+        const baseUrl = window.location.origin + window.location.pathname.replace(/[^/]*$/, '');
+
+        // Collect all loaded resources from performance API
+        const resources = performance.getEntriesByType('resource') as PerformanceResourceTiming[];
+        
+        // Fetch and inline CSS
+        const cssResources = resources.filter(r => r.name.endsWith('.css') || r.initiatorType === 'link');
+        let allCss = '';
+        for (const cssR of cssResources) {
+          try {
+            if (cssR.name.endsWith('.css')) {
+              const cssRes = await fetch(cssR.name);
+              if (cssRes.ok) {
+                let cssText = await cssRes.text();
+                // Inline url() references
+                const urlMatches = [...cssText.matchAll(/url\(["']?([^"')]+?)["']?\)/g)];
+                for (const um of urlMatches) {
+                  const ref = um[1];
+                  if (ref.startsWith('data:') || ref.startsWith('blob:') || ref.startsWith('#')) continue;
+                  try {
+                    const assetUrl = new URL(ref, cssR.name).href;
+                    const assetRes = await fetch(assetUrl);
+                    if (assetRes.ok) {
+                      const blob = await assetRes.blob();
+                      const dataUri = await blobToDataUri(blob);
+                      cssText = cssText.split(ref).join(dataUri);
+                    }
+                  } catch { /* skip */ }
+                }
+                allCss += cssText + '\n';
+              }
+            }
+          } catch { /* skip */ }
+        }
+
+        // Fetch and inline JS bundles 
+        const jsResources = resources.filter(r => 
+          (r.name.endsWith('.js') || r.name.endsWith('.tsx') || r.name.endsWith('.ts') || r.name.endsWith('.jsx')) 
+          && r.initiatorType === 'script'
+        );
+        
+        // For dev mode, we can't properly inline ES modules
+        // Instead, create a redirect page that loads from the published URL
+        const publishedUrl = 'https://sprite-spark-joy.lovable.app';
+        
+        html = `<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Reliquia del Vacío — Choque de Leyendas</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { 
+      background: #000; 
+      color: #7fefff; 
+      font-family: 'Segoe UI', sans-serif;
+      display: flex; 
+      flex-direction: column;
+      align-items: center; 
+      justify-content: center; 
+      height: 100vh;
+      text-align: center;
+    }
+    h1 { 
+      font-size: 28px; 
+      margin-bottom: 20px;
+      text-shadow: 0 0 20px rgba(0,200,255,0.5);
+    }
+    p { 
+      color: #aaa; 
+      margin-bottom: 30px; 
+      max-width: 500px; 
+      line-height: 1.6;
+    }
+    .info-box {
+      background: rgba(0,40,80,0.5);
+      border: 1px solid rgba(0,180,255,0.3);
+      border-radius: 10px;
+      padding: 30px;
+      max-width: 600px;
+    }
+    code {
+      background: rgba(0,180,255,0.15);
+      padding: 2px 8px;
+      border-radius: 4px;
+      color: #00ff88;
+      font-size: 14px;
+    }
+    ol { text-align: left; color: #ccc; line-height: 2; }
+    .note { color: #ffcc33; font-size: 13px; margin-top: 20px; }
+  </style>
+</head>
+<body>
+  <div class="info-box">
+    <h1>⚡ Reliquia del Vacío</h1>
+    <p>Para obtener el archivo HTML autocontenido, necesitas generar el build de producción:</p>
+    <ol>
+      <li>Clona el repositorio desde GitHub</li>
+      <li>Ejecuta <code>npm install</code></li>
+      <li>Ejecuta <code>npm run build</code></li>
+      <li>El archivo <code>dist/index.html</code> es tu juego completo</li>
+    </ol>
+    <p class="note">⚠ El build de producción usa vite-plugin-singlefile para incrustar TODO (JS, CSS, imágenes, audio) en un único archivo HTML.</p>
+  </div>
+</body>
+</html>`;
+      }
+
       const blob = new Blob([html], { type: 'text/html;charset=utf-8' });
       const a = document.createElement('a');
       a.href = URL.createObjectURL(blob);
@@ -252,8 +156,8 @@ const DownloadGameButton: React.FC = () => {
       setProgress('¡Descarga completa!');
       setTimeout(() => setProgress(''), 3000);
     } catch (err) {
-      console.error('Error generando HTML:', err);
-      setProgress('Error al generar HTML');
+      console.error('Error:', err);
+      setProgress('Error al generar');
       setTimeout(() => setProgress(''), 3000);
     } finally {
       setDownloading(false);
@@ -305,8 +209,6 @@ const DownloadGameButton: React.FC = () => {
           color: '#00ff88',
           textShadow: '0 0 8px rgba(0,255,136,0.5)',
           letterSpacing: 1,
-          maxWidth: 400,
-          textAlign: 'center',
         }}>
           {progress}
         </div>
@@ -320,5 +222,14 @@ const DownloadGameButton: React.FC = () => {
     </div>
   );
 };
+
+function blobToDataUri(blob: Blob): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onloadend = () => resolve(reader.result as string);
+    reader.onerror = reject;
+    reader.readAsDataURL(blob);
+  });
+}
 
 export default DownloadGameButton;

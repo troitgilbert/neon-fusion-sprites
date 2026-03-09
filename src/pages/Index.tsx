@@ -136,6 +136,9 @@ const GameApp: React.FC = () => {
       {gameState === 'ADVENTURE_PLAY' && <AdventurePlay />}
       {gameState === 'ONLINE' && <OnlineMenu />}
 
+      {/* Secret GILBERT download button */}
+      {gilbertUnlocked && showMenu && <DownloadGameButton />}
+
       {/* Cheat code notification */}
       {cheatNotification && (
         <div style={{

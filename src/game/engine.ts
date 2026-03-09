@@ -1159,8 +1159,14 @@ export class GameEngine {
     this.p1!.update(this.p2!, this, this.keys, this.justPressed, this.tapTracker);
     this.p2!.update(this.p1!, this, this.keys, this.justPressed, this.tapTracker);
 
-    if (this.p1!.hp <= 0) this.roundEnd(this.p1!);
-    if (this.p2!.hp <= 0) this.roundEnd(this.p2!);
+    // Check for KO - handle double KO
+    if (this.p1!.hp <= 0 && this.p2!.hp <= 0) {
+      this.roundDraw(); // Double KO
+    } else if (this.p1!.hp <= 0) {
+      this.roundEnd(this.p1!);
+    } else if (this.p2!.hp <= 0) {
+      this.roundEnd(this.p2!);
+    }
 
     this.projectiles.forEach((p, i) => { p.update(p.owner.id === 1 ? this.p2! : this.p1!, this); if (!p.active) this.projectiles.splice(i, 1); });
     this.particles = this.particles.filter(p => { p.update(); return p.life > 0; });

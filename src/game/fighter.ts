@@ -1155,47 +1155,47 @@ export class Fighter {
   }
 
   _drawEdowadoIntroBody(ctx: CanvasRenderingContext2D, y: number, progress: number) {
-    // Golden aura
+    // Golden aura effect
     ctx.save();
     ctx.globalAlpha = 0.3 + Math.sin(this.animTimer * 0.15) * 0.15;
     const aura = ctx.createRadialGradient(this.x, y, 0, this.x, y, 45);
-    aura.addColorStop(0, 'rgba(255, 215, 0, 0.6)');
-    aura.addColorStop(0.5, 'rgba(255, 140, 0, 0.3)');
+    aura.addColorStop(0, 'rgba(0, 255, 255, 0.4)');
+    aura.addColorStop(0.5, 'rgba(176, 0, 0, 0.2)');
     aura.addColorStop(1, 'transparent');
     ctx.fillStyle = aura;
     ctx.beginPath(); ctx.arc(this.x, y, 45, 0, Math.PI * 2); ctx.fill();
     ctx.restore();
 
-    // Body
+    // PIEL
     ctx.beginPath(); ctx.arc(this.x, y, 25, 0, Math.PI * 2);
-    ctx.fillStyle = '#d4af37'; ctx.fill();
-    ctx.strokeStyle = '#222222'; ctx.lineWidth = 2; ctx.stroke();
+    ctx.fillStyle = '#f5deb3'; ctx.fill();
+    ctx.strokeStyle = '#000'; ctx.lineWidth = 2; ctx.stroke();
 
-    // Clothes
+    // ROPA
     ctx.beginPath(); (ctx as any).roundRect(this.x - 25, y, 50, 11, 0);
-    ctx.fillStyle = '#1a1a2e'; ctx.fill(); ctx.stroke();
+    ctx.fillStyle = '#b00000'; ctx.fill(); ctx.stroke();
 
-    // Pants
+    // PANTALONES
     ctx.save(); ctx.translate(this.x, y + 11); ctx.scale(1, 0.6);
     ctx.beginPath(); ctx.arc(0, 0, 23, 0, Math.PI);
-    ctx.fillStyle = '#0f0f1a'; ctx.fill(); ctx.stroke(); ctx.restore();
+    ctx.fillStyle = '#000'; ctx.fill(); ctx.stroke(); ctx.restore();
 
-    // Hair
+    // PELO
     ctx.save(); ctx.translate(this.x, y - 10); ctx.scale(1, 0.7);
     ctx.beginPath(); ctx.arc(0, 0, 22, Math.PI, 0);
-    ctx.fillStyle = '#222222'; ctx.fill(); ctx.stroke(); ctx.restore();
+    ctx.fillStyle = '#5a3a1a'; ctx.fill(); ctx.stroke(); ctx.restore();
 
-    // Eyes - intense golden glow
-    ctx.fillStyle = '#ffd700';
-    ctx.shadowBlur = 10; ctx.shadowColor = '#ffd700';
-    ctx.beginPath(); ctx.arc(this.x + 6, y - 6, 3, 0, Math.PI * 2); ctx.fill();
-    ctx.beginPath(); ctx.arc(this.x + 14, y - 6, 3, 0, Math.PI * 2); ctx.fill();
+    // OJOS - cyan glow during intro
+    ctx.fillStyle = '#00ffff';
+    ctx.shadowBlur = 10; ctx.shadowColor = '#00ffff';
+    ctx.beginPath(); ctx.arc(this.x + 2, y - 6, 3, 0, Math.PI * 2); ctx.fill();
+    ctx.beginPath(); ctx.arc(this.x + 10, y - 6, 3, 0, Math.PI * 2); ctx.fill();
     ctx.shadowBlur = 0;
 
-    // Hands - raised fist pose during fall, impact pose on land
+    // MANOS - golden
     const handColor = '#d4af37';
     ctx.fillStyle = handColor;
-    ctx.strokeStyle = '#222222'; ctx.lineWidth = 2;
+    ctx.strokeStyle = '#000'; ctx.lineWidth = 2;
     
     if (progress < 0.5) {
       // Falling - both fists up

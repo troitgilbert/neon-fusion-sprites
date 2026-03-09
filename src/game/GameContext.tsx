@@ -33,7 +33,9 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [announcerText, setAnnouncerText] = useState('');
   const [achievementPopup, setAchievementPopup] = useState<Achievement | null>(null);
   const [cheatNotification, setCheatNotification] = useState<string | null>(null);
+  const [gilbertUnlocked, setGilbertUnlocked] = useState(false);
   const cheatBufferRef = useRef('');
+  const secretBufferRef = useRef('');
 
   useEffect(() => {
     const engine = engineRef.current;

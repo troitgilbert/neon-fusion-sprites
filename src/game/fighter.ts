@@ -1224,15 +1224,15 @@ export class Fighter {
   }
 
   _drawWinAnimation(ctx: CanvasRenderingContext2D, progress: number) {
-    // Victory pose: Edowado raises both fists, golden explosion around him
+    // Victory pose: Edowado raises both fists, cyan energy around him
     const bounce = Math.sin(progress * Math.PI * 4) * 5 * (1 - progress);
     const y = this.y - bounce;
 
-    // Expanding golden rings
+    // Expanding cyan/red rings
     for (let i = 0; i < 3; i++) {
       const ringProgress = (progress + i * 0.2) % 1;
       ctx.globalAlpha = 0.5 * (1 - ringProgress);
-      ctx.strokeStyle = '#ffd700';
+      ctx.strokeStyle = i % 2 === 0 ? '#00ffff' : '#b00000';
       ctx.lineWidth = 4 - ringProgress * 3;
       ctx.beginPath();
       ctx.arc(this.x, y, 30 + ringProgress * 80, 0, Math.PI * 2);
@@ -1246,7 +1246,7 @@ export class Fighter {
       const dist = 40 + Math.sin(progress * 8 + i) * 20;
       const sx = this.x + Math.cos(angle) * dist;
       const sy = y + Math.sin(angle) * dist * 0.6;
-      ctx.fillStyle = i % 2 === 0 ? '#ffd700' : '#ffffff';
+      ctx.fillStyle = i % 2 === 0 ? '#00ffff' : '#ffffff';
       ctx.beginPath(); ctx.arc(sx, sy, 2 + Math.random() * 2, 0, Math.PI * 2); ctx.fill();
     }
 
@@ -1255,31 +1255,31 @@ export class Fighter {
     ctx.scale(this.side * 0.7, 0.7 * (1 + Math.sin(progress * Math.PI) * 0.1));
     ctx.translate(-this.x, -y);
 
-    // Body
+    // PIEL
     ctx.beginPath(); ctx.arc(this.x, y, 25, 0, Math.PI * 2);
-    ctx.fillStyle = '#d4af37'; ctx.fill();
-    ctx.strokeStyle = '#222222'; ctx.lineWidth = 2; ctx.stroke();
+    ctx.fillStyle = '#f5deb3'; ctx.fill();
+    ctx.strokeStyle = '#000'; ctx.lineWidth = 2; ctx.stroke();
 
-    // Clothes & pants
+    // ROPA & PANTALONES
     ctx.beginPath(); (ctx as any).roundRect(this.x - 25, y, 50, 11, 0);
-    ctx.fillStyle = '#1a1a2e'; ctx.fill(); ctx.stroke();
+    ctx.fillStyle = '#b00000'; ctx.fill(); ctx.stroke();
     ctx.save(); ctx.translate(this.x, y + 11); ctx.scale(1, 0.6);
     ctx.beginPath(); ctx.arc(0, 0, 23, 0, Math.PI);
-    ctx.fillStyle = '#0f0f1a'; ctx.fill(); ctx.stroke(); ctx.restore();
+    ctx.fillStyle = '#000'; ctx.fill(); ctx.stroke(); ctx.restore();
 
-    // Hair
+    // PELO
     ctx.save(); ctx.translate(this.x, y - 10); ctx.scale(1, 0.7);
     ctx.beginPath(); ctx.arc(0, 0, 22, Math.PI, 0);
-    ctx.fillStyle = '#222222'; ctx.fill(); ctx.stroke(); ctx.restore();
+    ctx.fillStyle = '#5a3a1a'; ctx.fill(); ctx.stroke(); ctx.restore();
 
-    // Happy eyes - closed in smile
-    ctx.strokeStyle = '#ffd700'; ctx.lineWidth = 2;
-    ctx.beginPath(); ctx.arc(this.x + 6, y - 6, 4, Math.PI, 0); ctx.stroke();
-    ctx.beginPath(); ctx.arc(this.x + 14, y - 6, 4, Math.PI, 0); ctx.stroke();
+    // Happy eyes - closed in smile, cyan
+    ctx.strokeStyle = '#00ffff'; ctx.lineWidth = 2;
+    ctx.beginPath(); ctx.arc(this.x + 2, y - 6, 4, Math.PI, 0); ctx.stroke();
+    ctx.beginPath(); ctx.arc(this.x + 10, y - 6, 4, Math.PI, 0); ctx.stroke();
 
-    // Both fists raised high
+    // Both fists raised high - golden
     ctx.fillStyle = '#d4af37';
-    ctx.strokeStyle = '#222222'; ctx.lineWidth = 2;
+    ctx.strokeStyle = '#000'; ctx.lineWidth = 2;
     const fistY = y - 35 - Math.sin(progress * Math.PI * 6) * 5;
     ctx.beginPath(); ctx.arc(this.x - 25, fistY, 7, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
     ctx.beginPath(); ctx.arc(this.x + 25, fistY, 7, 0, Math.PI * 2); ctx.fill(); ctx.stroke();

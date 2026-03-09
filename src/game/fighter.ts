@@ -80,6 +80,9 @@ export class Fighter {
     this._agarreVy = 0;
     this._agarreBounces = 0;
     this._pendingCohete = false;
+    this.introAnim = 90; // 1.5 seconds at 60fps
+    this.resultAnim = 0;
+    this.resultType = null;
   }
 
   reset(x: number, side: number) {
@@ -93,6 +96,9 @@ export class Fighter {
     this.isCrouching = false; this.emoteTimer = 0;
     this._invocationActive = false; this._pendingImpactoCristalico = false;
     this._agarreActive = false; this._agarreVx = 0; this._agarreVy = 0; this._agarreBounces = 0;
+    this.introAnim = 90;
+    this.resultAnim = 0;
+    this.resultType = null;
     this._pendingCohete = false;
   }
 

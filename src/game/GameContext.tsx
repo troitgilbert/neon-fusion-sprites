@@ -12,13 +12,15 @@ interface GameContextType {
   setGameState: (s: GameState, mode?: GameMode) => void;
 }
 
-const GameCtx = createContext<GameContextType | null>(null);
+const GameCtx = createContext<GameContextType | undefined>(undefined);
 
-export const useGame = () => {
+export function useGame(): GameContextType {
   const ctx = useContext(GameCtx);
-  if (!ctx) throw new Error('useGame must be used within GameProvider');
+  if (ctx === undefined) {
+    throw new Error('useGame must be used within GameProvider');
+  }
   return ctx;
-};
+}
 
 const CHEAT_CODE = 'DINERO';
 

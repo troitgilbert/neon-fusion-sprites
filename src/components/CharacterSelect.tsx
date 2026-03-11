@@ -1,7 +1,7 @@
 import React, { useRef, useEffect, useCallback, useState } from 'react';
 import { useGame } from '../game/GameContext';
 import { CHAR_DATA, SHOP_CATALOG } from '../game/constants';
-import type { CustomCharData } from '../game/types';
+import type { CustomCharData, DevCharData } from '../game/types';
 import { playSelectSound, playConfirmSound } from '../game/audio';
 
 // ===== Color helpers =====

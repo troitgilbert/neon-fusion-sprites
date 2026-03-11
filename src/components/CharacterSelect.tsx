@@ -1490,11 +1490,23 @@ const CharacterSelect: React.FC = () => {
           {/* Honeycomb hex grid - proper beehive layout */}
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 0, position: 'relative', zIndex: 2 }}>
             {(() => {
-              const allItems = [
+              const allItems: { type: 'char' | 'custom' | 'random' | 'devchar'; ch: any; i: number }[] = [
                 ...charRenderData.map((ch, i) => ({ type: 'char' as const, ch, i })),
-                { type: 'custom' as const, ch: null as any, i: -1 },
-                { type: 'random' as const, ch: null as any, i: -2 },
               ];
+              // Add dev chars if GILBERT unlocked
+              if (gilbertUnlocked) {
+                devChars.forEach((dch, di) => {
+                  if (dch) {
+                    allItems.push({
+                      type: 'devchar' as const,
+                      ch: { name: dch.name, skinColor: dch.skinColor, hairColor: dch.hairColor, clothesColor: dch.clothesColor, pantsColor: dch.pantsColor, eyeColor: dch.eyesColor, handsColor: dch.handsColor, speed: 5, weight: 1, isCustom: true, idx: 200 + di } as CharRenderData,
+                      i: 200 + di,
+                    });
+                  }
+                });
+              }
+              allItems.push({ type: 'custom' as const, ch: null as any, i: -1 });
+              allItems.push({ type: 'random' as const, ch: null as any, i: -2 });
               const hexW = Math.min(window.innerWidth * 0.068, 66);
               const hexH = hexW * 1.155;
               const cols = 4;

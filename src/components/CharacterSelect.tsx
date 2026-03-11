@@ -1609,6 +1609,55 @@ const CharacterSelect: React.FC = () => {
                         </div>
                       );
                     }
+                    if (item.type === 'devchar') {
+                      const dch = item.ch;
+                      const isP1Selected = engine.p1Choice === item.i;
+                      const isHovered = isCursor;
+                      return (
+                        <div
+                          key={`dev-${item.i}`}
+                          onClick={() => handleDevCharSelect(item.i)}
+                          onMouseEnter={() => { setHoveredIdx(null); playSelectSound(); }}
+                          style={{
+                            transition: 'all 0.15s ease-out',
+                            transform: isHovered ? 'scale(1.15)' : 'scale(1)',
+                            zIndex: isHovered ? 10 : 1,
+                            cursor: 'pointer',
+                            filter: isP1Selected
+                              ? 'drop-shadow(0 0 10px rgba(255,0,100,0.5))'
+                              : isHovered ? 'drop-shadow(0 0 12px rgba(255,0,100,0.4))' : 'none',
+                          }}
+                        >
+                          <HexCell style={{
+                            background: isP1Selected
+                              ? 'linear-gradient(135deg, rgba(255,0,100,0.25), rgba(100,0,50,0.15))'
+                              : isHovered
+                                ? 'linear-gradient(135deg, rgba(40,10,25,0.98), rgba(30,5,15,0.98))'
+                                : 'linear-gradient(135deg, rgba(12,12,22,0.98), rgba(8,8,18,0.98))',
+                            position: 'relative',
+                          }}>
+                            <CanvasPortrait
+                              char={dch}
+                              size={Math.min(hexW * 0.48, 40)}
+                              isSelected={isP1Selected}
+                              isHovered={isHovered}
+                              facing={1}
+                            />
+                            {isP1Selected && (
+                              <div style={{
+                                position: 'absolute', bottom: '12%',
+                                color: '#ff0066', fontSize: 7, fontFamily: "'Orbitron', monospace",
+                                fontWeight: 900, textShadow: '0 0 8px #ff0066', letterSpacing: 2,
+                              }}>P1</div>
+                            )}
+                            <div style={{
+                              position: 'absolute', top: '8%', right: '15%',
+                              color: '#ff0066', fontSize: 5, fontFamily: "'Orbitron', monospace",
+                            }}>DEV</div>
+                          </HexCell>
+                        </div>
+                      );
+                    }
                     if (item.type === 'custom') {
                       return (
                         <div

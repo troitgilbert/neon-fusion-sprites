@@ -955,13 +955,14 @@ const CustomPortrait: React.FC<{ ch: CustomCharData; size?: number }> = ({ ch, s
 const KONAMI_CODE = ['ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'ArrowLeft', 'ArrowRight', 'KeyB', 'KeyA'];
 
 const CharacterSelect: React.FC = () => {
-  const { engine, setGameState } = useGame();
+  const { engine, setGameState, gilbertUnlocked } = useGame();
   const [skinSelectFor, setSkinSelectFor] = useState<{ charIdx: number; pNum: number } | null>(null);
   const [previewSkinId, setPreviewSkinId] = useState<string | null>(null);
   const [hoveredIdx, setHoveredIdx] = useState<number | null>(null);
   const [cursorIdx, setCursorIdx] = useState(0);
   const [showCustomMenu, setShowCustomMenu] = useState(false);
   const [customChars, setCustomChars] = useState<(CustomCharData | null)[]>([null, null, null, null, null, null]);
+  const [devChars, setDevChars] = useState<(DevCharData | null)[]>([]);
   const [konamiProgress, setKonamiProgress] = useState(0);
   const [cheatActive, setCheatActive] = useState(false);
   const [selectFlash, setSelectFlash] = useState<number | null>(null);
@@ -976,15 +977,29 @@ const CharacterSelect: React.FC = () => {
 
   const charRenderData = getCharRenderData();
 
-  // Build flat list of all grid items for navigation
+  // Load dev chars
+  React.useEffect(() => {
+    try {
+      const saved = JSON.parse(localStorage.getItem('devChars') || '[]');
+      setDevChars(saved);
+    } catch {}
+  }, []);
+
+  // Build flat list of all grid items for navigation (include dev chars)
   const allGridItems = React.useMemo(() => {
-    const items: { type: 'char' | 'custom' | 'random'; idx: number }[] = [
+    const items: { type: 'char' | 'custom' | 'random' | 'devchar'; idx: number }[] = [
       ...charRenderData.map((_, i) => ({ type: 'char' as const, idx: i })),
-      { type: 'custom' as const, idx: -1 },
-      { type: 'random' as const, idx: -2 },
     ];
+    // Add dev chars if GILBERT unlocked
+    if (gilbertUnlocked) {
+      devChars.forEach((ch, i) => {
+        if (ch) items.push({ type: 'devchar' as const, idx: 200 + i });
+      });
+    }
+    items.push({ type: 'custom' as const, idx: -1 });
+    items.push({ type: 'random' as const, idx: -2 });
     return items;
-  }, [charRenderData]);
+  }, [charRenderData, devChars, gilbertUnlocked]);
 
   const GRID_COLS = Math.min(allGridItems.length, 4);
 

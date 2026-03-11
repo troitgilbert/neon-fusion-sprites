@@ -29,6 +29,8 @@ import DifficultySelect from '../components/DifficultySelect';
 import AdventurePlay from '../components/AdventurePlay';
 import OnlineMenu from '../components/OnlineMenu';
 import DownloadGameButton from '../components/DownloadGameButton';
+import DevCharacterCreator from '../components/DevCharacterCreator';
+import DevStageCreator from '../components/DevStageCreator';
 import { getDifficultyColor } from '../game/achievements';
 import crystalIcon from '../assets/crystal-icon.png';
 
@@ -38,7 +40,7 @@ const GameApp: React.FC = () => {
   const { gameState, coins, achievementPopup, cheatNotification, gilbertUnlocked, engine, setGameState } = useGame();
   const inFight = gameState === 'FIGHT' || gameState === 'PAUSED' || gameState === 'ROUND_OVER';
   const showMenu = gameState === 'MENU';
-  const showNebula = showMenu || gameState === 'SELECT' || gameState === 'SKIN_SELECT' || gameState === 'STAGE_SELECT' || gameState === 'VERSUS_TYPE' || gameState === 'SHOP' || gameState === 'CONFIG' || gameState === 'CREATOR' || gameState === 'ACHIEVEMENTS' || gameState === 'STORY_SELECT' || gameState === 'ARCADE_TOWER' || gameState === 'ADVENTURE_SELECT' || gameState === 'ADVENTURE_CHAR_SELECT' || gameState === 'MISSIONS' || gameState === 'EVENTS' || gameState === 'BOSS_RUSH' || gameState === 'BOSS_SELECT' || gameState === 'MIND_GAMES' || gameState === 'DATING' || gameState === 'DOCUMENTS' || gameState === 'MINIGAMES' || gameState === 'DIFFICULTY_SELECT' || gameState === 'ONLINE';
+  const showNebula = showMenu || gameState === 'SELECT' || gameState === 'SKIN_SELECT' || gameState === 'STAGE_SELECT' || gameState === 'VERSUS_TYPE' || gameState === 'SHOP' || gameState === 'CONFIG' || gameState === 'CREATOR' || gameState === 'ACHIEVEMENTS' || gameState === 'STORY_SELECT' || gameState === 'ARCADE_TOWER' || gameState === 'ADVENTURE_SELECT' || gameState === 'ADVENTURE_CHAR_SELECT' || gameState === 'MISSIONS' || gameState === 'EVENTS' || gameState === 'BOSS_RUSH' || gameState === 'BOSS_SELECT' || gameState === 'MIND_GAMES' || gameState === 'DATING' || gameState === 'DOCUMENTS' || gameState === 'MINIGAMES' || gameState === 'DIFFICULTY_SELECT' || gameState === 'ONLINE' || gameState === 'DEV_CREATOR' || gameState === 'DEV_STAGE_CREATOR';
 
   return (
     <div className="w-screen h-screen overflow-hidden" style={{ background: '#000' }}>
@@ -135,9 +137,23 @@ const GameApp: React.FC = () => {
       )}
       {gameState === 'ADVENTURE_PLAY' && <AdventurePlay />}
       {gameState === 'ONLINE' && <OnlineMenu />}
+      {gameState === 'DEV_CREATOR' && <DevCharacterCreator />}
+      {gameState === 'DEV_STAGE_CREATOR' && <DevStageCreator />}
 
-      {/* Secret GILBERT download button */}
-      {gilbertUnlocked && showMenu && <DownloadGameButton />}
+      {/* Secret GILBERT buttons */}
+      {gilbertUnlocked && showMenu && (
+        <div style={{ position: 'fixed', bottom: 20, left: '50%', transform: 'translateX(-50%)', zIndex: 100, display: 'flex', gap: 12 }}>
+          <DownloadGameButton />
+          <button onClick={() => setGameState('DEV_CREATOR')} style={{
+            padding: '10px 24px', background: 'linear-gradient(135deg, rgba(255,0,100,0.3), rgba(100,0,255,0.3))',
+            border: '2px solid #ff0066', color: '#ff0066', cursor: 'pointer',
+            fontFamily: "'Orbitron', monospace", fontSize: 11, letterSpacing: 2,
+            boxShadow: '0 0 20px rgba(255,0,100,0.3)', animation: 'crystalPulse 2s ease-in-out infinite',
+          }}>
+            🔧 CREADOR PROGRAMADOR
+          </button>
+        </div>
+      )}
 
       {/* Cheat code notification */}
       {cheatNotification && (

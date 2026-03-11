@@ -1,7 +1,7 @@
 import React, { useRef, useEffect, useCallback, useState } from 'react';
 import { useGame } from '../game/GameContext';
 import { CHAR_DATA, SHOP_CATALOG } from '../game/constants';
-import type { CustomCharData } from '../game/types';
+import type { CustomCharData, DevCharData } from '../game/types';
 import { playSelectSound, playConfirmSound } from '../game/audio';
 
 // ===== Color helpers =====
@@ -955,13 +955,14 @@ const CustomPortrait: React.FC<{ ch: CustomCharData; size?: number }> = ({ ch, s
 const KONAMI_CODE = ['ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'ArrowLeft', 'ArrowRight', 'KeyB', 'KeyA'];
 
 const CharacterSelect: React.FC = () => {
-  const { engine, setGameState } = useGame();
+  const { engine, setGameState, gilbertUnlocked } = useGame();
   const [skinSelectFor, setSkinSelectFor] = useState<{ charIdx: number; pNum: number } | null>(null);
   const [previewSkinId, setPreviewSkinId] = useState<string | null>(null);
   const [hoveredIdx, setHoveredIdx] = useState<number | null>(null);
   const [cursorIdx, setCursorIdx] = useState(0);
   const [showCustomMenu, setShowCustomMenu] = useState(false);
   const [customChars, setCustomChars] = useState<(CustomCharData | null)[]>([null, null, null, null, null, null]);
+  const [devChars, setDevChars] = useState<(DevCharData | null)[]>([]);
   const [konamiProgress, setKonamiProgress] = useState(0);
   const [cheatActive, setCheatActive] = useState(false);
   const [selectFlash, setSelectFlash] = useState<number | null>(null);
@@ -976,15 +977,29 @@ const CharacterSelect: React.FC = () => {
 
   const charRenderData = getCharRenderData();
 
-  // Build flat list of all grid items for navigation
+  // Load dev chars
+  React.useEffect(() => {
+    try {
+      const saved = JSON.parse(localStorage.getItem('devChars') || '[]');
+      setDevChars(saved);
+    } catch {}
+  }, []);
+
+  // Build flat list of all grid items for navigation (include dev chars)
   const allGridItems = React.useMemo(() => {
-    const items: { type: 'char' | 'custom' | 'random'; idx: number }[] = [
+    const items: { type: 'char' | 'custom' | 'random' | 'devchar'; idx: number }[] = [
       ...charRenderData.map((_, i) => ({ type: 'char' as const, idx: i })),
-      { type: 'custom' as const, idx: -1 },
-      { type: 'random' as const, idx: -2 },
     ];
+    // Add dev chars if GILBERT unlocked
+    if (gilbertUnlocked) {
+      devChars.forEach((ch, i) => {
+        if (ch) items.push({ type: 'devchar' as const, idx: 200 + i });
+      });
+    }
+    items.push({ type: 'custom' as const, idx: -1 });
+    items.push({ type: 'random' as const, idx: -2 });
     return items;
-  }, [charRenderData]);
+  }, [charRenderData, devChars, gilbertUnlocked]);
 
   const GRID_COLS = Math.min(allGridItems.length, 4);
 
@@ -1039,6 +1054,7 @@ const CharacterSelect: React.FC = () => {
           // Confirm selection
           const item = allGridItems[cursorIdx];
           if (item.type === 'char') handleSelect(item.idx);
+          else if (item.type === 'devchar') handleDevCharSelect(item.idx);
           else if (item.type === 'custom') { if (!allReadyToFight) { setShowCustomMenu(true); playConfirmSound(); } }
           else if (item.type === 'random') handleRandomSelect();
           return;
@@ -1131,7 +1147,12 @@ const CharacterSelect: React.FC = () => {
     setShowCustomMenu(false);
   };
 
-  const handleRandomSelect = () => {
+  const handleDevCharSelect = (devIdx: number) => {
+    if (allReadyToFight) return;
+    playConfirmSound();
+    engine.confirmSkinChoice(devIdx, null, engine.p1Choice === null ? 1 : 2);
+  };
+
     if (allReadyToFight) return;
     const allOptions: number[] = [...CHAR_DATA.map((_, i) => i)];
     customChars.forEach((ch, i) => { if (ch) allOptions.push(100 + i); });
@@ -1469,11 +1490,23 @@ const CharacterSelect: React.FC = () => {
           {/* Honeycomb hex grid - proper beehive layout */}
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 0, position: 'relative', zIndex: 2 }}>
             {(() => {
-              const allItems = [
+              const allItems: { type: 'char' | 'custom' | 'random' | 'devchar'; ch: any; i: number }[] = [
                 ...charRenderData.map((ch, i) => ({ type: 'char' as const, ch, i })),
-                { type: 'custom' as const, ch: null as any, i: -1 },
-                { type: 'random' as const, ch: null as any, i: -2 },
               ];
+              // Add dev chars if GILBERT unlocked
+              if (gilbertUnlocked) {
+                devChars.forEach((dch, di) => {
+                  if (dch) {
+                    allItems.push({
+                      type: 'devchar' as const,
+                      ch: { name: dch.name, skinColor: dch.skinColor, hairColor: dch.hairColor, clothesColor: dch.clothesColor, pantsColor: dch.pantsColor, eyeColor: dch.eyesColor, handsColor: dch.handsColor, speed: 5, weight: 1, isCustom: true, idx: 200 + di } as CharRenderData,
+                      i: 200 + di,
+                    });
+                  }
+                });
+              }
+              allItems.push({ type: 'custom' as const, ch: null as any, i: -1 });
+              allItems.push({ type: 'random' as const, ch: null as any, i: -2 });
               const hexW = Math.min(window.innerWidth * 0.068, 66);
               const hexH = hexW * 1.155;
               const cols = 4;
@@ -1572,6 +1605,55 @@ const CharacterSelect: React.FC = () => {
                                 fontWeight: 900, textShadow: '0 0 8px #ffcc33', letterSpacing: 2,
                               }}>P1</div>
                             )}
+                          </HexCell>
+                        </div>
+                      );
+                    }
+                    if (item.type === 'devchar') {
+                      const dch = item.ch;
+                      const isP1Selected = engine.p1Choice === item.i;
+                      const isHovered = isCursor;
+                      return (
+                        <div
+                          key={`dev-${item.i}`}
+                          onClick={() => handleDevCharSelect(item.i)}
+                          onMouseEnter={() => { setHoveredIdx(null); playSelectSound(); }}
+                          style={{
+                            transition: 'all 0.15s ease-out',
+                            transform: isHovered ? 'scale(1.15)' : 'scale(1)',
+                            zIndex: isHovered ? 10 : 1,
+                            cursor: 'pointer',
+                            filter: isP1Selected
+                              ? 'drop-shadow(0 0 10px rgba(255,0,100,0.5))'
+                              : isHovered ? 'drop-shadow(0 0 12px rgba(255,0,100,0.4))' : 'none',
+                          }}
+                        >
+                          <HexCell style={{
+                            background: isP1Selected
+                              ? 'linear-gradient(135deg, rgba(255,0,100,0.25), rgba(100,0,50,0.15))'
+                              : isHovered
+                                ? 'linear-gradient(135deg, rgba(40,10,25,0.98), rgba(30,5,15,0.98))'
+                                : 'linear-gradient(135deg, rgba(12,12,22,0.98), rgba(8,8,18,0.98))',
+                            position: 'relative',
+                          }}>
+                            <CanvasPortrait
+                              char={dch}
+                              size={Math.min(hexW * 0.48, 40)}
+                              isSelected={isP1Selected}
+                              isHovered={isHovered}
+                              facing={1}
+                            />
+                            {isP1Selected && (
+                              <div style={{
+                                position: 'absolute', bottom: '12%',
+                                color: '#ff0066', fontSize: 7, fontFamily: "'Orbitron', monospace",
+                                fontWeight: 900, textShadow: '0 0 8px #ff0066', letterSpacing: 2,
+                              }}>P1</div>
+                            )}
+                            <div style={{
+                              position: 'absolute', top: '8%', right: '15%',
+                              color: '#ff0066', fontSize: 5, fontFamily: "'Orbitron', monospace",
+                            }}>DEV</div>
                           </HexCell>
                         </div>
                       );

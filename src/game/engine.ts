@@ -170,6 +170,31 @@ export class GameEngine {
 
   getCustomChar(idx: number): CustomCharData | null {
     try {
+      if (idx >= 200) {
+        // Dev character
+        const devChars = JSON.parse(localStorage.getItem('devChars') || '[]');
+        const devChar = devChars[idx - 200];
+        if (!devChar) return null;
+        // Convert DevCharData to CustomCharData for the fighter system
+        return {
+          name: devChar.name,
+          hairColor: devChar.hairColor,
+          skinColor: devChar.skinColor,
+          clothesColor: devChar.clothesColor,
+          pantsColor: devChar.pantsColor,
+          handsColor: devChar.handsColor,
+          shoesColor: '#333333',
+          eyesColor: devChar.eyesColor,
+          speed: devChar.speed || 'normal',
+          size: devChar.size || 'normal',
+          effectColor: devChar.effectColor,
+          specialAbility: devChar.attacks?.basicSpecial || 'Cristal',
+          superAbility: devChar.attacks?.basicSuper || 'Impacto Rojo',
+          ultraAbility: devChar.attacks?.ultra || 'Persecución Blanca',
+          _devAttacks: devChar.attacks, // Pass full attack config
+          _devSkins: devChar.skins,
+        } as any;
+      }
       const customs = JSON.parse(localStorage.getItem('customChars') || '[]');
       return customs[idx - 100] || null;
     } catch { return null; }

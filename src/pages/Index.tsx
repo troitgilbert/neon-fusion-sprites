@@ -137,6 +137,8 @@ const GameApp: React.FC = () => {
       )}
       {gameState === 'ADVENTURE_PLAY' && <AdventurePlay />}
       {gameState === 'ONLINE' && <OnlineMenu />}
+      {gameState === 'DEV_CREATOR' && <DevCharacterCreator />}
+      {gameState === 'DEV_STAGE_CREATOR' && <DevStageCreator />}
 
       {/* Secret GILBERT download button */}
       {gilbertUnlocked && showMenu && <DownloadGameButton />}

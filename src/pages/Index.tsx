@@ -29,6 +29,8 @@ import DifficultySelect from '../components/DifficultySelect';
 import AdventurePlay from '../components/AdventurePlay';
 import OnlineMenu from '../components/OnlineMenu';
 import DownloadGameButton from '../components/DownloadGameButton';
+import DevCharacterCreator from '../components/DevCharacterCreator';
+import DevStageCreator from '../components/DevStageCreator';
 import { getDifficultyColor } from '../game/achievements';
 import crystalIcon from '../assets/crystal-icon.png';
 

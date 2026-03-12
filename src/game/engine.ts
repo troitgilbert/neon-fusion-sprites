@@ -296,6 +296,15 @@ export class GameEngine {
 
   selectStage(stageId: string) {
     this.selectedStage = stageId;
+    // Load dev stage data if it's a dev stage
+    if (stageId.startsWith('dev_')) {
+      try {
+        const devStages = JSON.parse(localStorage.getItem('devStages') || '[]');
+        this.devStageData = devStages.find((s: any) => s && s.id === stageId) || null;
+      } catch { this.devStageData = null; }
+    } else {
+      this.devStageData = null;
+    }
     this.startMatch(this.p1Choice!, this.p2Choice!);
   }
 

@@ -23,6 +23,7 @@ export class GameEngine {
   p1Choice: number | null = null;
   p2Choice: number | null = null;
   selectedStage = 'default';
+  devStageData: any = null;
   selectedSkins = { p1: null as string | null, p2: null as string | null };
   arcadeStage = 0;
   selectedDifficulty: Difficulty = 'normal';
@@ -295,6 +296,15 @@ export class GameEngine {
 
   selectStage(stageId: string) {
     this.selectedStage = stageId;
+    // Load dev stage data if it's a dev stage
+    if (stageId.startsWith('dev_')) {
+      try {
+        const devStages = JSON.parse(localStorage.getItem('devStages') || '[]');
+        this.devStageData = devStages.find((s: any) => s && s.id === stageId) || null;
+      } catch { this.devStageData = null; }
+    } else {
+      this.devStageData = null;
+    }
     this.startMatch(this.p1Choice!, this.p2Choice!);
   }
 
@@ -945,6 +955,109 @@ export class GameEngine {
       return;
     }
 
+    // === DEV STAGE - Custom user-created stage ===
+    if (this.devStageData) {
+      const ds = this.devStageData;
+      // Background gradient
+      const dbg = ctx.createLinearGradient(0, 0, 0, CANVAS_H);
+      dbg.addColorStop(0, ds.bgColor1 || '#1a1a3a');
+      dbg.addColorStop(1, ds.bgColor2 || '#0b0b1f');
+      ctx.fillStyle = dbg;
+      ctx.fillRect(-50, -50, CANVAS_W + 100, CANVAS_H + 100);
+
+      // Ambient light
+      ctx.save();
+      ctx.globalAlpha = ds.lightIntensity || 0.3;
+      const dLight = ctx.createRadialGradient(CANVAS_W * 0.5, CANVAS_H * 0.2, 0, CANVAS_W * 0.5, CANVAS_H * 0.2, CANVAS_W * 0.6);
+      dLight.addColorStop(0, ds.lightColor || '#ffffff');
+      dLight.addColorStop(1, 'transparent');
+      ctx.fillStyle = dLight;
+      ctx.fillRect(0, 0, CANVAS_W, CANVAS_H);
+      ctx.restore();
+
+      // Fog
+      if ((ds.fogIntensity || 0) > 0) {
+        ctx.save();
+        ctx.globalAlpha = ds.fogIntensity;
+        const dFog = ctx.createLinearGradient(0, CANVAS_H * 0.5, 0, CANVAS_H);
+        dFog.addColorStop(0, 'transparent');
+        dFog.addColorStop(1, ds.fogColor || '#000044');
+        ctx.fillStyle = dFog;
+        ctx.fillRect(0, 0, CANVAS_W, CANVAS_H);
+        ctx.restore();
+      }
+
+      // Ground
+      ctx.fillStyle = ds.groundColor || '#333333';
+      ctx.fillRect(0, FLOOR_Y, CANVAS_W, CANVAS_H - FLOOR_Y);
+
+      // Ground line glow
+      ctx.save();
+      ctx.globalAlpha = 0.5;
+      const dGlowGrad = ctx.createLinearGradient(CANVAS_W * 0.1, FLOOR_Y, CANVAS_W * 0.9, FLOOR_Y);
+      dGlowGrad.addColorStop(0, 'transparent');
+      dGlowGrad.addColorStop(0.5, ds.ambientColor || '#4488ff');
+      dGlowGrad.addColorStop(1, 'transparent');
+      ctx.fillStyle = dGlowGrad;
+      ctx.fillRect(0, FLOOR_Y - 1, CANVAS_W, 3);
+      ctx.restore();
+
+      // Shadows on ground
+      ctx.save();
+      ctx.globalAlpha = ds.shadowIntensity || 0.5;
+      const dShadow = ctx.createLinearGradient(0, FLOOR_Y, 0, CANVAS_H);
+      dShadow.addColorStop(0, 'transparent');
+      dShadow.addColorStop(1, ds.shadowColor || '#000000');
+      ctx.fillStyle = dShadow;
+      ctx.fillRect(0, FLOOR_Y, CANVAS_W, CANVAS_H - FLOOR_Y);
+      ctx.restore();
+
+      // Particles
+      const pCount = ds.particleCount || 15;
+      ctx.save();
+      for (let i = 0; i < pCount; i++) {
+        const px = (CANVAS_W * 0.1 + ((t * 18 + i * 97) % (CANVAS_W * 0.8)));
+        const py = CANVAS_H * 0.1 + Math.sin(t * 0.9 + i * 1.7) * CANVAS_H * 0.3;
+        const sz = 1 + Math.sin(t * 1.8 + i) * 0.8;
+        ctx.globalAlpha = 0.6;
+        ctx.beginPath(); ctx.arc(px, py, sz, 0, Math.PI * 2);
+        ctx.fillStyle = ds.particleColor || '#ffcc33';
+        ctx.fill();
+      }
+      ctx.restore();
+
+      // Ambient color glow at edges
+      ctx.save();
+      ctx.globalAlpha = 0.08;
+      const dAmbL = ctx.createLinearGradient(0, 0, CANVAS_W * 0.3, 0);
+      dAmbL.addColorStop(0, ds.ambientColor || '#4488ff');
+      dAmbL.addColorStop(1, 'transparent');
+      ctx.fillStyle = dAmbL;
+      ctx.fillRect(0, 0, CANVAS_W * 0.3, CANVAS_H);
+      const dAmbR = ctx.createLinearGradient(CANVAS_W * 0.7, 0, CANVAS_W, 0);
+      dAmbR.addColorStop(0, 'transparent');
+      dAmbR.addColorStop(1, ds.ambientColor || '#4488ff');
+      ctx.fillStyle = dAmbR;
+      ctx.fillRect(CANVAS_W * 0.7, 0, CANVAS_W * 0.3, CANVAS_H);
+      ctx.restore();
+
+      // 3D perspective grid using ambient color
+      ctx.strokeStyle = (ds.ambientColor || '#4488ff') + '1a';
+      ctx.lineWidth = 1;
+      const dvY = 190, dvX = 320;
+      for (let i = 0; i < 16; i++) {
+        ctx.beginPath(); ctx.moveTo(i * 48 - 40, CANVAS_H); ctx.lineTo(dvX, dvY); ctx.stroke();
+      }
+      for (let i = 0; i < 10; i++) {
+        const y = FLOOR_Y + i * 10;
+        const sp = (y - dvY) / (CANVAS_H - dvY);
+        ctx.beginPath(); ctx.moveTo(dvX - sp * 500, y); ctx.lineTo(dvX + sp * 500, y); ctx.stroke();
+      }
+
+      ctx.globalAlpha = 1;
+      return;
+    }
+
     // === GALAXIA (default) - Deep space epic ===
     const bg = ctx.createLinearGradient(0, 0, CANVAS_W * 0.5, CANVAS_H);
     bg.addColorStop(0, '#010010');
@@ -1149,6 +1262,16 @@ export class GameEngine {
     if (this.selectedStage === 'nada') {
       ctx.strokeStyle = 'rgba(255,255,255,0.05)'; ctx.lineWidth = 1;
       ctx.beginPath(); ctx.moveTo(0, FLOOR_Y); ctx.lineTo(CANVAS_W, FLOOR_Y); ctx.stroke();
+      return;
+    }
+    // Dev stage floor
+    if (this.devStageData) {
+      const ds = this.devStageData;
+      const amb = ds.ambientColor || '#4488ff';
+      ctx.shadowBlur = 20; ctx.shadowColor = amb + 'cc';
+      ctx.strokeStyle = amb; ctx.lineWidth = 3;
+      ctx.beginPath(); ctx.moveTo(0, FLOOR_Y); ctx.lineTo(CANVAS_W, FLOOR_Y); ctx.stroke();
+      ctx.shadowBlur = 0;
       return;
     }
     const colors: Record<string, [string, string]> = {

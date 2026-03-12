@@ -1410,7 +1410,15 @@ export class Fighter {
     let rimColor = '';
     let rimAlpha = 0;
 
-    if (stage === 'infierno') {
+    // Dev stage lighting
+    if (game.devStageData) {
+      const ds = game.devStageData;
+      tintColor = ds.ambientColor || '#4488ff';
+      tintAlpha = (ds.lightIntensity || 0.3) * 0.3;
+      lightY = -1;
+      rimColor = ds.lightColor || '#ffffff';
+      rimAlpha = (ds.lightIntensity || 0.3) * 0.4;
+    } else if (stage === 'infierno') {
       tintColor = '#ff3300'; tintAlpha = 0.12;
       lightY = 1; // light from below (lava)
       rimColor = '#ff6600'; rimAlpha = 0.25;

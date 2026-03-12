@@ -140,18 +140,10 @@ const GameApp: React.FC = () => {
       {gameState === 'DEV_CREATOR' && <DevCharacterCreator />}
       {gameState === 'DEV_STAGE_CREATOR' && <DevStageCreator />}
 
-      {/* Secret GILBERT buttons */}
+      {/* Secret GILBERT download button */}
       {gilbertUnlocked && showMenu && (
         <div style={{ position: 'fixed', bottom: 20, left: '50%', transform: 'translateX(-50%)', zIndex: 100, display: 'flex', gap: 12 }}>
           <DownloadGameButton />
-          <button onClick={() => setGameState('DEV_CREATOR')} style={{
-            padding: '10px 24px', background: 'linear-gradient(135deg, rgba(255,0,100,0.3), rgba(100,0,255,0.3))',
-            border: '2px solid #ff0066', color: '#ff0066', cursor: 'pointer',
-            fontFamily: "'Orbitron', monospace", fontSize: 11, letterSpacing: 2,
-            boxShadow: '0 0 20px rgba(255,0,100,0.3)', animation: 'crystalPulse 2s ease-in-out infinite',
-          }}>
-            🔧 CREADOR PROGRAMADOR
-          </button>
         </div>
       )}
 

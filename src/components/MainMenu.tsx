@@ -12,7 +12,7 @@ interface MenuItem {
 }
 
 const MainMenu: React.FC = () => {
-  const { setGameState } = useGame();
+  const { setGameState, gilbertUnlocked } = useGame();
   const [activeIndex, setActiveIndex] = useState(0);
   const [inSub, setInSub] = useState(false);
   const [subIndex, setSubIndex] = useState(0);

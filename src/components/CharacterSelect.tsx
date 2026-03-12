@@ -1153,6 +1153,7 @@ const CharacterSelect: React.FC = () => {
     engine.confirmSkinChoice(devIdx, null, engine.p1Choice === null ? 1 : 2);
   };
 
+  const handleRandomSelect = () => {
     if (allReadyToFight) return;
     const allOptions: number[] = [...CHAR_DATA.map((_, i) => i)];
     customChars.forEach((ch, i) => { if (ch) allOptions.push(100 + i); });

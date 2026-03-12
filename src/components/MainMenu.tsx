@@ -11,7 +11,7 @@ interface MenuItem {
 }
 
 const MainMenu: React.FC = () => {
-  const { setGameState } = useGame();
+  const { setGameState, gilbertUnlocked } = useGame();
   const [activeIndex, setActiveIndex] = useState(0);
   const [inSub, setInSub] = useState(false);
   const [subIndex, setSubIndex] = useState(0);
@@ -66,7 +66,16 @@ const MainMenu: React.FC = () => {
     { label: 'ONLINE', action: () => setGameState('ONLINE') },
     { label: 'CONFIGURACIÓN', action: () => setGameState('CONFIG') },
     { label: 'SALIR', action: () => {} },
-  ], [setGameState]);
+    ...(gilbertUnlocked ? [
+      {
+        label: 'MODO DESARROLLADOR', hasSub: true,
+        subItems: [
+          { label: 'CREADOR DE PERSONAJES', action: () => setGameState('DEV_CREATOR'), className: 'dev-mode' },
+          { label: 'CREADOR DE ESCENARIOS', action: () => setGameState('DEV_STAGE_CREATOR'), className: 'dev-mode' },
+        ]
+      } as MenuItem
+    ] : []),
+  ], [setGameState, gilbertUnlocked]);
 
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {

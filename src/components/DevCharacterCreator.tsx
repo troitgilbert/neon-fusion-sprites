@@ -261,8 +261,8 @@ const DevCharacterCreator: React.FC = () => {
   useEffect(() => {
     try {
       const saved = JSON.parse(localStorage.getItem('devChars') || '[]');
-      const arr: (DevCharData | null)[] = [null, null, null, null, null, null, null, null];
-      saved.forEach((ch: any, i: number) => { if (i < 8 && ch) arr[i] = { ...defaultDevChar, ...ch, attacks: { ...defaultAttacks, ...(ch.attacks || {}) }, skins: ch.skins || [] }; });
+      const arr: (DevCharData | null)[] = Array(32).fill(null);
+      saved.forEach((ch: any, i: number) => { if (i < 32 && ch) arr[i] = { ...defaultDevChar, ...ch, attacks: { ...defaultAttacks, ...(ch.attacks || {}) }, skins: ch.skins || [] }; });
       setDevChars(arr);
     } catch {}
   }, []);

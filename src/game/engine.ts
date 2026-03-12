@@ -1264,6 +1264,16 @@ export class GameEngine {
       ctx.beginPath(); ctx.moveTo(0, FLOOR_Y); ctx.lineTo(CANVAS_W, FLOOR_Y); ctx.stroke();
       return;
     }
+    // Dev stage floor
+    if (this.devStageData) {
+      const ds = this.devStageData;
+      const amb = ds.ambientColor || '#4488ff';
+      ctx.shadowBlur = 20; ctx.shadowColor = amb + 'cc';
+      ctx.strokeStyle = amb; ctx.lineWidth = 3;
+      ctx.beginPath(); ctx.moveTo(0, FLOOR_Y); ctx.lineTo(CANVAS_W, FLOOR_Y); ctx.stroke();
+      ctx.shadowBlur = 0;
+      return;
+    }
     const colors: Record<string, [string, string]> = {
       infierno: ['rgba(255,80,0,0.8)', '#ff4400'],
       cielo: ['rgba(255,215,0,0.6)', '#ffd700'],

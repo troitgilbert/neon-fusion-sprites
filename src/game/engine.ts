@@ -23,6 +23,7 @@ export class GameEngine {
   p1Choice: number | null = null;
   p2Choice: number | null = null;
   selectedStage = 'default';
+  devStageData: any = null;
   selectedSkins = { p1: null as string | null, p2: null as string | null };
   arcadeStage = 0;
   selectedDifficulty: Difficulty = 'normal';

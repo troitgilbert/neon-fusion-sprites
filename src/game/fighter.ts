@@ -1413,7 +1413,7 @@ export class Fighter {
 
   takeDamage(dmg: number, canStun = true) {
     if (this.isDodging) return;
-    if (this.isKaitoDemonio() && this.isIntangible) return;
+    if (this.isIntangible) return;
     if (this.isBlocking) { dmg *= 0.5; canStun = false; playBlockSound(); }
     else { playHitSound(); }
     this.comboHits = 0; this.blockTime = 0;

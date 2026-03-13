@@ -332,35 +332,36 @@ export class Fighter {
     }
 
     // Directional hits for all characters
+    const _devAtk = (this.customData as any)?._devAttacks;
     if (justPressed[c.hit]) {
-      if (!this.customData && !this.isGrounded && keys[c.down]) {
-        // Air + Down + Hit = Temblor
+      const fwdKey = this.side === 1 ? c.right : c.left;
+      if (_devAtk) {
+        // Dev character: route based on configured attacks
+        if (!this.isGrounded && keys[c.down]) this.attack(_devAtk.airDownHit, game);
+        else if (!this.isGrounded && keys[fwdKey]) this.attack(_devAtk.airForwardHit, game);
+        else if (!this.isGrounded) this.attack('hit', game);
+        else if (keys[c.down]) this.attack(_devAtk.downHit, game);
+        else if (keys[c.up]) this.attack(_devAtk.upHit, game);
+        else if (keys[fwdKey]) this.attack(_devAtk.forwardHit, game);
+        else this.attack('hit', game);
+      } else if (!this.customData && !this.isGrounded && keys[c.down]) {
         this.attack('temblor', game);
       } else if (!this.customData && !this.isGrounded) {
-        const fwdKey = this.side === 1 ? c.right : c.left;
-        if (keys[fwdKey]) {
-          // Air + Forward + Hit = Gancho hacia abajo
-          this.attack('air_hook_down', game);
-        } else {
-          this.attack('hit', game);
-        }
+        if (keys[fwdKey]) this.attack('air_hook_down', game);
+        else this.attack('hit', game);
       } else if (!this.customData && keys[c.down]) {
         this.attack('hook_down', game);
       } else if (!this.customData && keys[c.up]) {
         this.attack('uppercut', game);
       } else if (!this.customData) {
-        const fwdKey = this.side === 1 ? c.right : c.left;
         if (keys[fwdKey]) {
           this.attack('hook_forward', game);
         } else {
-          // Double tap hit detection - if hit again within 18 frames, throw other fist
           const now = this.animTimer;
           if (this._lastHitFrame && (now - this._lastHitFrame) < 18) {
-            this.attack('hit', game);
-            this._lastHitFrame = 0;
+            this.attack('hit', game); this._lastHitFrame = 0;
           } else {
-            this.attack('hit', game);
-            this._lastHitFrame = now;
+            this.attack('hit', game); this._lastHitFrame = now;
           }
         }
       } else {
@@ -368,47 +369,49 @@ export class Fighter {
       }
     }
     if (justPressed[c.spec]) {
-      if (!this.customData && this.charIdx === 0) {
-        const fwdKey = this.side === 1 ? c.right : c.left;
-        if (!this.isGrounded && keys[c.down]) {
-          this.attack('crystal_descend', game);
-        } else if (!this.isGrounded && keys[fwdKey]) {
-          this.attack('crystal_impact', game);
-        } else if (keys[fwdKey]) {
-          this.attack('crystal_invocation', game);
-        } else if (keys[c.down]) {
-          this.attack('crystal_bounce_shot', game);
-        } else if (keys[c.up]) {
-          this.attack('crystal_curve_shot', game);
-        } else {
-          this.attack('special', game);
-        }
+      const fwdKey = this.side === 1 ? c.right : c.left;
+      if (_devAtk) {
+        if (!this.isGrounded && keys[c.down]) this.attack(_devAtk.airDownSpecial, game);
+        else if (!this.isGrounded && keys[fwdKey]) this.attack(_devAtk.airForwardSpecial, game);
+        else if (keys[fwdKey]) this.attack(_devAtk.forwardSpecial, game);
+        else if (keys[c.down]) this.attack(_devAtk.downSpecial, game);
+        else if (keys[c.up]) this.attack(_devAtk.upSpecial, game);
+        else this.attack(_devAtk.basicSpecial, game);
+      } else if (!this.customData && this.charIdx === 0) {
+        if (!this.isGrounded && keys[c.down]) this.attack('crystal_descend', game);
+        else if (!this.isGrounded && keys[fwdKey]) this.attack('crystal_impact', game);
+        else if (keys[fwdKey]) this.attack('crystal_invocation', game);
+        else if (keys[c.down]) this.attack('crystal_bounce_shot', game);
+        else if (keys[c.up]) this.attack('crystal_curve_shot', game);
+        else this.attack('special', game);
       } else {
         this.attack('special', game);
       }
     }
-    // Directional Super for Edowado
     if (justPressed[c.super]) {
-      if (!this.customData && this.charIdx === 0) {
-        const fwdKey = this.side === 1 ? c.right : c.left;
-        if (!this.isGrounded && keys[c.down]) {
-          this.attack('super_presion', game);
-        } else if (!this.isGrounded && keys[fwdKey]) {
-          this.attack('super_agarre', game);
-        } else if (keys[c.down]) {
-          this.attack('super_impulso', game);
-        } else if (keys[c.up]) {
-          this.attack('super_cohete', game);
-        } else if (keys[fwdKey]) {
-          this.attack('super_atraccion', game);
-        } else {
-          this.attack('super', game);
-        }
+      const fwdKey = this.side === 1 ? c.right : c.left;
+      if (_devAtk) {
+        if (!this.isGrounded && keys[c.down]) this.attack(_devAtk.airDownSuper, game);
+        else if (!this.isGrounded && keys[fwdKey]) this.attack(_devAtk.airForwardSuper, game);
+        else if (keys[c.down]) this.attack(_devAtk.downSuper, game);
+        else if (keys[c.up]) this.attack(_devAtk.upSuper, game);
+        else if (keys[fwdKey]) this.attack(_devAtk.forwardSuper, game);
+        else this.attack(_devAtk.basicSuper, game);
+      } else if (!this.customData && this.charIdx === 0) {
+        if (!this.isGrounded && keys[c.down]) this.attack('super_presion', game);
+        else if (!this.isGrounded && keys[fwdKey]) this.attack('super_agarre', game);
+        else if (keys[c.down]) this.attack('super_impulso', game);
+        else if (keys[c.up]) this.attack('super_cohete', game);
+        else if (keys[fwdKey]) this.attack('super_atraccion', game);
+        else this.attack('super', game);
       } else {
         this.attack('super', game);
       }
     }
-    if (justPressed[c.ultra]) this.attack('ultra', game);
+    if (justPressed[c.ultra]) {
+      if (_devAtk) this.attack(_devAtk.ultra, game);
+      else this.attack('ultra', game);
+    }
 
     if (this.dodgeCooldown > 0) this.dodgeCooldown--;
     if (this.isDodging && this.dodgeCooldown < 30) this.isDodging = false;

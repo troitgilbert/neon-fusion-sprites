@@ -112,12 +112,10 @@ export class Fighter {
     // Skin speed buffs
     if (this.isKaitoAsesino() || this.isKaitoDemonio()) this.data.speed = 10.5;
 
-    // Invuln tick
-    if (this.isKaitoDemonio()) {
-      if (this.invulnTimer > 0) {
-        this.invulnTimer--;
-        if (this.invulnTimer === 0) this.isIntangible = false;
-      }
+    // Invuln tick (for Kaito Demonio skin or dev chars with intangibility)
+    if (this.invulnTimer > 0) {
+      this.invulnTimer--;
+      if (this.invulnTimer === 0) this.isIntangible = false;
     }
 
     // Energy regen

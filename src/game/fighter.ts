@@ -536,8 +536,406 @@ export class Fighter {
       return;
     }
 
-    // === CUSTOM CHARACTER ATTACKS ===
-    if (this.customData && type !== 'hit') {
+    // === DEV CHARACTER ATTACKS (configured movesets) ===
+    const devAttacks = (this.customData as any)?._devAttacks;
+    if (devAttacks && type !== 'hit') {
+      const ec = this.customData!.effectColor || '#ffffff';
+
+      // --- HIT VARIANTS ---
+      if (type === 'embestida') {
+        this.handMode = 'punch_left'; this.handTimer = 16;
+        this.vx = this.side * 28; this.specialTrail = 20;
+        if (dist < 100) { const dmg = 1.5 * this.damageBoost; opp.takeDamage(dmg, true); game.trackStat('totalDamage', dmg); opp.vx = this.side * 16; opp.vy = -6; opp.stun = 10; game.texts.push(new FloatingText(opp.x, opp.y - 30, 'EMBESTIDA', ec)); game.spawnParticles(opp.x, opp.y, ec, 20, 3); game.particles.push(new PunchCircle(opp.x, opp.y, ec)); game.hitStop = 8; game.shake = 12; playHitSound(); this.comboHits++; game.trackStat('comboMax', this.comboHits); }
+        this.damageBoost = 1; return;
+      }
+      if (type === 'rush_combo') {
+        this.handMode = this.handOrder > 0 ? 'punch_left' : 'punch_right'; this.handTimer = 10; this.handOrder *= -1;
+        this.vx = this.side * 20;
+        if (dist < 90) { const dmg = 1.0 * this.damageBoost; opp.takeDamage(dmg, true); game.trackStat('totalDamage', dmg); opp.vx = this.side * 10; opp.stun = 6; game.texts.push(new FloatingText(opp.x, opp.y - 30, 'RÁFAGA', ec)); game.spawnParticles(opp.x, opp.y, ec, 15, 2); game.hitStop = 4; game.shake = 8; playHitSound(); this.comboHits++; game.trackStat('comboMax', this.comboHits); }
+        this.damageBoost = 1; return;
+      }
+      if (type === 'palm_strike') {
+        this.handMode = 'slam'; this.handTimer = 18;
+        this.vx = this.side * 12;
+        if (dist < 80) { const dmg = 1.2 * this.damageBoost; opp.takeDamage(dmg, true); game.trackStat('totalDamage', dmg); opp.vx = this.side * 25; opp.stun = 14; game.texts.push(new FloatingText(opp.x, opp.y - 30, 'PALMAZO', ec)); game.spawnParticles(opp.x, opp.y, ec, 25, 4); game.spawnShockwave(opp.x, opp.y, ec); game.hitStop = 10; game.shake = 16; playHitSound(); this.comboHits++; game.trackStat('comboMax', this.comboHits); }
+        this.damageBoost = 1; return;
+      }
+      if (type === 'rising_kick') {
+        this.handMode = 'uppercut_up'; this.handTimer = 18;
+        if (dist < 85) { const dmg = 1.4 * this.damageBoost; opp.takeDamage(dmg, true); game.trackStat('totalDamage', dmg); opp.vy = -14; opp.vx = this.side * 4; opp.isGrounded = false; opp.stun = 12; game.texts.push(new FloatingText(opp.x, opp.y - 40, 'PATADA LUNAR', ec)); game.spawnParticles(opp.x, opp.y, ec, 20, 3); game.hitStop = 7; game.shake = 10; playHitSound(); this.comboHits++; game.trackStat('comboMax', this.comboHits); }
+        this.damageBoost = 1; return;
+      }
+      if (type === 'sky_punch') {
+        this.handMode = 'uppercut_up'; this.handTimer = 20;
+        const gf = new GiantFist(this.x + this.side * 15, this.y - 20, this.side, -1, ec, 10, this);
+        game.particles.push(gf);
+        if (dist < 85) { const dmg = 1.6 * this.damageBoost; opp.takeDamage(dmg, true); game.trackStat('totalDamage', dmg); opp.vy = -16; opp.vx = this.side * 6; opp.isGrounded = false; opp.stun = 12; game.texts.push(new FloatingText(opp.x, opp.y - 40, 'PUÑO CELESTE', ec)); game.spawnParticles(opp.x, opp.y, ec, 22, 3); game.hitStop = 8; game.shake = 14; playSuperSound(); this.comboHits++; game.trackStat('comboMax', this.comboHits); }
+        this.damageBoost = 1; return;
+      }
+      if (type === 'sweep') {
+        this.handMode = 'punch_left'; this.handTimer = 14;
+        this.vx = this.side * 8;
+        if (dist < 100 && opp.isGrounded) { const dmg = 1.2 * this.damageBoost; opp.takeDamage(dmg, true); game.trackStat('totalDamage', dmg); opp.vy = -6; opp.vx = this.side * 8; opp.isGrounded = false; opp.stun = 18; game.texts.push(new FloatingText(opp.x, opp.y - 30, 'BARRIDA', ec)); game.spawnParticles(opp.x, GROUND_Y, ec, 20, 3); game.hitStop = 8; game.shake = 10; playHitSound(); this.comboHits++; game.trackStat('comboMax', this.comboHits); }
+        this.damageBoost = 1; return;
+      }
+      if (type === 'ground_pound') {
+        this.handMode = 'slam'; this.handTimer = 18;
+        game.spawnShockwave(this.x, GROUND_Y, ec);
+        game.spawnParticles(this.x, GROUND_Y, ec, 15, 3);
+        if (dist < 120 && opp.isGrounded) { const dmg = 1.5 * this.damageBoost; opp.takeDamage(dmg, true); game.trackStat('totalDamage', dmg); opp.vy = -10; opp.stun = 14; game.texts.push(new FloatingText(opp.x, opp.y - 30, 'IMPACTO BAJO', ec)); game.hitStop = 8; game.shake = 14; playHitSound(); this.comboHits++; game.trackStat('comboMax', this.comboHits); }
+        this.damageBoost = 1; return;
+      }
+      if (type === 'patada_meteoro') {
+        this.vy = 24; this.vx = this.side * 8;
+        this.handMode = 'slam'; this.handTimer = 16;
+        if (dist < 80) { const dmg = 2.0 * this.damageBoost; opp.takeDamage(dmg, true); game.trackStat('totalDamage', dmg); opp.vy = 12; opp.stun = 14; game.texts.push(new FloatingText(opp.x, opp.y - 30, 'PATADA METEORO', ec)); game.spawnParticles(opp.x, opp.y, ec, 20, 3); game.hitStop = 8; game.shake = 14; playHitSound(); this.comboHits++; game.trackStat('comboMax', this.comboHits); }
+        this.damageBoost = 1; return;
+      }
+      if (type === 'dive_bomb') {
+        this.vy = 30; this.handMode = 'slam'; this.handTimer = 20;
+        this._pendingTemblor = true;
+        this.damageBoost = 1.5;
+        return;
+      }
+      if (type === 'stomp') {
+        this.vy = 26; this.handMode = 'slam'; this.handTimer = 18;
+        this._pendingTemblor = true;
+        return;
+      }
+      if (type === 'flying_kick') {
+        this.vx = this.side * 22; this.handMode = 'punch_right'; this.handTimer = 16;
+        if (dist < 100) { const dmg = 1.6 * this.damageBoost; opp.takeDamage(dmg, true); game.trackStat('totalDamage', dmg); opp.vx = this.side * 14; opp.vy = -4; opp.stun = 10; game.texts.push(new FloatingText(opp.x, opp.y - 30, 'PATADA VOLADORA', ec)); game.spawnParticles(opp.x, opp.y, ec, 18, 3); game.hitStop = 7; game.shake = 10; playHitSound(); this.comboHits++; game.trackStat('comboMax', this.comboHits); }
+        this.damageBoost = 1; return;
+      }
+      if (type === 'air_dash') {
+        this.vx = this.side * 30; this.specialTrail = 15;
+        if (dist < 80) { const dmg = 1.4 * this.damageBoost; opp.takeDamage(dmg, true); game.trackStat('totalDamage', dmg); opp.vx = this.side * 18; opp.stun = 8; game.texts.push(new FloatingText(opp.x, opp.y - 30, 'EMBESTIDA AÉREA', ec)); game.spawnParticles(opp.x, opp.y, ec, 15, 3); game.hitStop = 6; game.shake = 8; playHitSound(); this.comboHits++; game.trackStat('comboMax', this.comboHits); }
+        this.damageBoost = 1; return;
+      }
+
+      // --- SPECIAL VARIANTS ---
+      if (type === 'wave_shot' && this.energy >= 49.5) {
+        this.energy -= 49.5; playSpecialSound();
+        game.texts.push(new FloatingText(this.x, this.y - 50, 'ONDA CORTANTE', ec));
+        game.spawnProjectile(this.x, this.y, this.side * 14, 0, ec, this, 'rhombus');
+        game.spawnShockwave(this.x, this.y, ec); game.shake = 10;
+        game.trackStat('totalSpecials'); return;
+      }
+      if (type === 'charge_rush' && this.energy >= 49.5) {
+        this.energy -= 49.5; playSpecialSound();
+        this.vx = this.side * 35; this.specialTrail = 40;
+        game.texts.push(new FloatingText(this.x, this.y - 50, 'CARGA ESPECIAL', ec));
+        game.spawnParticles(this.x, this.y, ec, 25, 3);
+        if (dist < 100) { opp.takeDamage(4, true); opp.vx = this.side * 20; opp.vy = -8; game.spawnExplosion(opp.x, opp.y, ec); game.hitStop = 8; game.shake = 16; game.trackStat('totalDamage', 4); }
+        game.trackStat('totalSpecials'); return;
+      }
+      if (type === 'estela_asesina' && this.energy >= 49.5) {
+        this.energy -= 49.5; playSpecialSound();
+        this.vx = this.side * 45; this.specialTrail = 60;
+        game.texts.push(new FloatingText(this.x, this.y - 50, 'ESTELA ASESINA', ec));
+        if (dist < 120) { opp.takeDamage(4, true); game.trackStat('totalDamage', 4); }
+        game.trackStat('totalSpecials'); return;
+      }
+      if (type === 'intangibilidad' && this.energy >= 49.5) {
+        this.energy -= 49.5; playSpecialSound();
+        this.invulnTimer = 120; this.isIntangible = true;
+        game.texts.push(new FloatingText(this.x, this.y - 50, 'INTANGIBILIDAD', ec));
+        game.spawnParticles(this.x, this.y, ec, 20, 3);
+        game.trackStat('totalSpecials'); return;
+      }
+      if (type === 'mine_drop' && this.energy >= 49.5) {
+        this.energy -= 49.5; playSpecialSound();
+        game.texts.push(new FloatingText(this.x, this.y - 50, 'MINA', ec));
+        game.spawnProjectile(this.x, GROUND_Y, 0, 0, ec, this, 'mine');
+        game.trackStat('totalSpecials'); return;
+      }
+      if (type === 'counter' && this.energy >= 49.5) {
+        this.energy -= 49.5; playSpecialSound();
+        this.isBlocking = true; this.blockTime = 0; this.handMode = 'block'; this.handTimer = 60;
+        this.damageBoost = 2.5;
+        game.texts.push(new FloatingText(this.x, this.y - 50, 'CONTRAATAQUE', ec));
+        game.spawnParticles(this.x, this.y, ec, 15, 3);
+        game.trackStat('totalSpecials'); return;
+      }
+      if (type === 'estela_dorada' && this.energy >= 49.5) {
+        this.energy -= 49.5; playSpecialSound();
+        this.vx = this.side * 32; this.specialTrail = 45;
+        game.texts.push(new FloatingText(this.x, this.y - 50, 'ESTELA DORADA', ec));
+        game.spawnParticles(this.x, this.y, ec, 35, 3);
+        if (dist < 65) { opp.takeDamage(4, true); opp.vx = this.side * 18; opp.vy = -10; game.spawnExplosion(opp.x, opp.y, ec); game.hitStop = 8; game.shake = 18; game.trackStat('totalDamage', 4); }
+        game.trackStat('totalSpecials'); return;
+      }
+      if (type === 'rising_beam' && this.energy >= 49.5) {
+        this.energy -= 49.5; playSpecialSound();
+        game.texts.push(new FloatingText(this.x, this.y - 50, 'RAYO ASCENDENTE', ec));
+        game.spawnProjectile(this.x, this.y, 0, -14, ec, this, 'crystal_rise');
+        game.spawnShockwave(this.x, this.y, ec); game.shake = 10;
+        game.trackStat('totalSpecials'); return;
+      }
+      if (type === 'tornado' && this.energy >= 49.5) {
+        this.energy -= 49.5; playSpecialSound();
+        this.vy = -14; this.isGrounded = false;
+        game.texts.push(new FloatingText(this.x, this.y - 50, 'TORNADO', ec));
+        for (let i = 0; i < 12; i++) { const a = (Math.PI * 2 / 12) * i; game.spawnParticles(this.x + Math.cos(a) * 30, this.y + Math.sin(a) * 30, ec, 3, 3); }
+        game.spawnShockwave(this.x, this.y, ec);
+        if (dist < 100) { opp.takeDamage(3, true); opp.vy = -12; opp.stun = 15; game.trackStat('totalDamage', 3); }
+        game.trackStat('totalSpecials'); return;
+      }
+      if (type === 'rain_shot' && this.energy >= 49.5) {
+        this.energy -= 49.5; playSpecialSound();
+        game.texts.push(new FloatingText(this.x, this.y - 50, 'LLUVIA DE ENERGÍA', ec));
+        for (let i = 0; i < 5; i++) game.spawnProjectile(this.x + (i - 2) * 20, this.y, 0, 8 + i, ec, this, 'crystal_descend');
+        game.shake = 8; game.trackStat('totalSpecials'); return;
+      }
+      if (type === 'gravity_drop' && this.energy >= 49.5) {
+        this.energy -= 49.5; playSpecialSound();
+        this.vy = 25;
+        game.texts.push(new FloatingText(this.x, this.y - 50, 'CAÍDA GRAVITACIONAL', ec));
+        game.spawnShockwave(this.x, this.y, ec);
+        this._pendingTemblor = true; this.damageBoost = 1.8;
+        game.trackStat('totalSpecials'); return;
+      }
+      if (type === 'spike_ball' && this.energy >= 49.5) {
+        this.energy -= 49.5; playSpecialSound();
+        game.texts.push(new FloatingText(this.x, this.y - 50, 'ESFERA DESCENDENTE', ec));
+        game.spawnProjectile(this.x, this.y, 0, 10, ec, this, 'crystal_descend');
+        game.shake = 6; game.trackStat('totalSpecials'); return;
+      }
+      if (type === 'air_rush' && this.energy >= 49.5) {
+        this.energy -= 49.5; playSpecialSound();
+        this.vx = this.side * 35; this.specialTrail = 30;
+        game.texts.push(new FloatingText(this.x, this.y - 50, 'RUSH AÉREO', ec));
+        game.spawnParticles(this.x, this.y, ec, 20, 3);
+        if (dist < 100) { opp.takeDamage(4, true); opp.vx = this.side * 16; game.spawnExplosion(opp.x, opp.y, ec); game.hitStop = 7; game.shake = 12; game.trackStat('totalDamage', 4); }
+        game.trackStat('totalSpecials'); return;
+      }
+      if (type === 'energy_lance' && this.energy >= 49.5) {
+        this.energy -= 49.5; playSpecialSound();
+        game.texts.push(new FloatingText(this.x, this.y - 50, 'LANZA DE ENERGÍA', ec));
+        game.spawnProjectile(this.x, this.y, this.side * 16, 0, ec, this, 'rhombus');
+        game.shake = 8; game.trackStat('totalSpecials'); return;
+      }
+      if (type === 'comet' && this.energy >= 49.5) {
+        this.energy -= 49.5; playSpecialSound();
+        this.vx = this.side * 18; this.vy = 14; this.specialTrail = 25;
+        game.texts.push(new FloatingText(this.x, this.y - 50, 'COMETA', ec));
+        this._pendingImpactoCristalico = true;
+        game.trackStat('totalSpecials'); return;
+      }
+      if (type === 'cristal' && this.energy >= 49.5) {
+        this.energy -= 49.5; playSpecialSound();
+        game.texts.push(new FloatingText(this.x, this.y - 50, 'CRISTAL', ec));
+        game.spawnProjectile(this.x, this.y, this.side * 12, 0, ec, this, 'rhombus');
+        game.spawnShockwave(this.x, this.y, ec); game.shake = 14; game.hitStop = 6;
+        game.trackStat('totalSpecials'); return;
+      }
+      if (type === 'estela_dorada_basic' && this.energy >= 49.5) {
+        this.energy -= 49.5; playSpecialSound();
+        this.vx = this.side * 32; this.specialTrail = 45;
+        game.texts.push(new FloatingText(this.x, this.y - 50, 'ESTELA DORADA', ec));
+        game.spawnParticles(this.x, this.y, ec, 35, 3);
+        if (dist < 65) { opp.takeDamage(4, true); opp.vx = this.side * 18; opp.vy = -10; game.spawnExplosion(opp.x, opp.y, ec); game.hitStop = 8; game.shake = 18; game.trackStat('totalDamage', 4); }
+        game.trackStat('totalSpecials'); return;
+      }
+      if (type === 'energy_ball' && this.energy >= 49.5) {
+        this.energy -= 49.5; playSpecialSound();
+        game.texts.push(new FloatingText(this.x, this.y - 50, 'ESFERA DE ENERGÍA', ec));
+        game.spawnProjectile(this.x, this.y, this.side * 10, 0, ec, this, 'rhombus');
+        game.spawnShockwave(this.x, this.y, ec); game.shake = 10;
+        game.trackStat('totalSpecials'); return;
+      }
+      if (type === 'shockwave_basic' && this.energy >= 49.5) {
+        this.energy -= 49.5; playSpecialSound();
+        game.texts.push(new FloatingText(this.x, this.y - 50, 'ONDA DE CHOQUE', ec));
+        game.spawnShockwave(this.x, this.y, ec); game.spawnShockwave(this.x, this.y, ec);
+        game.spawnParticles(this.x, this.y, ec, 30, 4); game.shake = 16;
+        if (dist < 130) { opp.takeDamage(3, true); opp.vx = (opp.x > this.x ? 1 : -1) * 14; opp.stun = 12; game.trackStat('totalDamage', 3); }
+        game.trackStat('totalSpecials'); return;
+      }
+
+      // --- SUPER VARIANTS ---
+      if (type === 'teletransporte_oscuro' && this.energy >= 100) {
+        this.energy -= 100; playSuperSound(); game.flashScreen();
+        this.x = opp.x - this.side * 40; opp.stun = 120;
+        game.texts.push(new FloatingText(this.x, this.y - 50, 'TELETRANSPORTE OSCURO', ec));
+        game.spawnParticles(opp.x, opp.y, ec, 45, 3); game.spawnShockwave(opp.x, opp.y, ec);
+        game.trackStat('totalSupers'); return;
+      }
+      if (type === 'teletransporte_rojo' && this.energy >= 100) {
+        this.energy -= 100; playSuperSound(); game.flashScreen();
+        this.x = opp.x - this.side * 40; opp.stun = 80;
+        const dmg = 6 * this.damageBoost; opp.takeDamage(dmg, true); game.trackStat('totalDamage', dmg);
+        game.texts.push(new FloatingText(this.x, this.y - 50, 'TELETRANSPORTE ROJO', '#ff0000'));
+        game.spawnParticles(opp.x, opp.y, '#ff0000', 40, 3); game.spawnShockwave(opp.x, opp.y, '#ff0000');
+        game.shake = 20; game.hitStop = 10;
+        game.trackStat('totalSupers'); return;
+      }
+      if (type === 'pillar_eruption' && this.energy >= 100) {
+        this.energy -= 100; playSuperSound(); game.flashScreen();
+        game.texts.push(new FloatingText(this.x, this.y - 50, 'ERUPCIÓN', ec));
+        for (let i = 0; i < 4; i++) { const px = this.x + this.side * (40 + i * 50); game.spawnProjectile(px, GROUND_Y, 0, 0, ec, this, 'crystal_pillar'); game.spawnParticles(px, GROUND_Y, ec, 10, 3); }
+        game.shake = 22; game.hitStop = 10;
+        game.trackStat('totalSupers'); return;
+      }
+      if (type === 'super_slam' && this.energy >= 100) {
+        this.energy -= 100; playSuperSound(); game.flashScreen();
+        this.handMode = 'slam'; this.handTimer = 25;
+        game.texts.push(new FloatingText(this.x, this.y - 50, 'SÚPER IMPACTO', ec));
+        game.spawnShockwave(this.x, GROUND_Y, ec); game.spawnShockwave(this.x, GROUND_Y, ec);
+        game.spawnParticles(this.x, GROUND_Y, ec, 35, 4); game.shake = 28;
+        if (dist < 150) { const dmg = 8 * this.damageBoost; opp.takeDamage(dmg, true); game.trackStat('totalDamage', dmg); opp.vy = -18; opp.vx = (opp.x > this.x ? 1 : -1) * 12; opp.stun = 20; game.spawnExplosion(opp.x, opp.y, ec); game.hitStop = 14; }
+        game.trackStat('totalSupers'); this.damageBoost = 1; return;
+      }
+      if (type === 'rising_dragon' && this.energy >= 100) {
+        this.energy -= 100; playSuperSound(); game.flashScreen();
+        this.vy = -22; this.isGrounded = false; this.handMode = 'uppercut_up'; this.handTimer = 25;
+        game.texts.push(new FloatingText(this.x, this.y - 50, 'DRAGÓN ASCENDENTE', ec));
+        for (let i = 0; i < 10; i++) game.spawnParticles(this.x + (Math.random() - 0.5) * 30, this.y + i * 8, ec, 3, 3);
+        game.spawnShockwave(this.x, this.y, ec); game.shake = 18;
+        if (dist < 90) { const dmg = 9 * this.damageBoost; opp.takeDamage(dmg, true); game.trackStat('totalDamage', dmg); opp.vy = -20; opp.isGrounded = false; opp.stun = 20; game.spawnExplosion(opp.x, opp.y, ec); game.hitStop = 12; }
+        game.trackStat('totalSupers'); this.damageBoost = 1; return;
+      }
+      if (type === 'sky_beam' && this.energy >= 100) {
+        this.energy -= 100; playSuperSound(); game.flashScreen();
+        game.texts.push(new FloatingText(this.x, this.y - 50, 'RAYO CELESTIAL', ec));
+        game.spawnProjectile(this.x, this.y, 0, -18, ec, this, 'crystal_rise');
+        game.spawnProjectile(this.x, this.y, this.side * 2, -16, ec, this, 'crystal_rise');
+        game.spawnShockwave(this.x, this.y, ec); game.shake = 20;
+        game.trackStat('totalSupers'); return;
+      }
+      if (type === 'meteor_rise' && this.energy >= 100) {
+        this.energy -= 100; playSuperSound(); game.flashScreen();
+        this.vy = -25; this.isGrounded = false;
+        game.texts.push(new FloatingText(this.x, this.y - 50, 'METEORO INVERSO', ec));
+        for (let i = 0; i < 12; i++) game.spawnParticles(this.x + (Math.random() - 0.5) * 20, this.y + i * 6, ec, 4, 4);
+        game.spawnExplosion(this.x, this.y, ec); game.shake = 22;
+        if (dist < 100) { const dmg = 10 * this.damageBoost; opp.takeDamage(dmg, true); game.trackStat('totalDamage', dmg); opp.vy = -22; opp.isGrounded = false; opp.stun = 22; game.hitStop = 14; }
+        game.trackStat('totalSupers'); this.damageBoost = 1; return;
+      }
+      if (type === 'mega_rush' && this.energy >= 100) {
+        this.energy -= 100; playSuperSound(); game.flashScreen();
+        this.vx = this.side * 45; this.specialTrail = 50;
+        game.texts.push(new FloatingText(this.x, this.y - 50, 'MEGA RUSH', ec));
+        game.spawnParticles(this.x, this.y, ec, 30, 4); game.shake = 16;
+        if (dist < 140) { const dmg = 8 * this.damageBoost; opp.takeDamage(dmg, true); game.trackStat('totalDamage', dmg); opp.vx = this.side * 22; opp.vy = -10; opp.stun = 18; game.spawnExplosion(opp.x, opp.y, ec); game.hitStop = 12; }
+        game.trackStat('totalSupers'); this.damageBoost = 1; return;
+      }
+      if (type === 'beam_cannon' && this.energy >= 100) {
+        this.energy -= 100; playSuperSound(); game.flashScreen();
+        game.texts.push(new FloatingText(this.x, this.y - 50, 'CAÑÓN DE ENERGÍA', ec));
+        for (let i = 0; i < 3; i++) game.spawnProjectile(this.x, this.y, this.side * (14 + i * 2), (i - 1) * 2, ec, this, 'rhombus');
+        game.spawnShockwave(this.x, this.y, ec); game.shake = 20;
+        game.trackStat('totalSupers'); return;
+      }
+      if (type === 'meteor_strike' && this.energy >= 100) {
+        this.energy -= 100; playSuperSound(); game.flashScreen();
+        this.vy = 28; this.handMode = 'slam'; this.handTimer = 22;
+        game.texts.push(new FloatingText(this.x, this.y - 50, 'GOLPE METEORO', ec));
+        game.spawnParticles(this.x, this.y, ec, 25, 4);
+        this._pendingTemblor = true; this.damageBoost = 3;
+        game.trackStat('totalSupers'); return;
+      }
+      if (type === 'gravity_crush' && this.energy >= 100) {
+        this.energy -= 100; playSuperSound(); game.flashScreen();
+        game.texts.push(new FloatingText(this.x, this.y - 50, 'APLASTE GRAVITACIONAL', ec));
+        game.spawnShockwave(this.x, this.y, ec); game.spawnShockwave(this.x, this.y, ec);
+        if (dist < 160) { const dmg = 7 * this.damageBoost; opp.takeDamage(dmg, true); game.trackStat('totalDamage', dmg); opp.vy = 20; opp.stun = 25; game.shake = 22; game.hitStop = 12; game.spawnExplosion(opp.x, opp.y, ec); }
+        game.trackStat('totalSupers'); this.damageBoost = 1; return;
+      }
+      if (type === 'diving_fist' && this.energy >= 100) {
+        this.energy -= 100; playSuperSound(); game.flashScreen();
+        this.handMode = 'slam'; this.handTimer = 22;
+        const gf = new GiantFist(this.x, this.y + 20, this.side, 1, ec, 25, this);
+        game.particles.push(gf);
+        game.texts.push(new FloatingText(this.x, this.y - 50, 'PUÑO DESCENDENTE', ec));
+        game.spawnParticles(this.x, this.y, ec, 20, 4); game.shake = 18;
+        if (dist < 120 && opp.y > this.y - 30) { const dmg = 9 * this.damageBoost; opp.takeDamage(dmg, true); game.trackStat('totalDamage', dmg); opp.vy = 18; opp.stun = 18; game.spawnExplosion(opp.x, opp.y, ec); game.hitStop = 12; }
+        game.trackStat('totalSupers'); this.damageBoost = 1; return;
+      }
+      if (type === 'homing_rush' && this.energy >= 100) {
+        this.energy -= 100; playSuperSound(); game.flashScreen();
+        game.texts.push(new FloatingText(this.x, this.y - 50, 'RUSH PERSECUTOR', ec));
+        const dx2 = opp.x - this.x; const dy2 = opp.y - this.y; const d2 = Math.hypot(dx2, dy2) || 1;
+        this.vx = (dx2 / d2) * 30; this.vy = (dy2 / d2) * 30; this.specialTrail = 40;
+        if (dist < 120) { const dmg = 8 * this.damageBoost; opp.takeDamage(dmg, true); game.trackStat('totalDamage', dmg); opp.vx = this.side * 18; opp.vy = -12; opp.stun = 20; game.spawnExplosion(opp.x, opp.y, ec); game.hitStop = 10; game.shake = 18; }
+        game.trackStat('totalSupers'); this.damageBoost = 1; return;
+      }
+      if (type === 'barrage' && this.energy >= 100) {
+        this.energy -= 100; playSuperSound(); game.flashScreen();
+        game.texts.push(new FloatingText(this.x, this.y - 50, 'BARRERA', ec));
+        this.handMode = 'punch_left'; this.handTimer = 30;
+        if (dist < 100) { for (let i = 0; i < 6; i++) { setTimeout(() => { const dmg = 1.5; opp.takeDamage(dmg, true); game.trackStat('totalDamage', dmg); game.spawnParticles(opp.x + (Math.random()-0.5)*20, opp.y + (Math.random()-0.5)*20, ec, 5, 2); game.shake = 6; playHitSound(); }, i * 80); } }
+        game.trackStat('totalSupers'); this.damageBoost = 1; return;
+      }
+      if (type === 'suplex_air' && this.energy >= 100) {
+        this.energy -= 100; playSuperSound(); game.flashScreen();
+        game.texts.push(new FloatingText(this.x, this.y - 50, 'SUPLEX AÉREO', ec));
+        if (dist < 80) { opp.vx = 0; opp.vy = 30; opp.stun = 30; const dmg = 10 * this.damageBoost; opp.takeDamage(dmg, true); game.trackStat('totalDamage', dmg); game.spawnExplosion(opp.x, opp.y, ec); game.shake = 25; game.hitStop = 15; }
+        game.trackStat('totalSupers'); this.damageBoost = 1; return;
+      }
+      if (type === 'impacto_rojo' && this.energy >= 100) {
+        this.energy -= 100; playSuperSound(); game.flashScreen();
+        game.texts.push(new FloatingText(this.x, this.y - 50, 'IMPACTO ROJO', '#ff0000'));
+        if (dist < 110) { opp.takeDamage(8, true); game.shake = 28; game.hitStop = 14; game.spawnExplosion(opp.x, opp.y, '#ff0000'); game.trackStat('totalDamage', 8); }
+        game.trackStat('totalSupers'); return;
+      }
+      if (type === 'esfera_rebotante' && this.energy >= 100) {
+        this.energy -= 100; playSuperSound(); game.flashScreen();
+        game.texts.push(new FloatingText(this.x, this.y - 50, 'ESFERA REBOTANTE', ec));
+        game.spawnProjectile(this.x, this.y, 6, 6, ec, this, 'bounce');
+        game.trackStat('totalSupers'); return;
+      }
+      if (type === 'mega_blast' && this.energy >= 100) {
+        this.energy -= 100; playSuperSound(); game.flashScreen();
+        game.texts.push(new FloatingText(this.x, this.y - 50, 'MEGA EXPLOSIÓN', ec));
+        game.spawnExplosion(this.x + this.side * 50, this.y, ec);
+        game.spawnShockwave(this.x, this.y, ec); game.spawnShockwave(this.x, this.y, ec);
+        game.spawnParticles(this.x, this.y, ec, 50, 5); game.shake = 30;
+        if (dist < 140) { const dmg = 10 * this.damageBoost; opp.takeDamage(dmg, true); game.trackStat('totalDamage', dmg); opp.vx = (opp.x > this.x ? 1 : -1) * 20; opp.vy = -14; opp.stun = 20; game.hitStop = 14; }
+        game.trackStat('totalSupers'); this.damageBoost = 1; return;
+      }
+      if (type === 'chain_lightning' && this.energy >= 100) {
+        this.energy -= 100; playSuperSound(); game.flashScreen();
+        game.texts.push(new FloatingText(this.x, this.y - 50, 'RELÁMPAGO ENCADENADO', ec));
+        for (let i = 0; i < 5; i++) { const lx = 80 + i * 120; game.spawnProjectile(lx, 50, 0, 12, ec, this, 'crystal_descend'); }
+        game.shake = 18; game.trackStat('totalSupers'); return;
+      }
+
+      // --- ULTRA VARIANTS ---
+      if (type === 'persecucion_blanca' && this.energy >= 300) {
+        this.energy -= 300; playSuperSound(); game.flashScreen();
+        game.texts.push(new FloatingText(this.x, this.y - 50, 'PERSECUCIÓN BLANCA', '#ffffff'));
+        game.spawnProjectile(this.x, this.y, 0, 0, '#ffffff', this, 'homing');
+        game.shake = 30; game.trackStat('totalUltras'); return;
+      }
+      if (type === 'detencion_temporal' && this.energy >= 300) {
+        this.energy -= 300; playSuperSound(); game.flashScreen();
+        game.texts.push(new FloatingText(this.x, this.y - 50, 'DETENCIÓN TEMPORAL', ec));
+        game.startTimeStop(this);
+        game.shake = 30; game.trackStat('totalUltras'); return;
+      }
+      if (type === 'eclipse_negro' && this.energy >= 300) {
+        this.energy -= 300; playSuperSound(); game.flashScreen();
+        game.texts.push(new FloatingText(this.x, this.y - 50, 'ECLIPSE NEGRO', '#000000'));
+        game.shake = 40; game.hitStop = 20;
+        for (let i = 0; i < 8; i++) { setTimeout(() => { game.spawnExplosion(opp.x + (Math.random()-0.5)*80, opp.y + (Math.random()-0.5)*60, '#000000'); game.shake = 15; }, i * 120); }
+        if (dist < 200) { const dmg = 25; opp.takeDamage(dmg, true); game.trackStat('totalDamage', dmg); opp.stun = 60; opp.vx = this.side * 20; opp.vy = -15; }
+        game.trackStat('totalUltras'); return;
+      }
+      if (type === 'juicio_final' && this.energy >= 300) {
+        this.energy -= 300; playSuperSound(); game.flashScreen();
+        game.texts.push(new FloatingText(this.x, this.y - 50, 'JUICIO FINAL', '#ff0000'));
+        game.shake = 40;
+        for (let i = 0; i < 10; i++) { setTimeout(() => { const ex = this.x + this.side * (30 + i * 40); game.spawnExplosion(ex, this.y - 10 + (Math.random()-0.5)*40, '#ff4400'); game.shake = 12; if (Math.abs(ex - opp.x) < 60 && Math.abs(this.y - opp.y) < 80) { opp.takeDamage(3, true); game.trackStat('totalDamage', 3); opp.stun = 10; } }, i * 100); }
+        game.trackStat('totalUltras'); return;
+      }
+
+      // Fallback: if the attack ID matches an existing handler (Edowado/Kaito attacks), let it fall through
+      // Otherwise use generic custom char behavior below
+    }
+
+    // === CUSTOM CHARACTER ATTACKS (non-dev) ===
+    if (this.customData && !devAttacks && type !== 'hit') {
       const effectColor = this.customData.effectColor;
       const ability = type === 'special' ? this.customData.specialAbility : type === 'super' ? this.customData.superAbility : this.customData.ultraAbility;
 
